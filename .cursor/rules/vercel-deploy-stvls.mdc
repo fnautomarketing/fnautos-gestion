@@ -1,0 +1,47 @@
+---
+description: Deploy Vercel solo al equipo y dominio STVLS (solo este proyecto)
+globs:
+alwaysApply: true
+---
+
+# Vercel deploy – solo STVLS
+
+En este proyecto el deploy a Vercel debe ir **siempre** al equipo y dominio de STVLS. El archivo `.vercel/project.json` ya apunta a ese equipo y proyecto; el MCP de Vercel del proyecto usa esa configuración.
+
+- **Equipo Vercel:** `stvls-gestions-projects`
+- **Proyecto:** `stvls-erp`
+- **Dominio producción:** `stvls-erp.vercel.app`
+- **URL de deployment:** `https://stvls-*-stvls-gestions-projects.vercel.app`
+
+## Comandos
+
+- Enlazar (primera vez o tras cambiar de cuenta): `npm run vercel:link`
+- Deploy a producción: `npm run vercel:deploy` o `npx vercel deploy --prod`
+- Deploy preview: `npm run vercel:deploy:preview` o `npx vercel deploy`
+
+## Cuando el usuario diga "subir a Vercel" / "deploy a Vercel" / "llevar a Vercel"
+
+Hacer **siempre** este flujo (en este orden):
+
+1. **Local y remoto:** Si hay cambios sin commitear (código, reglas, migraciones, docs del proyecto), hacer `git add` de los archivos relevantes (excluir temp: `push-batch-*.json`, `mcp-payload*.json`, `temp-push-content.json`), `git commit` y `git push origin <rama_actual>` con la regla de push (Git CLI + token de `.env.local`; ver `.cursor/rules/git-push-remoto.mdc`).
+
+2. **Test previo de build:** Ejecutar `npm run build` en la raíz del repo. Si falla, no seguir; informar el error en el chat.
+
+3. **Deploy a producción:** Ejecutar `npx vercel deploy --prod --yes` en la raíz del repo. Así se actualiza **https://stvls-erp.vercel.app**. No usar solo `vercel deploy` (preview); para que el dominio de producción refleje los cambios hay que usar `--prod`.
+
+4. **Si algo falla:** Mostrar en el chat el mensaje de error completo del comando que falle.
+
+5. **Git author:** El autor del último commit debe tener acceso al equipo Vercel. Si falla con "Git author X must have access to the team", configurar autor válido:
+   ```bash
+   git config --local user.email "administracion@stvls.com"
+   git config --local user.name "STVLS"
+   ```
+   Luego hacer un nuevo commit (o amend) y volver a intentar el deploy.
+
+**Resumen:** commit (+ push si hay cambios) → `npm run build` → `npx vercel deploy --prod --yes`. Dominio a verificar: **stvls-erp.vercel.app**.
+
+## MCP / pruebas
+
+Al comprobar el deploy o probar la app en producción, usar **stvls-erp.vercel.app** (o la URL del deployment bajo stvls-gestions-projects), no otras cuentas/equipos de Vercel.
+
+Documentación detallada: `docs/VERCEL_DEPLOY_STVLS.md`.

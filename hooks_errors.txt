@@ -1,0 +1,9 @@
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\conceptos\concepto-form.tsx : react-hooks/incompatible-library line 69
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\dashboard\sidebar.tsx : react-hooks/exhaustive-deps line 78
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\empresa-selector.tsx : react-hooks/set-state-in-effect line 74
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\facturas\modal-crear-rectificativa.tsx : react-hooks/set-state-in-effect line 64
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\facturas\modal-crear-rectificativa.tsx : react-hooks/exhaustive-deps line 66
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantilla-selector.tsx : react-hooks/set-state-in-effect line 51
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantilla-selector.tsx : react-hooks/exhaustive-deps line 52
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pagos\registrar-pago-form.tsx : react-hooks/incompatible-library line 64
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-layout-preview.tsx : react-hooks/exhaustive-deps line 84

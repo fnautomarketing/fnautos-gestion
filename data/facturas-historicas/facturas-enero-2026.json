@@ -1,0 +1,161 @@
+{
+  "descripcion": "Facturas enero 2026 extraídas de los PDFs STV. Revisar clientes (CIF) en el programa antes de importar.",
+  "facturas": [
+    {
+      "empresa": "Yenifer",
+      "cliente": "A08887473",
+      "numero_manual": "1",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 2565.20,
+      "base_imponible": 2120.00,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "Servicio feria", "descripcion": "", "cantidad": 1, "precio_unitario": 900, "iva_porcentaje": 21, "subtotal": 900 },
+        { "concepto": "IFEMA-BARCELONA", "descripcion": "", "cantidad": 1, "precio_unitario": 900, "iva_porcentaje": 21, "subtotal": 900 },
+        { "concepto": "ENTREGA FERIA-BARCELONA", "descripcion": "", "cantidad": 1, "precio_unitario": 125, "iva_porcentaje": 21, "subtotal": 125 },
+        { "concepto": "RECOJIDA FERIA-BARCELONA", "descripcion": "", "cantidad": 1, "precio_unitario": 125, "iva_porcentaje": 21, "subtotal": 125 },
+        { "concepto": "ENTREGA-PUERTO BARCELONA", "descripcion": "(NOVIEMBRE)", "cantidad": 1, "precio_unitario": 70, "iva_porcentaje": 21, "subtotal": 70 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA 01-2026 (1).pdf",
+      "notas": "Cliente: COMERCIAL FRAMAN S.A. Importado desde PDF."
+    },
+    {
+      "empresa": "Edison",
+      "cliente": "B66617010",
+      "numero_manual": "1",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 6987.00,
+      "base_imponible": 5822.50,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTAS VARIAS Y SERVICIOS ENERO", "descripcion": "", "cantidad": 20, "precio_unitario": 291.125, "iva_porcentaje": 21, "subtotal": 5822.50 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA 01-2026.pdf",
+      "notas": "Cliente: Yerai serveis Logistic S.L. Importado desde PDF."
+    },
+    {
+      "empresa": "Yenifer",
+      "cliente": "54449716E",
+      "numero_manual": "2",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 1801.20,
+      "base_imponible": 1488.60,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "SERVICIO 13/11 SEAT", "descripcion": "", "cantidad": 1, "precio_unitario": 80, "iva_porcentaje": 21, "subtotal": 80 },
+        { "concepto": "SERVICIO TRANSPORTE DICIEMBRE", "descripcion": "", "cantidad": 1, "precio_unitario": 1408.60, "iva_porcentaje": 21, "subtotal": 1408.60 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA 02-2026.pdf",
+      "notas": "Cliente: MILTON CASTIBLANCO. Importado desde PDF."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "B60901766",
+      "numero_manual": "4",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 4057.26,
+      "base_imponible": 3353.11,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTA 268", "descripcion": "", "cantidad": 3, "precio_unitario": 166.23, "iva_porcentaje": 21, "subtotal": 498.70 },
+        { "concepto": "RUTA 126", "descripcion": "", "cantidad": 20, "precio_unitario": 124.72, "iva_porcentaje": 21, "subtotal": 2494.41 },
+        { "concepto": "RUTA 157", "descripcion": "", "cantidad": 2, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 360 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA 4-2026.pdf",
+      "notas": "Cliente: RADOCKS S.L. Importado desde PDF."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "A08227829",
+      "numero_manual": "5",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 973.03,
+      "base_imponible": 804.16,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTA 268", "descripcion": "", "cantidad": 3, "precio_unitario": 13.77, "iva_porcentaje": 21, "subtotal": 41.30 },
+        { "concepto": "RUTA 126", "descripcion": "", "cantidad": 20, "precio_unitario": 38.14, "iva_porcentaje": 21, "subtotal": 762.86 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA 5-2026.pdf",
+      "notas": "Cliente: EMPRESAS RAMONEDA S.A. Importado desde PDF."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "B67394387",
+      "numero_manual": "1-CANO",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-02-28",
+      "total": 10648.00,
+      "base_imponible": 8800.00,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTA 5 - PORTES", "descripcion": "25 PORTES", "cantidad": 25, "precio_unitario": 145, "iva_porcentaje": 21, "subtotal": 3625 },
+        { "concepto": "RUTA 5 - PORTES 2º HORAS", "descripcion": "7 PORTES", "cantidad": 7, "precio_unitario": 50, "iva_porcentaje": 21, "subtotal": 350 },
+        { "concepto": "RUTA 5 - PORTES EXTRAS", "descripcion": "4 PORTES", "cantidad": 4, "precio_unitario": 100, "iva_porcentaje": 21, "subtotal": 400 },
+        { "concepto": "RUTA 11 - PORTES", "descripcion": "25 PORTES", "cantidad": 25, "precio_unitario": 145, "iva_porcentaje": 21, "subtotal": 3625 },
+        { "concepto": "RUTA 11 - PORTES 2º HORAS", "descripcion": "16 PORTES", "cantidad": 16, "precio_unitario": 50, "iva_porcentaje": 21, "subtotal": 800 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Transferencia",
+      "archivo_pdf": "FACTURA CANO 1-2026.pdf",
+      "notas": "Cliente: CARFERTRANSPORTO627, SL. Importado desde PDF."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "B67181768",
+      "numero_manual": "2-JSTRANS",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-04-05",
+      "total": 3896.81,
+      "base_imponible": 3390.00,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTA EXTRA CARROZADO", "descripcion": "Varios servicios BCNPALET SCCL", "cantidad": 14, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 2520 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Domiciliación",
+      "archivo_pdf": "FACTURA JSTRANS 2-2026.pdf",
+      "notas": "Cliente: JS Trans 2016 SL. Importado desde PDF. Descuento 5% aplicado en original."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "B67181768",
+      "numero_manual": "3-JSTRANS",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-04-05",
+      "total": 1504.70,
+      "base_imponible": 1309.00,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "Servicios logística enero", "descripcion": "CIL, RHENUS, CREATIVE PROJECTS, etc.", "cantidad": 1, "precio_unitario": 1309, "iva_porcentaje": 21, "subtotal": 1309 }
+      ],
+      "pagada": true,
+      "fecha_pago": "2026-01-31",
+      "metodo_pago": "Domiciliación",
+      "archivo_pdf": "FACTURA JSTRANS 3-2026.pdf",
+      "notas": "Cliente: JS Trans 2016 SL. Importado desde PDF. Descuento 5% aplicado en original."
+    }
+  ]
+}

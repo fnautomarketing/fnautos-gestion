@@ -1,0 +1,54 @@
+---
+description: Push a remoto SIEMPRE con Git CLI y GITHUB_TOKEN de .env.local; NUNCA con MCP (solo este proyecto, solo stvls-erp)
+alwaysApply: true
+---
+
+# Push a remoto - solo Git CLI, NUNCA MCP
+
+**Importante:** Para subir cambios a GitHub en este proyecto **siempre** se usa **Git CLI** (`git push`) con el token de `.env.local`. **No se usa nunca** el MCP de GitHub (`push_files`, `call_mcp_tool`, etc.). Cualquier mención en otros archivos a "usar MCP para push" queda anulada por esta regla.
+
+---
+
+**Ámbito:** Solo este proyecto (stvls-erp-git). Config `--local`; otros repos no se ven afectados.
+
+**Repositorio:** Siempre `stvlsmarketing-spec/stvls-erp`. No otro owner ni otro repo.
+
+---
+
+## Cuándo aplicar
+
+Cuando el usuario diga cualquiera de estas cosas (o similar), hacer **siempre** el flujo de abajo con Git CLI:
+
+- "guárdalo en local y remoto" / "guarda en local y remoto"
+- "súbelo" / "súbelo a remoto" / "sube a remoto"
+- "actualiza a remoto" / "actualiza el remoto"
+- "haz push" / "haz un git push" / "git push"
+
+Si hay cambios sin commitear: primero `git add` y `git commit` en local, luego push.
+
+---
+
+## Flujo (solo Git CLI)
+
+1. **Comprobar remoto:** Si `git config --get remote.origin.url` no contiene el token (no es `https://ghp_...@github.com/...`), configurarlo solo en este repo:
+   - Leer `GITHUB_TOKEN` de `.env.local` (línea que empiece por `GITHUB_TOKEN=`).
+   - `git config --local credential.https://github.com.useHttpPath true`
+   - `git remote set-url origin "https://<TOKEN>@github.com/stvlsmarketing-spec/stvls-erp.git"`
+
+2. **Push:** Desde la raíz del repo:
+   - `git push origin <rama_actual>` (rama: `git branch --show-current`).
+   - Si Git rechaza por "remote has work you don't have" y el usuario quiere que gane lo local: `git push --force origin <rama_actual>`.
+
+3. **Si algo falla:** Mostrar en el chat el mensaje de error completo (salida del comando). No ocultar el fallo.
+
+---
+
+## Resumen
+
+| Qué | Cómo |
+|-----|------|
+| Subir a remoto | **Siempre** Git CLI (`git push`), **nunca** MCP |
+| Token | `GITHUB_TOKEN` en `.env.local`, en la URL del remoto |
+| Repo | Solo `stvlsmarketing-spec/stvls-erp` |
+| Proyecto | Solo este repo (config local) |
+| Errores | Devolver en el chat el error completo |

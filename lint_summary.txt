@@ -1,0 +1,37 @@
+
+--- Errors by Directory ---
+{
+  "src": 267
+}
+
+--- Top 10 Error Types ---
+[
+  [
+    "@typescript-eslint/no-explicit-any",
+    185
+  ],
+  [
+    "@typescript-eslint/no-unused-vars",
+    71
+  ],
+  [
+    "@next/next/no-img-element",
+    5
+  ],
+  [
+    "react/no-unescaped-entities",
+    2
+  ],
+  [
+    "@typescript-eslint/ban-ts-comment",
+    2
+  ],
+  [
+    "react-hooks/incompatible-library",
+    1
+  ],
+  [
+    "@typescript-eslint/no-empty-object-type",
+    1
+  ]
+]

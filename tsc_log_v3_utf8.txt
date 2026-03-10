@@ -1,0 +1,1 @@
+﻿src/types/supabase.ts(1,9): error TS1005: ';' expected.

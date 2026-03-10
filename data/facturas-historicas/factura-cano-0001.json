@@ -1,0 +1,25 @@
+{
+  "descripcion": "Factura Villegas 0001 - CARFERTRANSPORTO627 (FACTURA CANO 1-2026)",
+  "facturas": [
+    {
+      "empresa": "Villegas",
+      "cliente": "B67394387",
+      "numero_manual": "0001",
+      "fecha_emision": "2026-01-31",
+      "fecha_vencimiento": "2026-01-31",
+      "total": 10648,
+      "base_imponible": 8800,
+      "iva": 1848,
+      "iva_porcentaje": 21,
+      "lineas": [
+        { "concepto": "RUTA 5 - 25 PORTES", "cantidad": 25, "precio_unitario": 145, "iva_porcentaje": 21, "subtotal": 3625 },
+        { "concepto": "RUTA 5 - 7 PORTES 2º HORAS", "cantidad": 7, "precio_unitario": 50, "iva_porcentaje": 21, "subtotal": 350 },
+        { "concepto": "RUTA 5 - 4 PORTES EXTRAS", "cantidad": 4, "precio_unitario": 100, "iva_porcentaje": 21, "subtotal": 400 },
+        { "concepto": "RUTA 11 - 25 PORTES", "cantidad": 25, "precio_unitario": 145, "iva_porcentaje": 21, "subtotal": 3625 },
+        { "concepto": "RUTA 11 - 16 PORTES 2º HORAS", "cantidad": 16, "precio_unitario": 50, "iva_porcentaje": 21, "subtotal": 800 }
+      ],
+      "archivo_pdf": "FACTURA CANO 1-2026.pdf",
+      "notas": "Factura histórica Villegas 0001 - CARFERTRANSPORTO627"
+    }
+  ]
+}

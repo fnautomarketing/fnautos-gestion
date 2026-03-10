@@ -1,0 +1,71 @@
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\dashboard\page.tsx:3:'TrendingDown' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\dashboard\page.tsx:3:'Banknote' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas-vencidas\page.tsx:3:'Link' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas-vencidas\page.tsx:4:'Button' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas-vencidas\page.tsx:7:'Mail' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas\[id]\pdf\page.tsx:4:'useRouter' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas\nueva\page.tsx:8:'adminClient' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\facturas\page.tsx:30:'rol' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\pagos\page.tsx:33:'hoy' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\(dashboard)\ventas\pagos\registrar\page.tsx:4:'Button' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\actions\clientes.ts:146:'deleteCount' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\actions\conceptos.ts:6:'Database' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\actions\facturas-rectificativas.ts:56:'z' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\actions\pagos.ts:26:'userId' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\actions\pagos.ts:184:'uploadData' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\api\qa\route.ts:5:'eliminarClienteAction' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\api\qa\route.ts:6:'editarFacturaAction' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\api\qa\route.ts:6:'anularFacturaAction' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\app\api\qa\route.ts:6:'duplicarFacturaAction' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\conceptos\concepto-form.tsx:3:'useState' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\configuracion\empresa-form.tsx:51:'series' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\configuracion\empresa-form.tsx:51:'plantillas' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\dashboard\navbar.tsx:4:'Command' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\informes\informes-kpis.tsx:6:'Loader2' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\informes\informes-kpis.tsx:7:'Skeleton' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:8:'format' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:9:'CalendarIcon' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:9:'Check' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:17:'Popover' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:17:'PopoverContent' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:17:'PopoverTrigger' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:18:'Calendar' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:19:'cn' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pago-form.tsx:78:'error' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pagos-tabla.tsx:3:'useState' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\pagos\pagos-tabla.tsx:6:'Button' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantilla-selector.tsx:4:'FileText' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantilla-selector.tsx:4:'Check' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantillas\plantilla-editor.tsx:13:'Select' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantillas\plantilla-editor.tsx:13:'SelectContent' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantillas\plantilla-editor.tsx:13:'SelectItem' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantillas\plantilla-editor.tsx:13:'SelectTrigger' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\plantillas\plantilla-editor.tsx:13:'SelectValue' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:33:'DialogTrigger' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:38:'Calendar' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:38:'ArrowRight' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:38:'AlertCircle' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:40:'es' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\vencidas\vencidas-tabla.tsx:49:'nivel' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\anular-factura-modal.tsx:6:'X' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\duplicar-factura-modal.tsx:8:'X' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\editar-factura-form.tsx:8:'Loader2' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\editar-factura-form.tsx:116:'setLineas' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\editar-factura-form.tsx:127:'getSimboloDivisa' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\email\email-send-form.tsx:23:'incluirLogo' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\email\email-send-form.tsx:58:'error' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\email\email-summary-card.tsx:5:'es' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\facturas-filters.tsx:5:'Filter' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\nueva-factura-form.tsx:5:'z' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\nueva-factura-form.tsx:7:'format' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\nueva-factura-form.tsx:8:'Calendar' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\nueva-factura-form.tsx:8:'Euro' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\nueva-factura-form.tsx:28:'empresaConfig' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pagos\historial-pagos-card.tsx:4:'CheckCircle2' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pagos\registrar-pago-form.tsx:45:'empresaId' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pagos\resumen-factura-pago.tsx:4:'es' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-document.tsx:2:'StyleSheet' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-document.tsx:2:'Font' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-document.tsx:6:'PlantillaPdf' is defined but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-document.tsx:178:'colorAccent' is assigned a value but never used.
+C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pdf\pdf-options-panel.tsx:6:'Input' is defined but never used.

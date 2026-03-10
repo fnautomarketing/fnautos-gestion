@@ -1,0 +1,44 @@
+{
+  "descripcion": "Factura externa Villegas 0009 - JS Trans, ya emitida y enviada",
+  "facturas": [
+    {
+      "empresa": "Villegas",
+      "cliente": "B67181768",
+      "numero_manual": "0009",
+      "fecha_emision": "2026-02-28",
+      "fecha_vencimiento": "2026-05-05",
+      "total": 2888.12,
+      "base_imponible": 2386.88,
+      "iva": 501.24,
+      "iva_porcentaje": 21,
+      "descuento_tipo": "porcentaje",
+      "descuento_valor": 5,
+      "importe_descuento": 125.63,
+      "retencion_porcentaje": 0,
+      "importe_retencion": 0,
+      "lineas": [
+        { "concepto": "RUTA 0160", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "RUTA FIJA CARROZADO REF: 160885/160886/160887/160897/160891/160892/160893", "cantidad": 1, "precio_unitario": 202.50, "iva_porcentaje": 21, "subtotal": 202.50 },
+        { "concepto": "RUTA EXTRA CARROZADO", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "RUTA FIJA CARROZADO REF: 161070/161071/161072/161073/161074/161075", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "SERVICIO ZAL-MONELLS C", "cantidad": 1, "precio_unitario": 270, "iva_porcentaje": 21, "subtotal": 270 },
+        { "concepto": "RUTA EXTRA CARROZADO", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "SERVICIO RECOGIDAS CARROZADO REF: 31723", "cantidad": 1, "precio_unitario": 90, "iva_porcentaje": 21, "subtotal": 90 },
+        { "concepto": "SERVICIO ESPLUGUES-EL PRAT CARROZADO REF: 00001/26", "cantidad": 1, "precio_unitario": 90, "iva_porcentaje": 21, "subtotal": 90 },
+        { "concepto": "RUTA FIJA C. 18 PALETS COND. 8BD", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "SERVICIO ZAL-BARCELONA CARROZADO REF: 5414/2026/BA", "cantidad": 1, "precio_unitario": 100, "iva_porcentaje": 21, "subtotal": 100 },
+        { "concepto": "SERVICIO BARCELONA-ZAL CARROZADO REF: 5642/2026/BA", "cantidad": 1, "precio_unitario": 100, "iva_porcentaje": 21, "subtotal": 100 },
+        { "concepto": "SERVICIO SKECHERS SURIA CARROZADO", "cantidad": 1, "precio_unitario": 170, "iva_porcentaje": 21, "subtotal": 170 },
+        { "concepto": "RUTA FIJA CARROZADO + AYUDANTE REF: 161426/161427/161423/161430/161424/161425", "cantidad": 1, "precio_unitario": 230, "iva_porcentaje": 21, "subtotal": 230 },
+        { "concepto": "RUTA EXTRA CARROZADO", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "RUTA EXTRA CARROZADO 47240", "cantidad": 1, "precio_unitario": 180, "iva_porcentaje": 21, "subtotal": 180 },
+        { "concepto": "Ajuste descuento 5% (PDF)", "cantidad": 1, "precio_unitario": 125.63, "iva_porcentaje": 0, "subtotal": 125.63 }
+      ],
+      "enviada": true,
+      "email_enviado_a": "JUVSEBASTIAN@GMAIL.COM",
+      "pagada": false,
+      "archivo_pdf": "Fra_VILLEGAS_LOGISTICS_SOLUTIONS_SL_234.pdf",
+      "notas": "Factura externa JS Trans 234. PDF original subido."
+    }
+  ]
+}

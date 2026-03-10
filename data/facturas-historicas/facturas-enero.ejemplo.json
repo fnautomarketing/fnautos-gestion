@@ -1,0 +1,58 @@
+{
+  "descripcion": "Facturas de enero creadas/enviadas/pagadas fuera del programa. Copia este archivo a facturas-enero.json y rellena con tus datos.",
+  "facturas": [
+    {
+      "empresa": "Villegas",
+      "cliente": "B12345678",
+      "numero_manual": "F2025-0001",
+      "fecha_emision": "2025-01-10",
+      "fecha_vencimiento": "2025-02-10",
+      "total": 1210,
+      "base_imponible": 1000,
+      "iva_porcentaje": 21,
+      "lineas": [
+        {
+          "concepto": "Servicio profesional",
+          "descripcion": "Asesoría enero 2025",
+          "cantidad": 1,
+          "precio_unitario": 1000,
+          "iva_porcentaje": 21,
+          "subtotal": 1000
+        }
+      ],
+      "enviada": true,
+      "email_enviado_a": "cliente@ejemplo.com",
+      "pagada": true,
+      "fecha_pago": "2025-01-25",
+      "metodo_pago": "Transferencia",
+      "referencia_pago": "TRF-ENERO-001",
+      "notas": "Factura creada manualmente, importada a sistema."
+    },
+    {
+      "empresa": "Villegas",
+      "cliente": "ACME S.L.",
+      "numero_manual": "F2025-0002",
+      "fecha_emision": "2025-01-20",
+      "fecha_vencimiento": "2025-02-20",
+      "total": 605,
+      "base_imponible": 500,
+      "iva_porcentaje": 21,
+      "lineas": [
+        {
+          "concepto": "Consultoría",
+          "descripcion": "Enero 2025",
+          "cantidad": 1,
+          "precio_unitario": 500,
+          "iva_porcentaje": 21,
+          "subtotal": 500
+        }
+      ],
+      "enviada": true,
+      "email_enviado_a": "acme@ejemplo.com",
+      "pagada": true,
+      "fecha_pago": "2025-01-28",
+      "metodo_pago": "Transferencia",
+      "notas": "Segunda factura enero."
+    }
+  ]
+}

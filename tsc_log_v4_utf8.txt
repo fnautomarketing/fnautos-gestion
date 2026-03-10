@@ -1,0 +1,29 @@
+﻿src/app/(dashboard)/ventas/clientes/page.tsx(99,28): error TS2322: Type 'import("C:/Users/jebol/Desktop/STVLS-ERP/stvls-erp/src/types/ventas").Cliente[]' is not assignable to type 'Cliente[]'.
+  Type 'import("C:/Users/jebol/Desktop/STVLS-ERP/stvls-erp/src/types/ventas").Cliente' is not assignable to type 'Cliente'.
+    Types of property 'created_at' are incompatible.
+      Type 'string | null' is not assignable to type 'string'.
+        Type 'null' is not assignable to type 'string'.
+src/app/(dashboard)/ventas/facturas/[id]/editar/page.tsx(81,17): error TS2322: Type '{ base_imponible: number; cliente_id: string; created_at: string | null; descuento: number | null; descuento_tipo: string | null; descuento_valor: number | null; divisa: string | null; ... 27 more ...; lineas: { ...; }[]; }' is not assignable to type 'FacturaWithRelations'.
+  Types of property 'descuento_tipo' are incompatible.
+    Type 'string | null' is not assignable to type '"porcentaje" | "fijo" | null'.
+      Type 'string' is not assignable to type '"porcentaje" | "fijo" | null'.
+src/app/(dashboard)/ventas/facturas/page.tsx(170,21): error TS2322: Type '{ base_imponible: number; cliente_id: string; created_at: string | null; descuento: number | null; descuento_tipo: string | null; descuento_valor: number | null; divisa: string | null; ... 26 more ...; cliente: { ...; }; }[]' is not assignable to type 'FacturaWithCliente[]'.
+  Type '{ base_imponible: number; cliente_id: string; created_at: string | null; descuento: number | null; descuento_tipo: string | null; descuento_valor: number | null; divisa: string | null; ... 26 more ...; cliente: { ...; }; }' is not assignable to type 'FacturaWithCliente'.
+    Types of property 'cliente' are incompatible.
+      Type '{ nombre_fiscal: string; nombre_comercial: string | null; cif: string; }' is not assignable to type 'Cliente'.
+        Type '{ nombre_fiscal: string; nombre_comercial: string | null; cif: string; }' is missing the following properties from type '{ activo: boolean | null; banco: string | null; bic_swift: string | null; cif: string; ciudad: string | null; codigo_postal: string | null; created_at: string | null; descuento_comercial: number | null; ... 26 more ...; updated_at: string | null; }': activo, banco, bic_swift, ciudad, and 28 more.
+src/app/actions/email.tsx(79,17): error TS2322: Type '{ base_imponible: number; cliente_id: string; created_at: string | null; descuento: number | null; descuento_tipo: string | null; descuento_valor: number | null; divisa: string | null; ... 27 more ...; lineas: { ...; }[]; }' is not assignable to type 'FacturaWithRelations'.
+  Types of property 'es_rectificativa' are incompatible.
+    Type 'boolean | null' is not assignable to type 'boolean | undefined'.
+      Type 'null' is not assignable to type 'boolean | undefined'.
+src/app/actions/facturas-rectificativas.ts(104,13): error TS2345: Argument of type '"crear_factura_rectificativa"' is not assignable to parameter of type '"generar_codigo_concepto" | "get_desglose_iva" | "get_estadisticas_vencidas" | "get_estado_facturas" | "get_evolucion_facturacion" | "get_facturacion_por_categoria" | ... 6 more ... | "validar_iban"'.
+src/app/actions/usuarios-empresas.ts(46,54): error TS2339: Property 'empresa_activa' does not exist on type 'SelectQueryError<"column 'empresa_activa' does not exist on 'usuarios_empresas'.">'.
+src/app/actions/usuarios-empresas.ts(51,34): error TS2339: Property 'empresa_id' does not exist on type 'SelectQueryError<"column 'empresa_activa' does not exist on 'usuarios_empresas'.">'.
+src/app/actions/usuarios-empresas.ts(53,28): error TS2339: Property 'rol' does not exist on type 'SelectQueryError<"column 'empresa_activa' does not exist on 'usuarios_empresas'.">'.
+src/app/actions/usuarios-empresas.ts(106,23): error TS2353: Object literal may only specify known properties, and 'empresa_activa' does not exist in type '{ created_at?: string | null | undefined; empresa_id?: string | undefined; id?: string | undefined; is_active?: boolean | null | undefined; last_accessed_at?: string | null | undefined; rol?: string | ... 1 more ... | undefined; user_id?: string | undefined; }'.
+src/app/actions/usuarios-empresas.ts(112,23): error TS2353: Object literal may only specify known properties, and 'empresa_activa' does not exist in type '{ created_at?: string | null | undefined; empresa_id?: string | undefined; id?: string | undefined; is_active?: boolean | null | undefined; last_accessed_at?: string | null | undefined; rol?: string | ... 1 more ... | undefined; user_id?: string | undefined; }'.
+src/components/ventas/pdf/pdf-document.tsx(11,11): error TS2430: Interface 'FacturaWithRelations' incorrectly extends interface 'Factura'.
+  Type 'FacturaWithRelations' is not assignable to type '{ base_imponible: number; cliente_id: string; created_at: string | null; descuento: number | null; descuento_tipo: string | null; descuento_valor: number | null; divisa: string | null; ... 25 more ...; updated_at: string | null; }'.
+    Types of property 'es_rectificativa' are incompatible.
+      Type 'boolean | undefined' is not assignable to type 'boolean | null'.
+        Type 'undefined' is not assignable to type 'boolean | null'.

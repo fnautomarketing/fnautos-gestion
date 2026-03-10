@@ -1,0 +1,957 @@
+﻿
+> stvls-erp@0.1.0 lint
+> eslint
+
+
+C:\stvls-erp-git\e2e\clientes-empresas-facturas.spec.ts
+  17:7  warning  'EMPRESA_YENIFER_ID' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\e2e\facturas-series.spec.ts
+  17:7  warning  'EMPRESA_VILLEGAS_ID' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  18:7  warning  'EMPRESA_YENIFER_ID' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  19:7  warning  'EMPRESA_EDISON_ID' is assigned a value but never used    @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\app\(dashboard)\dashboard\page.tsx
+  25:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:85  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\clientes\[id]\editar\page.tsx
+   1:10  warning  'createServerClient' is defined but never used  @typescript-eslint/no-unused-vars
+   2:20  warning  'redirect' is defined but never used            @typescript-eslint/no-unused-vars
+  25:21  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  26:18  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  53:54  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\clientes\nuevo\page.tsx
+  7:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  8:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\configuracion\plantillas\[id]\preview\page.tsx
+  119:132  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:114  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  181:170  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\configuracion\series\[id]\editar\page.tsx
+  41:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\configuracion\series\page.tsx
+  55:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas-vencidas\page.tsx
+  25:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\[id]\editar\page.tsx
+   87:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\[id]\page.tsx
+    1:10  warning  'createServerClient' is defined but never used                   @typescript-eslint/no-unused-vars
+  121:21  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  122:18  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  139:34  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  140:37  error    Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  235:41  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  235:69  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\[id]\pago\page.tsx
+  56:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\[id]\pdf\page.tsx
+  133:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\nueva\page.tsx
+  53:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\facturas\page.tsx
+  122:78  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\pagos\page.tsx
+   29:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   65:55  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   77:42  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  101:62  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  126:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\(dashboard)\ventas\pagos\registrar\page.tsx
+  22:29  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\clientes.ts
+    4:10   warning  'createServerClient' is defined but never used  @typescript-eslint/no-unused-vars
+   12:32   error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   12:62   error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   55:35   error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   98:21   error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  109:157  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  148:59   error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\conceptos.ts
+   46:82  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\email.tsx
+   77:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  150:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  195:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  206:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  220:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\empresa.ts
+   42:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  157:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  165:17  warning  'supabase' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  224:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  232:17  warning  'supabase' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  271:21  error    Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\empresas-crud.ts
+  179:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  215:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  290:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  527:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\facturas-rectificativas.ts
+   49:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   56:10  warning  'z' is defined but never used             @typescript-eslint/no-unused-vars
+  117:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\notificaciones.ts
+   29:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   67:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  119:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  170:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\pagos.ts
+    4:10  warning  'createServerClient' is defined but never used  @typescript-eslint/no-unused-vars
+   31:59  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   66:58  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+   88:45  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  160:52  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  195:46  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  239:59  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  264:55  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  271:67  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  279:76  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  297:75  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  303:58  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  309:64  error    Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\plantillas.ts
+   78:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  136:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  177:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  211:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  241:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  264:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\recordatorios.ts
+   55:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   87:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  158:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  168:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  180:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  191:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  198:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\series.ts
+   66:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   85:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  185:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  216:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  237:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  263:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  293:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\usuarios-empresas.ts
+   47:62  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   49:29  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   50:26  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   86:49  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  121:38  warning  'rol' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  125:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  125:80  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  139:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  214:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  238:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  301:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  338:49  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  353:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  364:44  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  379:48  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  384:21  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\actions\ventas.ts
+   15:59   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+   33:42   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  123:18   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  215:40   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  234:9    error    'numero' is never reassigned. Use 'const' instead       prefer-const
+  235:9    error    'serieCodigo' is never reassigned. Use 'const' instead  prefer-const
+  267:18   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  364:96   warning  'es_externa' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  375:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  382:39   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  385:40   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  411:108  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  416:59   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  421:71   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  422:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  428:49   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  428:92   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  428:123  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  430:58   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  431:29   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  434:64   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  435:29   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  438:76   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  444:94   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  448:110  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  452:120  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  456:116  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  460:120  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  464:92   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  468:102  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  510:36   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  567:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  570:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  570:57   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  574:26   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  576:34   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  577:39   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  580:26   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  580:58   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  582:29   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  583:29   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  658:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  803:63   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  806:58   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  808:49   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  809:50   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  810:55   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  811:53   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  812:55   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  814:64   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  815:53   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  816:55   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  818:54   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  823:37   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  833:69   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  902:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  917:25   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  917:67   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  917:98   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  917:127  error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+  918:50   error    Unexpected any. Specify a different type                @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\clientes\search\route.ts
+  41:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\dev\save-pdf-factura\route.ts
+   47:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  117:54  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  129:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\dev\seed-facturas-y-enviar\route.ts
+   78:10  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   93:8   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:8   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  108:22  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  202:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  254:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  276:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\dev\send-3-facturas-email\route.ts
+   55:36  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\facturas\[id]\pdf\route.tsx
+   17:58  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   71:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  124:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  132:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  138:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\app\api\qa\route.ts
+  102:14  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\conceptos\concepto-form.tsx
+   3:10  warning  'useState' is defined but never used      @typescript-eslint/no-unused-vars
+  37:19  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  64:50  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\conceptos\conceptos-tabla.tsx
+  16:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\configuracion\empresa-form.tsx
+  64:9  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\configuracion\empresa-form.tsx:64:9
+  62 |
+  63 |     useEffect(() => {
+> 64 |         setSeriePredeterminadaId(empresaInicial.serie_predeterminada_id || NONE_VALUE)
+     |         ^^^^^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  65 |         setPlantillaPredeterminadaId(empresaInicial.plantilla_pdf_predeterminada_id || NONE_VALUE)
+  66 |     }, [empresaInicial.serie_predeterminada_id, empresaInicial.plantilla_pdf_predeterminada_id])
+  67 |     const [ibanValido, setIbanValido] = useState<boolean | null>(null)  react-hooks/set-state-in-effect
+
+C:\stvls-erp-git\src\components\dashboard\navbar.tsx
+  4:18  warning  'Bell' is defined but never used     @typescript-eslint/no-unused-vars
+  4:41  warning  'Command' is defined but never used  @typescript-eslint/no-unused-vars
+  5:10  warning  'toast' is defined but never used    @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\dashboard\sidebar.tsx
+  24:11  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:15  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\dashboard\user-dropdown.tsx
+  24:11  warning  'router' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\empresa-selector.tsx
+   16:8   warning  'Link' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   76:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\empresa-selector.tsx:76:9
+  74 |
+  75 |     useEffect(() => {
+> 76 |         loadEmpresas()
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  77 |     }, [])
+  78 |
+  79 |     const handleSelectEmpresa = (empresaOrId: Empresa | string) => {  react-hooks/set-state-in-effect
+  172:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+  242:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+
+C:\stvls-erp-git\src\components\facturas\modal-crear-rectificativa.tsx
+   40:44   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   55:67   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   85:25   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+   86:38   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  240:139  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  240:147  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  241:137  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  241:162  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  242:168  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  242:176  error  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  247:86   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  340:91   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+  349:61   error  Unexpected any. Specify a different type                         @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\informes\informes-graficos.tsx
+   91:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  157:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  182:69  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  188:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\notificaciones-dropdown.tsx
+    4:23  warning  'X' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   48:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\notificaciones-dropdown.tsx:48:9
+  46 |
+  47 |     useEffect(() => {
+> 48 |         cargarContador()
+     |         ^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  49 |         // Actualizar contador cada 30 segundos
+  50 |         const interval = setInterval(cargarContador, 30000)
+  51 |         return () => clearInterval(interval)  react-hooks/set-state-in-effect
+   56:13  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\notificaciones-dropdown.tsx:56:13
+  54 |     useEffect(() => {
+  55 |         if (open) {
+> 56 |             cargarNotificaciones()
+     |             ^^^^^^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  57 |         }
+  58 |     }, [open])
+  59 |                                                                                         react-hooks/set-state-in-effect
+  115:11  warning  'getTipoBg' is assigned a value but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\pagos\pago-form.tsx
+   19:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   25:60  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   72:18  warning  '_error' is defined but never used        @typescript-eslint/no-unused-vars
+  137:85  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\pagos\pagos-tabla.tsx
+  6:10  warning  'Button' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\plantilla-selector.tsx
+  4:10  warning  'FileText' is defined but never used  @typescript-eslint/no-unused-vars
+  4:20  warning  'Check' is defined but never used     @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\plantillas\plantilla-editor.tsx
+  19:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\plantillas\plantillas-grid.tsx
+  13:17  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\series\serie-form.tsx
+  18:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\series\series-grid.tsx
+  24:13  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\vencidas\vencidas-stats.tsx
+  5:12  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\vencidas\vencidas-tabla.tsx
+   43:15  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   47:50  warning  '_nivel' is defined but never used        @typescript-eslint/no-unused-vars
+   53:58  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:39  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  148:38  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\anular-factura-modal.tsx
+  6:25  warning  'X' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\ventas\detalle-factura-header.tsx
+   90:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   97:94  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:63  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  105:95  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  127:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  160:75  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  204:83  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\duplicar-factura-modal.tsx
+    8:16  warning  'X' is defined but never used             @typescript-eslint/no-unused-vars
+   42:18  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  197:85  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\editar-factura-form.tsx
+    8:22  warning  'CalendarIcon' is defined but never used               @typescript-eslint/no-unused-vars
+    8:36  warning  'Loader2' is defined but never used                    @typescript-eslint/no-unused-vars
+   18:10  warning  'Calendar' is defined but never used                   @typescript-eslint/no-unused-vars
+   95:30  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  116:68  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  122:60  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  136:36  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  155:11  warning  'getSimboloDivisa' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  228:61  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  241:36  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  251:33  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  252:37  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\email\email-activity-card.tsx
+  7:16  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\email\email-send-form.tsx
+  30:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  88:18  warning  '_error' is defined but never used        @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\ventas\email\email-summary-card.tsx
+  5:10  warning  'es' is defined but never used            @typescript-eslint/no-unused-vars
+  8:14  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx
+  171:95   error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react/no-unescaped-entities
+  171:103  error    `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react/no-unescaped-entities
+  278:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:278:23
+  276 |
+  277 |     // Sincronizar con URL (navegaci├│n atr├ís, etc.)
+> 278 |     useEffect(() => { setBusqueda(searchParams.get('q') || '') }, [searchParams.get('q')])
+      |                       ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  279 |     useEffect(() => { setEstado(searchParams.get('estado') || 'todas') }, [searchParams.get('estado')])
+  280 |     useEffect(() => { setMes(searchParams.get('mes') || 'todos') }, [searchParams.get('mes')])
+  281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])                                                                                                                                                                                          react-hooks/set-state-in-effect
+  278:67   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  278:68   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  279:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:279:23
+  277 |     // Sincronizar con URL (navegaci├│n atr├ís, etc.)
+  278 |     useEffect(() => { setBusqueda(searchParams.get('q') || '') }, [searchParams.get('q')])
+> 279 |     useEffect(() => { setEstado(searchParams.get('estado') || 'todas') }, [searchParams.get('estado')])
+      |                       ^^^^^^^^^ Avoid calling setState() directly within an effect
+  280 |     useEffect(() => { setMes(searchParams.get('mes') || 'todos') }, [searchParams.get('mes')])
+  281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])
+  282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])                                                                                  react-hooks/set-state-in-effect
+  279:75   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  279:76   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  280:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:280:23
+  278 |     useEffect(() => { setBusqueda(searchParams.get('q') || '') }, [searchParams.get('q')])
+  279 |     useEffect(() => { setEstado(searchParams.get('estado') || 'todas') }, [searchParams.get('estado')])
+> 280 |     useEffect(() => { setMes(searchParams.get('mes') || 'todos') }, [searchParams.get('mes')])
+      |                       ^^^^^^ Avoid calling setState() directly within an effect
+  281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])
+  282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
+  283 |     useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])                             react-hooks/set-state-in-effect
+  280:69   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  280:70   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  281:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:281:23
+  279 |     useEffect(() => { setEstado(searchParams.get('estado') || 'todas') }, [searchParams.get('estado')])
+  280 |     useEffect(() => { setMes(searchParams.get('mes') || 'todos') }, [searchParams.get('mes')])
+> 281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])
+      |                       ^^^^^^^ Avoid calling setState() directly within an effect
+  282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
+  283 |     useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])
+  284 |     useEffect(() => { setClienteLabel(searchParams.get('clienteLabel') || '') }, [searchParams.get('clienteLabel')])  react-hooks/set-state-in-effect
+  281:73   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  281:74   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  282:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:282:23
+  280 |     useEffect(() => { setMes(searchParams.get('mes') || 'todos') }, [searchParams.get('mes')])
+  281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])
+> 282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
+      |                       ^^^^^^^^ Avoid calling setState() directly within an effect
+  283 |     useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])
+  284 |     useEffect(() => { setClienteLabel(searchParams.get('clienteLabel') || '') }, [searchParams.get('clienteLabel')])
+  285 |                                                                                                         react-hooks/set-state-in-effect
+  282:78   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  282:79   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  283:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:283:23
+  281 |     useEffect(() => { setAnio(searchParams.get('anio') || '__all__') }, [searchParams.get('anio')])
+  282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
+> 283 |     useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])
+      |                       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  284 |     useEffect(() => { setClienteLabel(searchParams.get('clienteLabel') || '') }, [searchParams.get('clienteLabel')])
+  285 |
+  286 |     const applySearch = useCallback(                                                                                                                                                               react-hooks/set-state-in-effect
+  283:76   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  283:77   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+  284:23   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-filters.tsx:284:23
+  282 |     useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
+  283 |     useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])
+> 284 |     useEffect(() => { setClienteLabel(searchParams.get('clienteLabel') || '') }, [searchParams.get('clienteLabel')])
+      |                       ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  285 |
+  286 |     const applySearch = useCallback(
+  287 |         (q: string) => {                                                                                                                                                                                                                                       react-hooks/set-state-in-effect
+  284:82   warning  React Hook useEffect has a missing dependency: 'searchParams'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       react-hooks/exhaustive-deps
+  284:83   warning  React Hook useEffect has a complex expression in the dependency array. Extract it to a separate variable so it can be statically checked                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              react-hooks/exhaustive-deps
+
+C:\stvls-erp-git\src\components\ventas\facturas-table.tsx
+   7:42  warning  'Globe' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+  51:21  error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\stvls-erp-git\src\components\ventas\facturas-table.tsx:51:21
+  49 | function HighlightedText({ text, query }: { text: string; query?: string }) {
+  50 |     const [mounted, setMounted] = useState(false)
+> 51 |     useEffect(() => setMounted(true), [])
+     |                     ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  52 |
+  53 |     if (!mounted || !query?.trim() || !text) return <>{text}</>
+  54 |  react-hooks/set-state-in-effect
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx
+  84:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:84:22
+  82 |             <CardContent className="pt-2 pb-4 px-5">
+  83 |                 <dl className="space-y-0">
+> 84 |                     <InfoRow label="Serie">{factura.serie ?? '-'}</InfoRow>
+     |                      ^^^^^^^ This component is created during render
+  85 |                     <InfoRow label="N├║mero">
+  86 |                         <span className="font-mono">{factura.numero}</span>
+  87 |                     </InfoRow>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">                                                                                                                                              react-hooks/static-components
+  85:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:85:22
+  83 |                 <dl className="space-y-0">
+  84 |                     <InfoRow label="Serie">{factura.serie ?? '-'}</InfoRow>
+> 85 |                     <InfoRow label="N├║mero">
+     |                      ^^^^^^^ This component is created during render
+  86 |                         <span className="font-mono">{factura.numero}</span>
+  87 |                     </InfoRow>
+  88 |                     <InfoRow label="Emisi├│n">{formatDate(factura.fecha_emision)}</InfoRow>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">                                                                                                        react-hooks/static-components
+  88:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:88:22
+  86 |                         <span className="font-mono">{factura.numero}</span>
+  87 |                     </InfoRow>
+> 88 |                     <InfoRow label="Emisi├│n">{formatDate(factura.fecha_emision)}</InfoRow>
+     |                      ^^^^^^^ This component is created during render
+  89 |                     <InfoRow label="Vencimiento">{formatDate(factura.fecha_vencimiento)}</InfoRow>
+  90 |                     <InfoRow label="Forma de pago">{formaPagoDisplay}</InfoRow>
+  91 |                     <InfoRow label="Estado">{getEstadoBadge(factura.estado)}</InfoRow>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">  react-hooks/static-components
+  89:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:89:22
+  87 |                     </InfoRow>
+  88 |                     <InfoRow label="Emisi├│n">{formatDate(factura.fecha_emision)}</InfoRow>
+> 89 |                     <InfoRow label="Vencimiento">{formatDate(factura.fecha_vencimiento)}</InfoRow>
+     |                      ^^^^^^^ This component is created during render
+  90 |                     <InfoRow label="Forma de pago">{formaPagoDisplay}</InfoRow>
+  91 |                     <InfoRow label="Estado">{getEstadoBadge(factura.estado)}</InfoRow>
+  92 |                 </dl>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">                                                        react-hooks/static-components
+  90:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:90:22
+  88 |                     <InfoRow label="Emisi├│n">{formatDate(factura.fecha_emision)}</InfoRow>
+  89 |                     <InfoRow label="Vencimiento">{formatDate(factura.fecha_vencimiento)}</InfoRow>
+> 90 |                     <InfoRow label="Forma de pago">{formaPagoDisplay}</InfoRow>
+     |                      ^^^^^^^ This component is created during render
+  91 |                     <InfoRow label="Estado">{getEstadoBadge(factura.estado)}</InfoRow>
+  92 |                 </dl>
+  93 |             </CardContent>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">                                                            react-hooks/static-components
+  91:22  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:91:22
+  89 |                     <InfoRow label="Vencimiento">{formatDate(factura.fecha_vencimiento)}</InfoRow>
+  90 |                     <InfoRow label="Forma de pago">{formaPagoDisplay}</InfoRow>
+> 91 |                     <InfoRow label="Estado">{getEstadoBadge(factura.estado)}</InfoRow>
+     |                      ^^^^^^^ This component is created during render
+  92 |                 </dl>
+  93 |             </CardContent>
+  94 |         </Card>
+
+C:\stvls-erp-git\src\components\ventas\informacion-factura.tsx:63:21
+  61 |         : formaPago
+  62 |
+> 63 |     const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+     |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |             <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |                 {label}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 67 |             </dt>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 68 |             <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 69 |                 {children}
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |             </dd>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |         </div>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 72 |     )
+     | ^^^^^^ The component is created during render here
+  73 |
+  74 |     return (
+  75 |         <Card className="shadow-sm border-slate-200 dark:border-slate-700">                                                                                                                                       react-hooks/static-components
+
+C:\stvls-erp-git\src\components\ventas\nueva-factura-form.tsx
+   17:10  warning  'EmpresaSelector' is defined but never used                    @typescript-eslint/no-unused-vars
+   23:15  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   24:40  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   27:20  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   35:7   warning  'PLANTILLA_ESTANDAR_ID' is assigned a value but never used     @typescript-eslint/no-unused-vars
+   36:7   warning  'PLANTILLA_CORPORATIVA_ID' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   41:42  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   61:26  warning  'setNumeroManual' is assigned a value but never used           @typescript-eslint/no-unused-vars
+   63:12  warning  'isUploading' is assigned a value but never used               @typescript-eslint/no-unused-vars
+   88:29  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   97:54  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   98:78  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+   99:67  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  147:63  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  206:25  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  268:23  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  297:23  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+  385:72  error    Unexpected any. Specify a different type                       @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\pagos\historial-pagos-card.tsx
+  4:43  warning  'CheckCircle2' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\ventas\pagos\registrar-pago-form.tsx
+   47:48  warning  'empresaId' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  153:42  warning  Compilation Skipped: Use of incompatible library
+
+This API returns functions which cannot be memoized without leading to stale UI. To prevent this, by default React Compiler will skip memoizing this component/hook. However, you may see issues if values from this API are passed to other components/hooks that are memoized.
+
+C:\stvls-erp-git\src\components\ventas\pagos\registrar-pago-form.tsx:153:42
+  151 |                                         )}
+  152 |                                     >
+> 153 |                                         {form.watch('fecha_pago') ? (
+      |                                          ^^^^ React Hook Form's `useForm()` API returns a `watch()` function which cannot be memoized safely.
+  154 |                                             format(form.watch('fecha_pago'), "dd/MM/yyyy")
+  155 |                                         ) : (
+  156 |                                             <span>Seleccionar fecha</span>  react-hooks/incompatible-library
+
+C:\stvls-erp-git\src\components\ventas\pagos\resumen-factura-pago.tsx
+  4:10  warning  'es' is defined but never used  @typescript-eslint/no-unused-vars
+
+C:\stvls-erp-git\src\components\ventas\pdf\pdf-document.tsx
+  193:11  warning  'BRAND_DARK_LIGHT' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  281:32  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  282:46  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  288:35  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  289:38  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  290:39  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  291:40  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+  390:57  error    Unexpected any. Specify a different type               @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\pdf\pdf-layout-preview.tsx
+   6:15  warning  'Factura' is defined but never used       @typescript-eslint/no-unused-vars
+   6:24  warning  'Cliente' is defined but never used       @typescript-eslint/no-unused-vars
+   6:33  warning  'LineaFactura' is defined but never used  @typescript-eslint/no-unused-vars
+  57:27  error    Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\pdf\pdf-options-panel.tsx
+  45:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\components\ventas\seed-pdf-externa-button.tsx
+  25:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\lib\helpers\empresa-context.ts
+  28:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:26  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:41  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:35  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  71:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  81:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+C:\stvls-erp-git\src\types\empresa.ts
+  82:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+C:\stvls-erp-git\src\types\notificaciones.ts
+  11:30  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:31  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+Ô£û 379 problems (314 errors, 65 warnings)
+
