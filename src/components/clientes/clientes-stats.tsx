@@ -14,7 +14,7 @@ const statItems = [
     { key: 'total', label: 'Total Clientes', value: (s: ClientesStatsProps['stats']) => s.totalClientes, icon: Users, color: 'text-primary', bg: 'bg-primary/20 dark:bg-primary/20' },
     { key: 'activos', label: 'Clientes Activos', value: (s: ClientesStatsProps['stats']) => s.activos, icon: UserCheck, color: 'text-green-600 dark:text-green-400', bg: 'bg-green-100 dark:bg-green-900/40', badge: 'Saludable' },
     { key: 'inactivos', label: 'Inactivos', value: (s: ClientesStatsProps['stats']) => s.inactivos, icon: UserX, color: 'text-slate-600 dark:text-slate-400', bg: 'bg-slate-100 dark:bg-slate-800' },
-    { key: 'facturacion', label: 'Facturación Total', value: (s: ClientesStatsProps['stats']) => s.facturacionTotal, icon: Banknote, color: 'text-yellow-600 dark:text-yellow-400', bg: 'bg-yellow-100 dark:bg-yellow-900/40', format: 'currency' },
+    { key: 'facturacion', label: 'Facturación Total', value: (s: ClientesStatsProps['stats']) => s.facturacionTotal, icon: Banknote, color: 'text-primary dark:text-primary', bg: 'bg-primary/10 dark:bg-primary/20', format: 'currency' },
 ]
 
 export function ClientesStats({ stats }: ClientesStatsProps) {

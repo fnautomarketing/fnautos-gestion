@@ -119,6 +119,7 @@ export async function POST(request: Request) {
       }
 
       const stream = await renderToStream(
+        // @ts-ignore - React 19 typings conflict with @react-pdf/renderer
         React.createElement(FacturaPdfDocument, {
           factura: fullFactura,
           empresa,
@@ -133,7 +134,7 @@ export async function POST(request: Request) {
       const message = `Estimado cliente,\n\nAdjuntamos la factura ${factura.serie}-${factura.numero} correspondiente a los servicios prestados.\n\nQuedamos a su disposición para cualquier consulta.\n\nAtentamente,\n${clientConfig.nombre}`
 
       const { data, error } = await resend.emails.send({
-        from: process.env.RESEND_FROM || 'Facturación <administracion@stvls.com>',
+        from: process.env.RESEND_FROM || clientConfig.email.from,
         to,
         subject,
         html: `<p>${message.replace(/\n/g, '<br/>')}</p>`,

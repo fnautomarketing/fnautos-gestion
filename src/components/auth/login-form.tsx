@@ -91,7 +91,7 @@ export function LoginForm() {
 
                             <div className="relative group/field">
                                 {/* Animated Golden Neon Glow - Only visible on focus-within or hover - STATIC NO PULSE */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-yellow-400 to-primary rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover/field:opacity-50 group-focus-within/input:opacity-100" />
+                                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary/50 to-primary rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover/field:opacity-50 group-focus-within/input:opacity-100" />
 
                                 {/* Glass Container */}
                                 <div className="relative flex items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-xl overflow-hidden transition-all duration-500 group-focus-within/input:bg-white dark:group-focus-within/input:bg-slate-950">
@@ -141,7 +141,7 @@ export function LoginForm() {
 
                             <div className="relative group/field">
                                 {/* Animated Golden Neon Glow - Only visible on focus-within or hover - STATIC NO PULSE */}
-                                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-yellow-400 to-primary rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover/field:opacity-50 group-focus-within/input:opacity-100" />
+                                <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary/50 to-primary rounded-xl opacity-0 blur-md transition-opacity duration-300 group-hover/field:opacity-50 group-focus-within/input:opacity-100" />
 
                                 {/* Glass Container */}
                                 <div className="relative flex items-center bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl rounded-xl overflow-hidden transition-all duration-500 group-focus-within/input:bg-white dark:group-focus-within/input:bg-slate-950">

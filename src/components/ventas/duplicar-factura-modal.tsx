@@ -101,8 +101,8 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
             <DialogContent className="sm:max-w-[650px]">
                 <DialogHeader>
                     <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-100 dark:bg-yellow-900/20">
-                            <Copy className="h-6 w-6 text-yellow-600 dark:text-yellow-500" />
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 dark:bg-primary/20">
+                            <Copy className="h-6 w-6 text-primary dark:text-primary" />
                         </div>
                         <div className="flex-1">
                             <DialogTitle className="text-2xl font-serif">Duplicar Factura</DialogTitle>
@@ -136,7 +136,7 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
                             </div>
                             <div>
                                 <p className="text-slate-500 text-xs mb-1">Importe Total</p>
-                                <p className="font-semibold text-yellow-600">{formatCurrency(factura.total)}</p>
+                                <p className="font-semibold text-primary">{formatCurrency(factura.total)}</p>
                             </div>
                         </div>
                     </div>

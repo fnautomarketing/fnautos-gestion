@@ -194,7 +194,7 @@ export function PagoForm({ facturas }: PagoFormProps) {
                 <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="bg-linear-to-r from-primary to-yellow-600 hover:scale-105 transition-all text-white font-bold"
+                    className="bg-linear-to-r from-primary to-primary/80 hover:scale-105 transition-all text-white font-bold"
                 >
                     {isSubmitting ? 'Registrando...' : 'Registrar Pago'}
                 </Button>

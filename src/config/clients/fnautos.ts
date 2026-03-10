@@ -5,6 +5,7 @@ export const fnautosConfig: ClientConfig = {
   nombre: 'FNAUTOS',
   nombreCorto: 'FNAUTOS',
   tagline: 'Gestión Inteligente de Automoción',
+  description: 'Plataforma integral para gestión de flotas y administración de automoción.',
   copyright: '© 2026 FNAUTOS S.L.',
   logoPath: '/logo-fnautos.svg',   // TODO: El cliente debe proveerlo
   logoPngPath: '/logo-fnautos.png', // TODO: El cliente debe proveerlo

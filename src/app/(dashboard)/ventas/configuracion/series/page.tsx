@@ -84,7 +84,7 @@ export default async function SeriesPage() {
                     </p>
                 </div>
                 <Link href="/ventas/configuracion/series/nueva" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-primary to-yellow-600 hover:scale-105 active:scale-95 transition-all duration-300">
+                    <Button className="w-full sm:w-auto min-h-[44px] bg-gradient-to-r from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-300">
                         + Nueva Serie
                     </Button>
                 </Link>

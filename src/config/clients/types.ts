@@ -4,6 +4,7 @@ export interface ClientConfig {
   nombre: string
   nombreCorto: string
   tagline: string
+  description: string
   copyright: string
   logoPath: string
   logoPngPath: string

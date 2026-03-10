@@ -125,7 +125,7 @@ export function PerfilForm({
         <div className="space-y-6 max-w-3xl min-w-0" data-testid="perfil-form">
             {/* Card principal: Identidad */}
             <Card className="overflow-hidden border-slate-200/80 dark:border-slate-700/80 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50">
-                <div className="bg-gradient-to-br from-primary/5 via-transparent to-yellow-500/5 dark:from-primary/10 dark:to-yellow-500/10 p-6 sm:p-8">
+                <div className="bg-gradient-to-br from-primary/5 via-transparent to-primary/70/5 dark:from-primary/10 dark:to-primary/70/10 p-6 sm:p-8">
                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
                         <div className="relative group" data-testid="perfil-avatar-container">
                             <Avatar className="h-20 w-20 sm:h-24 sm:w-24 border-4 border-white dark:border-slate-800 shadow-xl shrink-0">
@@ -138,7 +138,7 @@ export function PerfilForm({
                                         sizes="96px"
                                     />
                                 ) : (
-                                    <AvatarFallback className="bg-gradient-to-br from-primary to-yellow-600 text-white text-2xl sm:text-3xl font-bold">
+                                    <AvatarFallback className="bg-gradient-to-br from-primary to-primary/80 text-white text-2xl sm:text-3xl font-bold">
                                         {initials}
                                     </AvatarFallback>
                                 )}
@@ -202,7 +202,7 @@ export function PerfilForm({
                                     variant={isAdmin ? 'default' : 'secondary'}
                                     className={
                                         isAdmin
-                                            ? 'bg-gradient-to-r from-primary to-yellow-600 text-white border-0 shrink-0'
+                                            ? 'bg-gradient-to-r from-primary to-primary/80 text-white border-0 shrink-0'
                                             : 'shrink-0'
                                     }
                                 >

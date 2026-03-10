@@ -24,19 +24,19 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: `${clientConfig.nombreCorto} | Gestión Logística`,
-  description: 'Sistema de Gestión Empresarial para Logística y Transporte',
+  title: `${clientConfig.nombreCorto} | Gestión Inteligente`,
+  description: clientConfig.description,
   metadataBase: new URL(SITE_URL),
   openGraph: {
     title: `${clientConfig.nombre} | ${clientConfig.tagline}`,
-    description: 'Sistema de Gestión Empresarial para Logística y Transporte',
+    description: clientConfig.description,
     type: 'website',
     locale: 'es_ES',
   },
   twitter: {
     card: 'summary_large_image',
     title: `${clientConfig.nombre} | ${clientConfig.tagline}`,
-    description: 'Sistema de Gestión Empresarial para Logística y Transporte',
+    description: clientConfig.description,
   },
   robots: {
     index: true,

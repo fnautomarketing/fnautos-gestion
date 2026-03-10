@@ -689,7 +689,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                         </div>
 
                         <Button
-                            className="w-full bg-linear-to-r from-primary to-yellow-600 hover:scale-[1.02] transition-all text-white font-bold h-12 text-lg shadow-md shadow-primary/20"
+                            className="w-full bg-linear-to-r from-primary to-primary/80 hover:scale-[1.02] transition-all text-white font-bold h-12 text-lg shadow-md shadow-primary/20"
                             onClick={validateAndShowConfirm}
                             disabled={isSubmitting}
                         >

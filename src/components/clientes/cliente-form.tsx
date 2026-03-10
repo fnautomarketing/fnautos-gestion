@@ -355,7 +355,7 @@ export function ClienteForm({ clienteId, defaultValues, empresas, empresasClient
                 <Button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-linear-to-r from-primary to-yellow-600 hover:scale-105 active:scale-95 transition-all duration-300 font-bold"
+                    className="bg-linear-to-r from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-300 font-bold"
                 >
                     {isLoading ? 'Guardando...' : clienteId ? 'Guardar Cambios' : 'Guardar Cliente'}
                 </Button>

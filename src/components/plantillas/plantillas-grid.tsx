@@ -223,7 +223,7 @@ export function PlantillasGrid({ plantillas }: PlantillasGridProps) {
                     <h3 className="text-2xl font-bold text-white mb-2">No hay plantillas configuradas</h3>
                     <p className="text-slate-400 mb-6">Crea tu primera plantilla para personalizar tus facturas PDF.</p>
                     <Link href="/ventas/configuracion/plantillas/nueva">
-                        <Button className="bg-linear-to-r from-primary to-yellow-600 hover:scale-105 active:scale-95 transition-all duration-300 font-bold px-8">
+                        <Button className="bg-linear-to-r from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-300 font-bold px-8">
                             + Crear Plantilla
                         </Button>
                     </Link>

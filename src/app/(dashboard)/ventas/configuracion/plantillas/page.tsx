@@ -39,7 +39,7 @@ export default async function PlantillasPage() {
                     </p>
                 </div>
                 <Link href="/ventas/configuracion/plantillas/nueva" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto min-h-[44px] bg-linear-to-r from-primary to-yellow-600 hover:scale-105 active:scale-95 transition-all duration-300 font-bold">
+                    <Button className="w-full sm:w-auto min-h-[44px] bg-linear-to-r from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-300 font-bold">
                         + Nueva Plantilla
                     </Button>
                 </Link>

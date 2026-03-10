@@ -159,7 +159,7 @@ export default async function PagosPage({
                     </p>
                 </div>
                 <Link href="/ventas/pagos/registrar" className="w-full sm:w-auto">
-                    <Button className="w-full sm:w-auto min-h-[44px] bg-linear-to-r from-primary to-yellow-600 hover:scale-105 active:scale-95 transition-all duration-300">
+                    <Button className="w-full sm:w-auto min-h-[44px] bg-linear-to-r from-primary to-primary/80 hover:scale-105 active:scale-95 transition-all duration-300">
                         + Registrar Pago
                     </Button>
                 </Link>

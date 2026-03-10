@@ -164,7 +164,7 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 <Card>
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-yellow-600" />
+                            <Building2 className="h-5 w-5 text-primary" />
                             Datos Fiscales
                         </CardTitle>
                     </CardHeader>

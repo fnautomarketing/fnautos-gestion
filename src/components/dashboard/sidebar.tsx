@@ -97,10 +97,12 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
     }
 
     const baseEmail = (userEmail || clientConfig.email.admin).toLowerCase()
-    const isAdminPrincipal = baseEmail === clientConfig.email.admin.toLowerCase() || baseEmail.startsWith('admin')
-    const footerName = isAdminPrincipal ? 'Administración' : 'Usuario'
-    const footerInitials = isAdminPrincipal
-        ? 'A'
+    
+    // Mejorar lógica de visualización de usuario
+    const isClientAdmin = baseEmail === clientConfig.email.admin.toLowerCase()
+    const footerName = isClientAdmin ? (clientConfig.nombreCorto || 'Administrador') : (userEmail?.split('@')[0] || 'Usuario')
+    const footerInitials = isClientAdmin
+        ? (clientConfig.id === 'nike' ? 'N' : clientConfig.nombreCorto?.[0] || 'A')
         : (baseEmail.split('@')[0] || 'us')
               .substring(0, 2)
               .toUpperCase()
@@ -224,7 +226,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                     className="w-full flex items-center gap-3 p-3 min-h-[52px] rounded-xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all duration-300 cursor-pointer group shadow-inner text-left touch-manipulation active:scale-[0.98]"
                     data-testid="sidebar-user-perfil"
                 >
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-yellow-600 text-white text-xs font-black shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/80 text-white text-xs font-black shadow-lg shadow-primary/20 group-hover:scale-110 transition-transform">
                         {footerInitials}
                     </div>
                     <div className="flex-1 overflow-hidden">

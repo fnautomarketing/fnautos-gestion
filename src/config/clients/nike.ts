@@ -7,6 +7,7 @@ export const nikeConfig: ClientConfig = {
   nombre: 'Nike Sport S.L.',
   nombreCorto: 'NIKE',
   tagline: 'Just Do Business',
+  description: 'Sistema de gestión de rendimiento deportivo y logística corporativa.',
   copyright: '© 2026 Nike Sport S.L.',
   logoPath: '/logo-nike.svg',      // placeholder hasta que el cliente provea su logo
   logoPngPath: '/logo-nike.png',

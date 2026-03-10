@@ -5,6 +5,7 @@ export const stvlsConfig: ClientConfig = {
   nombre: 'STV Global',
   nombreCorto: 'STV Logistics',
   tagline: 'El Futuro de la Logística Inteligente',
+  description: 'Solución integral para gestión logística, transporte y administración empresarial de vanguardia.',
   copyright: '© 2026 STV Logistics Group',
   logoPath: '/logo-stv.svg',
   logoPngPath: '/logo-stv.png',
