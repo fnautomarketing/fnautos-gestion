@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ERP Gestión Multi-Cliente
 
-## Getting Started
+Sistema integral de gestión de facturación, clientes y pagos con arquitectura multi-empresa (White-Label) y branding dinámico.
 
-First, run the development server:
+## 🚀 Tecnologías Principales
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **Frontend**: [Next.js](https://nextjs.org/) (App Router)
+- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
+- **Estilos**: [Tailwind CSS](https://tailwindcss.com/)
+- **Componentes**: [Radix UI](https://www.radix-ui.com/) / [Shadcn UI](https://ui.shadcn.com/)
+- **Base de Datos & Auth**: [Supabase](https://supabase.com/)
+- **Gráficos**: [Recharts](https://recharts.org/)
+- **PDFs**: [React-PDF](https://react-pdf.org/)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 📂 Estructura del Proyecto
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `src/app`: Rutas principales y lógica de la aplicación.
+- `src/components`: Componentes de interfaz reutilizables.
+- `src/config/clients`: Configuraciones de branding y lógica multi-cliente.
+- `src/lib`: Utilidades, clientes de Supabase y hooks compartidos.
+- `public`: Activos estáticos, logos y favicons.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ⚙️ Configuración y Despliegue
 
-## Learn More
+1. **Instalar dependencias**:
+   ```bash
+   npm install
+   ```
 
-To learn more about Next.js, take a look at the following resources:
+2. **Variables de Entorno**:
+   Configura un archivo `.env.local` con las credenciales de Supabase:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=tu_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anon
+   NEXT_PUBLIC_CLIENT_ID=fnautos (o el ID del cliente deseado)
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. **Ejecutar en desarrollo**:
+   ```bash
+   npm run dev
+   ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+4. **Build de producción**:
+   ```bash
+   npm run build
+   ```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+Este proyecto ha sido optimizado para ser una plantilla profesional, segura y altamente escalable.

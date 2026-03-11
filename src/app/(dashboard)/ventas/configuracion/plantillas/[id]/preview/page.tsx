@@ -3,7 +3,7 @@ import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ArrowLeft, Edit } from 'lucide-react'
-import { clientConfig } from '@/config/client'
+import { clientConfig } from '@/config/clients'
 
 interface PreviewPlantillaPageProps {
     params: Promise<{ id: string }>
