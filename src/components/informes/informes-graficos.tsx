@@ -22,7 +22,14 @@ interface InformesGraficosProps {
     fechaHasta?: string
 }
 
-const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d']
+const COLORS = [
+    'hsl(var(--primary))',  // Rojo FNAUTOS
+    '#020202',              // Negro Premium
+    '#4D4D4D',              // Gris oscuro
+    '#CC0108',              // Rojo sólido
+    '#1A1A1A',              // Antracita
+    '#7f0005'               // Rojo oscuro
+]
 
 export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosProps) {
     const [evolucion, setEvolucion] = useState<EvolucionData[]>([])
@@ -94,9 +101,9 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                                 <Line
                                     type="monotone"
                                     dataKey="facturacion"
-                                    stroke="#2563eb"
-                                    strokeWidth={2}
-                                    activeDot={{ r: 8 }}
+                                    stroke="hsl(var(--primary))"
+                                    strokeWidth={3}
+                                    activeDot={{ r: 8, fill: 'hsl(var(--primary))' }}
                                 />
                             </LineChart>
                         </ResponsiveContainer>
@@ -155,7 +162,12 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                                     tick={{ fontSize: 12 }}
                                 />
                                 <Tooltip formatter={(value: any) => [`${Number(value).toFixed(2)}€`, 'Facturado']} />
-                                <Bar dataKey="facturacion" fill="#adfa1d" radius={[0, 4, 4, 0]} />
+                                <Bar 
+                                    dataKey="facturacion" 
+                                    fill="hsl(var(--primary))" 
+                                    radius={[0, 4, 4, 0]} 
+                                    fillOpacity={0.9}
+                                />
                             </BarChart>
                         </ResponsiveContainer>
                     </div>

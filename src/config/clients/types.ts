@@ -21,6 +21,13 @@ export interface ClientConfig {
     admin: string
     from: string
   }
+  // Marketing & UI
+  loginDescription: string
+  features: {
+    icon: string // nombre del icono de lucide-react o similar
+    label: string
+    desc: string
+  }[]
   // Funcionalidades
   multiEmpresa: boolean
 }

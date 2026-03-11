@@ -7,6 +7,8 @@ import path from 'path'
 import fs from 'fs'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 
+import { clientConfig } from '@/config/clients'
+
 export async function GET(
     request: Request,
     { params }: { params: Promise<{ id: string }> }
@@ -101,13 +103,16 @@ export async function GET(
         cif: '',
     }
 
-    // Load Logo - usar logo-stv.png (nuevo logo con fondo blanco/circular)
+    // Load Logo dinámicamente desde el config del cliente
     let logoUrl: string | undefined
     try {
-        const logoPath = path.join(process.cwd(), 'public', 'logo-stv.png')
+        const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
+        const logoPath = path.join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
         if (fs.existsSync(logoPath)) {
             const logoBuffer = fs.readFileSync(logoPath)
-            logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+            const isSvg = relativeLogoPath.endsWith('.svg')
+            const mimeType = isSvg ? 'image/svg+xml' : 'image/png'
+            logoUrl = `data:${mimeType};base64,${logoBuffer.toString('base64')}`
         } else {
             logoUrl = undefined
         }

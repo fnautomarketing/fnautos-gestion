@@ -37,7 +37,7 @@ export default async function AppleIcon() {
             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
           />
         ) : (
-          <span style={{ fontSize: 56, fontWeight: 800, color: '#93662d' }}>{clientConfig.nombreCorto}</span>
+          <span style={{ fontSize: 56, fontWeight: 800, color: clientConfig.colors.brandGold }}>{clientConfig.nombreCorto}</span>
         )}
       </div>
     ),

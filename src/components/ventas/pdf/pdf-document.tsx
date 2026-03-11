@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
+import { clientConfig } from '@/config/clients'
 import { format } from 'date-fns'
 import { es, enUS, fr } from 'date-fns/locale'
 import type { Factura, Cliente, LineaFactura } from '@/types/ventas'
@@ -186,13 +187,13 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
     // Ensure validated variant
     const variant = options.plantilla || 'estandar'
 
-    // Brand Colors - Logo y aplicación STV
-    const BRAND_GOLD = '#E0A904'
-    const BRAND_GOLD_LIGHT = '#F5D547'
-    const BRAND_DARK = '#1F2937'
-    const BRAND_DARK_LIGHT = '#374151'
+    // Brand Colors - FNAUTOS
+    const BRAND_PRIMARY = clientConfig.colors.brandGold || '#CC0108'
+    const BRAND_PRIMARY_LIGHT = clientConfig.colors.brandGoldLight || '#FF4D4D'
+    const BRAND_DARK = clientConfig.colors.brandDark || '#020202'
+    const BRAND_DARK_LIGHT = '#1A1A1A'
 
-    const colorPrimary = options.colorAcento || (variant === 'premium' ? BRAND_GOLD : BRAND_DARK)
+    const colorPrimary = options.colorAcento || (variant === 'premium' ? BRAND_PRIMARY : BRAND_DARK)
     const isPremium = variant === 'premium'
     const isEstandar = variant === 'estandar'
 
@@ -225,20 +226,20 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
             textTransform: 'uppercase' as const,
             marginBottom: 8,
             borderBottomWidth: safeBorder(1),
-            borderBottomColor: isPremium ? BRAND_GOLD_LIGHT : '#e5e7eb',
+            borderBottomColor: isPremium ? BRAND_PRIMARY_LIGHT : '#e5e7eb',
             paddingBottom: 4
         },
         table: {
             marginTop: isPremium ? 0 : 40,
             borderWidth: safeBorder(isPremium ? 2 : 1),
-            borderColor: isPremium ? BRAND_GOLD : '#e2e8f0',
+            borderColor: isPremium ? BRAND_PRIMARY : '#e2e8f0',
             borderRadius: safeRadius(6),
         },
         tableHeader: {
             flexDirection: 'row' as const,
             backgroundColor: isPremium ? '#ffffff' : '#f8fafc',
             borderBottomWidth: isPremium ? 2 : 1,
-            borderBottomColor: isPremium ? BRAND_GOLD : '#e2e8f0',
+            borderBottomColor: isPremium ? BRAND_PRIMARY : '#e2e8f0',
             padding: 10,
         },
         th: {
@@ -250,7 +251,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
         tableRow: {
             flexDirection: 'row' as const,
             borderBottomWidth: 1,
-            borderBottomColor: isPremium ? BRAND_GOLD_LIGHT : '#f1f5f9',
+            borderBottomColor: isPremium ? BRAND_PRIMARY_LIGHT : '#f1f5f9',
             padding: 8,
             paddingVertical: 10,
         },
@@ -267,13 +268,13 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
             padding: 15,
             backgroundColor: isPremium ? '#ffffff' : '#f8fafc',
             borderWidth: safeBorder(isPremium ? 2 : 1),
-            borderColor: isPremium ? BRAND_GOLD : '#e2e8f0',
+            borderColor: isPremium ? BRAND_PRIMARY : '#e2e8f0',
             borderRadius: safeRadius(4)
         },
         footer: {
             ...baseStyles.footer,
             borderTopWidth: safeBorder(isPremium ? 2 : 1),
-            borderTopColor: isPremium ? BRAND_GOLD : '#f1f5f9',
+            borderTopColor: isPremium ? BRAND_PRIMARY : '#f1f5f9',
         }
     }
 
@@ -308,7 +309,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                 {/* PREMIUM: Encabezado blanco con línea dorada inferior */}
                 {isPremium && (
                     <View style={{ marginBottom: 16 }}>
-                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, borderBottomWidth: safeBorder(2), borderBottomColor: BRAND_GOLD }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, borderBottomWidth: safeBorder(2), borderBottomColor: BRAND_PRIMARY }}>
                             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                                 {logoUrl && (
                                     <View style={{ backgroundColor: '#ffffff', paddingVertical: 12, paddingHorizontal: 14, borderRadius: safeRadius(8), marginRight: 18 }}>
@@ -319,7 +320,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                                     <Text style={{ fontSize: 26, fontWeight: 'bold', color: BRAND_DARK, textTransform: 'uppercase', letterSpacing: 2 }}>
                                         {factura.es_rectificativa ? t.facturaRectificativa : t.factura}
                                     </Text>
-                                    <Text style={{ fontSize: 16, color: BRAND_GOLD, fontWeight: 'bold', marginTop: 4, letterSpacing: 1 }}>{factura.serie}-{factura.numero}</Text>
+                                    <Text style={{ fontSize: 16, color: BRAND_PRIMARY, fontWeight: 'bold', marginTop: 4, letterSpacing: 1 }}>{factura.serie}-{factura.numero}</Text>
                                 </View>
                             </View>
                             <View style={{ alignItems: 'flex-end' }}>
@@ -353,8 +354,8 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                 {/* EMISOR y DESTINATARIO - Requisitos legales España */}
                 <View style={{ flexDirection: 'row', marginBottom: 20 }}>
                     {/* EMISOR (Empresa) */}
-                    <View style={{ flex: 1, marginRight: 24, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(1), borderColor: isPremium ? BRAND_GOLD_LIGHT : '#e2e8f0', borderLeftWidth: safeBorder(4), borderLeftColor: isPremium ? BRAND_GOLD : (colorPrimary || BRAND_DARK) }}>
-                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_GOLD, marginBottom: 8, letterSpacing: 0.5 }}>{t.emisor}</Text>
+                    <View style={{ flex: 1, marginRight: 24, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(1), borderColor: isPremium ? BRAND_PRIMARY_LIGHT : '#e2e8f0', borderLeftWidth: safeBorder(4), borderLeftColor: isPremium ? BRAND_PRIMARY : (colorPrimary || BRAND_DARK) }}>
+                        <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_PRIMARY, marginBottom: 8, letterSpacing: 0.5 }}>{t.emisor}</Text>
                         <Text style={{ ...styles.textLg, fontSize: 12, marginBottom: 4, color: BRAND_DARK }}>{empresa.nombre_fiscal}</Text>
                         <Text style={styles.text}>{t.nif}: {empresa.cif}</Text>
                         {empresa.direccion ? <Text style={styles.text}>{empresa.direccion}</Text> : null}
@@ -363,7 +364,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                     </View>
 
                     {/* DESTINATARIO (Cliente) */}
-                    <View style={{ flex: 1, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(1), borderColor: isPremium ? BRAND_GOLD_LIGHT : '#e2e8f0', borderLeftWidth: safeBorder(4), borderLeftColor: isPremium ? BRAND_GOLD : '#94a3b8' }}>
+                    <View style={{ flex: 1, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(1), borderColor: isPremium ? BRAND_PRIMARY_LIGHT : '#e2e8f0', borderLeftWidth: safeBorder(4), borderLeftColor: isPremium ? BRAND_PRIMARY : '#94a3b8' }}>
                         <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_DARK, marginBottom: 8, letterSpacing: 0.5 }}>{t.destinatario}</Text>
                         <Text style={{ ...styles.textLg, fontSize: 12, marginBottom: 4, color: BRAND_DARK }}>{cliente.nombre_fiscal || '-'}</Text>
                         <Text style={styles.text}>{t.nif}: {cliente.cif || '-'}</Text>
@@ -376,8 +377,8 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                 {/* Línea dorada decorativa antes de la tabla (Premium) */}
                 {isPremium && (
                     <View style={{ flexDirection: 'row', marginBottom: 12 }}>
-                        <View style={{ width: 80, height: 2, backgroundColor: BRAND_GOLD }} />
-                        <View style={{ flex: 1, height: 1, backgroundColor: BRAND_GOLD_LIGHT, alignSelf: 'center', marginLeft: 8 }} />
+                        <View style={{ width: 80, height: 2, backgroundColor: BRAND_PRIMARY }} />
+                        <View style={{ flex: 1, height: 1, backgroundColor: BRAND_PRIMARY_LIGHT, alignSelf: 'center', marginLeft: 8 }} />
                     </View>
                 )}
 
@@ -406,8 +407,8 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
 
                 {/* TOTALS - Requisitos legales: base imponible, cuota IVA */}
                 <View style={[styles.totalsSection, { marginTop: 18 }]}>
-                    <View style={{ width: 260, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(isPremium ? 2 : 1), borderColor: isPremium ? BRAND_GOLD : '#e2e8f0', ...(isPremium && { borderLeftWidth: 4, borderLeftColor: BRAND_GOLD }) }}>
-                        <View style={styles.totalRow}>
+                    <View style={{ width: 260, padding: 16, backgroundColor: isPremium ? '#ffffff' : '#f8fafc', borderRadius: safeRadius(6), borderWidth: safeBorder(isPremium ? 2 : 1), borderColor: isPremium ? BRAND_PRIMARY : '#e2e8f0', ...(isPremium && { borderLeftWidth: 4, borderLeftColor: BRAND_PRIMARY }) }}>
+                         <View style={styles.totalRow}>
                             <Text style={styles.totalLabel}>{t.subtotal}</Text>
                             <Text style={styles.totalValue}>{formatCurrency(factura.subtotal || 0, divisa)}</Text>
                         </View>
@@ -419,7 +420,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                                 <Text style={[styles.totalValue, { color: '#16a34a' }]}>-{formatCurrency(descuentoTotal, divisa)}</Text>
                             </View>
                         )}
-                        <View style={[styles.totalRow, { borderTopWidth: 1, borderTopColor: isPremium ? BRAND_GOLD_LIGHT : '#e2e8f0', marginTop: 4, paddingTop: 6 }]}>
+                        <View style={[styles.totalRow, { borderTopWidth: 1, borderTopColor: BRAND_PRIMARY_LIGHT, marginTop: 4, paddingTop: 6 }]}>
                             <Text style={styles.totalLabel}>{t.baseImponible}</Text>
                             <Text style={styles.totalValue}>{formatCurrency(baseImponible, divisa)}</Text>
                         </View>

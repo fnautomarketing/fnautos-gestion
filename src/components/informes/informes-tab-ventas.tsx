@@ -42,7 +42,14 @@ interface InformesTabVentasProps {
     clienteId?: string | null
 }
 
-const COLORS = ['#2563eb', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = [
+    'hsl(var(--primary))',  // Rojo FNAUTOS
+    '#020202',              // Negro Premium
+    '#4D4D4D',              // Gris oscuro
+    '#CC0108',              // Rojo sólido
+    '#1A1A1A',              // Antracita
+    '#7f0005'               // Rojo oscuro
+]
 
 export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId }: InformesTabVentasProps) {
     const [evolucion, setEvolucion] = useState<EvolucionData[]>([])
@@ -125,9 +132,9 @@ export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId
                                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(148,163,184,0.4)" />
                                     <XAxis dataKey="periodo" stroke="hsl(var(--foreground))" fontSize={11} tick={{ fill: 'hsl(var(--foreground))' }} tickLine={false} axisLine={false} />
                                     <YAxis stroke="hsl(var(--foreground))" fontSize={11} tick={{ fill: 'hsl(var(--foreground))' }} tickLine={false} axisLine={false} tickFormatter={(v) => `${v}€`} width={44} />
-                                    <Tooltip formatter={(value: number) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(value)), 'Facturación']} />
+                                    <Tooltip formatter={(value: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(value || 0)), 'Facturación']} />
                                     <Line type="monotone" dataKey="facturacion" stroke="hsl(var(--primary))" strokeWidth={2.5} activeDot={{ r: 10 }}>
-                                        <LabelList position="top" formatter={(v: number) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(v) + '€'} />
+                                        <LabelList position="top" formatter={(v: any) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(v || 0)) + '€'} />
                                     </Line>
                                 </LineChart>
                             </ResponsiveContainer>
@@ -169,7 +176,7 @@ export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId
                                             <Cell key={i} fill={COLORS[i % COLORS.length]} />
                                         ))}
                                     </Pie>
-                                    <Tooltip formatter={(v: number) => [v, 'Facturas']} />
+                                    <Tooltip formatter={(v: any) => [Number(v || 0), 'Facturas']} />
                                     <Legend
                                         verticalAlign="bottom"
                                         height={56}

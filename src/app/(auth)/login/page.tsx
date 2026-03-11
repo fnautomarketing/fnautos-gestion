@@ -1,7 +1,7 @@
 import { LoginForm } from '@/components/auth/login-form'
 import Image from 'next/image'
-import { MapPin, ShieldCheck, Zap } from 'lucide-react'
 import { clientConfig } from '@/config/clients'
+import * as LucideIcons from 'lucide-react'
 
 export default function LoginPage() {
     return (
@@ -10,7 +10,7 @@ export default function LoginPage() {
             <section className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-950 group/hero">
                 {/* Background: gradient (hero-login.png no existe; evita 404 en prod) */}
                 <div
-                    className="absolute inset-0 bg-gradient-to-br from-slate-900 via-primary/20 to-slate-950 opacity-90 transition-transform duration-[2000ms] ease-out group-hover/hero:scale-105"
+                    className="absolute inset-0 bg-gradient-to-br from-black via-primary/20 to-[#050505] opacity-90 transition-transform duration-[2000ms] ease-out group-hover/hero:scale-105"
                     aria-hidden
                 />
 
@@ -37,25 +37,24 @@ export default function LoginPage() {
                                 {clientConfig.tagline.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 animate-gradient-x italic">{clientConfig.tagline.split(' ')[1]}</span> {clientConfig.tagline.split(' ').slice(2).join(' ')}
                             </h2>
                             <p className="text-xl text-slate-300 font-medium leading-relaxed max-w-md backdrop-blur-sm bg-black/10 p-4 rounded-xl border border-white/5 shadow-inner">
-                                Control total de tu flota y operaciones en tiempo real. Máxima eficiencia para un mundo en constante movimiento.
+                                {clientConfig.loginDescription}
                             </p>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-3 gap-8 border-t border-primary/20 pt-12 backdrop-blur-md bg-white/5 rounded-2xl p-6 transform transition-all duration-500 hover:bg-white/10 hover:border-primary/30 hover:shadow-2xl">
-                        {[
-                            { icon: MapPin, label: "Trazabilidad Total", desc: "Seguimiento en vivo GPS" },
-                            { icon: Zap, label: "IA Predictiva", desc: "Rutas optimizadas" },
-                            { icon: ShieldCheck, label: "Seguridad 24/7", desc: "Protocolos blindados" },
-                        ].map((item, id) => (
-                            <div key={id} className="flex flex-col items-center text-center space-y-2 group/item cursor-default">
-                                <div className="login-feature-icon-bg w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/40 transition-all duration-300 group-hover/item:scale-110">
-                                    <item.icon className="login-feature-icon w-5 h-5 transition-colors duration-300" />
+                        {clientConfig.features.map((item, id) => {
+                            const IconComponent = (LucideIcons as any)[item.icon] || LucideIcons.HelpCircle
+                            return (
+                                <div key={id} className="flex flex-col items-center text-center space-y-2 group/item cursor-default">
+                                    <div className="login-feature-icon-bg w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center border border-primary/40 transition-all duration-300 group-hover/item:scale-110">
+                                        <IconComponent className="login-feature-icon w-5 h-5 transition-colors duration-300 text-primary" />
+                                    </div>
+                                    <h3 className="login-feature-title text-sm font-bold text-white uppercase tracking-wider transition-colors">{item.label}</h3>
+                                    <p className="login-feature-desc text-xs text-slate-300 font-medium transition-colors">{item.desc}</p>
                                 </div>
-                                <h3 className="login-feature-title text-sm font-bold text-white uppercase tracking-wider transition-colors">{item.label}</h3>
-                                <p className="login-feature-desc text-xs text-slate-300 font-medium transition-colors">{item.desc}</p>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                 </div>
             </section>

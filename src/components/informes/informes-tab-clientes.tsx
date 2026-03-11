@@ -39,7 +39,14 @@ interface InformesTabClientesProps {
     clienteId?: string | null
 }
 
-const COLORS = ['#2563eb', '#0ea5e9', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6']
+const COLORS = [
+    'hsl(var(--primary))',  // Rojo FNAUTOS
+    '#020202',              // Negro Premium
+    '#4D4D4D',              // Gris oscuro
+    '#CC0108',              // Rojo sólido
+    '#1A1A1A',              // Antracita
+    '#7f0005'               // Rojo oscuro
+]
 
 export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, clienteId }: InformesTabClientesProps) {
     const [topClientes, setTopClientes] = useState<TopClienteData[]>([])
@@ -130,9 +137,9 @@ export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, cliente
                                                 axisLine={false}
                                                 tickLine={false}
                                             />
-                                            <Tooltip formatter={(v: number) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(v), 'Facturado']} />
+                                            <Tooltip formatter={(v: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Facturado']} />
                                             <Bar dataKey="facturacion" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} barSize={20} name="Facturado">
-                                                <LabelList position="right" formatter={(v: number) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(v) + '€'} />
+                                                <LabelList position="right" formatter={(v: any) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(v || 0)) + '€'} />
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -177,7 +184,7 @@ export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, cliente
                                                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
                                             ))}
                                         </Pie>
-                                        <Tooltip formatter={(v: number) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v)), 'Ingresos']} />
+                                        <Tooltip formatter={(v: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Ingresos']} />
                                         <Legend
                                             verticalAlign="bottom"
                                             height={48}

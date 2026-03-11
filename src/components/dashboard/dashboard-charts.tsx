@@ -42,7 +42,14 @@ function getStoredChartType(): ChartTypeValue {
     return 'line'
 }
 
-const COLORS = ['#10b981', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#06b6d4']
+const COLORS = [
+    'hsl(var(--primary))',  // Rojo FNAUTOS
+    '#1A1A1A',              // Negro suave
+    '#4D4D4D',              // Gris oscuro
+    '#CC0108',              // Rojo sólido
+    '#7f0005',              // Rojo oscuro
+    '#333333'               // Antracita
+]
 
 interface DashboardChartsProps {
     fechaDesde: string
@@ -126,7 +133,7 @@ export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: Dashboard
             <XAxis dataKey="periodo" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
             <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k€`} />
             <Tooltip
-                formatter={(value: number) => chartTooltipFormatter(value)}
+                formatter={(value: number | string | undefined) => value !== undefined ? chartTooltipFormatter(Number(value)) : ['', '']}
                 contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
             />
         </>
@@ -223,8 +230,8 @@ export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: Dashboard
                                         paddingAngle={3}
                                         dataKey="cantidad"
                                         nameKey="estado"
-                                        label={({ estado, percent }) =>
-                                            `${estadoLabels[estado] || estado} ${(percent * 100).toFixed(0)}%`
+                                        label={(props: any) =>
+                                            `${estadoLabels[props.name] || props.name} ${((props.percent || 0) * 100).toFixed(0)}%`
                                         }
                                     >
                                         {estados.map((_, i) => (
@@ -232,8 +239,8 @@ export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: Dashboard
                                         ))}
                                     </Pie>
                                     <Tooltip
-                                        formatter={(value: number, name: string) => [
-                                            value,
+                                        formatter={(value: any, name: any) => [
+                                            value !== undefined ? Number(value) : 0,
                                             estadoLabels[name] || name,
                                         ]}
                                     />

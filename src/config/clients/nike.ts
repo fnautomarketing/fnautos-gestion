@@ -24,5 +24,11 @@ export const nikeConfig: ClientConfig = {
     admin: 'erp@nike-sport.com',
     from: 'Facturación Nike Sport <facturacion@nike-sport.com>',
   },
+  loginDescription: 'Gestión de alto rendimiento para equipos de élite. Lleva tu administración deportiva al siguiente nivel.',
+  features: [
+    { icon: 'Activity', label: 'Rendimiento', desc: 'Métricas de atletas en vivo' },
+    { icon: 'Package', label: 'Inventario Pro', desc: 'Stock global en tiempo real' },
+    { icon: 'Trophy', label: 'Gestión de Éxito', desc: 'KPIS de victoria corporativa' },
+  ],
   multiEmpresa: false,
 }

@@ -27,11 +27,21 @@ export const metadata: Metadata = {
   title: `${clientConfig.nombreCorto} | Gestión Inteligente`,
   description: clientConfig.description,
   metadataBase: new URL(SITE_URL),
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: clientConfig.nombreCorto,
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
     title: `${clientConfig.nombre} | ${clientConfig.tagline}`,
     description: clientConfig.description,
     type: 'website',
     locale: 'es_ES',
+    url: SITE_URL,
+    siteName: clientConfig.nombre,
   },
   twitter: {
     card: 'summary_large_image',
@@ -44,10 +54,13 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/icon', sizes: '48x48', type: 'image/png' },
-      { url: '/favicon.ico', sizes: 'any' },
+      { url: clientConfig.faviconPath || '/favicon.ico', sizes: 'any' },
+      { url: '/icon.png', type: 'image/png', sizes: '32x32' },
+      { url: clientConfig.logoPath, type: 'image/svg+xml' },
     ],
-    apple: '/apple-icon',
+    apple: [
+      { url: '/apple-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 }
 

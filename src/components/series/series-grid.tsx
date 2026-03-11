@@ -137,7 +137,7 @@ export function SeriesGrid({ series }: SeriesGridProps) {
                                         {serie.activa ? 'ACTIVA' : 'INACTIVA'}
                                     </Badge>
                                     {serie.predeterminada && (
-                                        <Badge className="bg-gradient-to-r from-amber-500 to-orange-600 text-white border-none shadow-lg shadow-orange-900/20 animate-pulse">
+                                        <Badge className="bg-linear-to-r from-primary to-primary/80 text-primary-foreground border-none shadow-lg shadow-primary/20 animate-pulse font-bold">
                                             ⭐ PREDETERMINADA
                                         </Badge>
                                     )}
@@ -202,7 +202,7 @@ export function SeriesGrid({ series }: SeriesGridProps) {
                                         {serie.activa ? 'Desactivar' : 'Activar'}
                                     </DropdownMenuItem>
                                     <DropdownMenuItem onClick={() => setResetTarget({ id: serie.id, codigo: serie.codigo })} className="focus:bg-white/10 focus:text-white cursor-pointer">
-                                        <RotateCcw className="h-4 w-4 mr-2 text-blue-400" />
+                                        <RotateCcw className="h-4 w-4 mr-2 text-primary" />
                                         Resetear Numeración
                                     </DropdownMenuItem>
                                     <DropdownMenuItem className="text-red-400 focus:bg-red-500/10 focus:text-red-300 cursor-pointer" onClick={() => setDeleteTarget({ id: serie.id, codigo: serie.codigo })}>

@@ -1,9 +1,0 @@
---- Incompatible Library ---
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\ventas\pagos\registrar-pago-form.tsx:147
-
---- No Img Element ---
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\configuracion\empresa-form.tsx:170
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\configuracion\gestion-empresas-client.tsx:206
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\empresa-selector.tsx:123
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\empresa-selector.tsx:153
-C:\Users\jebol\Desktop\STVLS-ERP\stvls-erp\src\components\empresa-selector.tsx:223

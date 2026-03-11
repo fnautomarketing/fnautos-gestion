@@ -69,7 +69,10 @@ function MiniSparkline({
                 <LineChart data={data} margin={{ top: 2, right: 2, left: 2, bottom: 2 }}>
                     <XAxis dataKey="periodo" hide />
                     <YAxis hide domain={['auto', 'auto']} />
-                    <Tooltip formatter={(v: number) => [format(v), '']} contentStyle={{ fontSize: 10 }} />
+                    <Tooltip 
+                        formatter={(v: number | string | undefined) => v !== undefined ? [format(Number(v)), ''] : ['', '']} 
+                        contentStyle={{ fontSize: 10 }} 
+                    />
                     <Line
                         type="monotone"
                         dataKey={dataKey}
@@ -112,7 +115,7 @@ export function DashboardKpiCards({ kpis, evolution, vista }: DashboardKpiCardsP
             icon: TrendingUp,
             color: 'text-green-600 dark:text-green-400',
             bg: 'bg-green-100 dark:bg-green-900/30',
-            sparkline: <MiniSparkline data={sparklineDataFact} dataKey="value" color="#10b981" format={(v) => formatCurrency(v)} />,
+            sparkline: <MiniSparkline data={sparklineDataFact} dataKey="value" color="hsl(var(--primary))" format={(v) => formatCurrency(v)} />,
         },
         {
             id: kpiIds[1],
@@ -124,7 +127,7 @@ export function DashboardKpiCards({ kpis, evolution, vista }: DashboardKpiCardsP
             icon: Receipt,
             color: 'text-primary',
             bg: 'bg-primary/20',
-            sparkline: <MiniSparkline data={sparklineDataCount} dataKey="value" color="#3b82f6" />,
+            sparkline: <MiniSparkline data={sparklineDataCount} dataKey="value" color="hsl(var(--primary))" />,
         },
         {
             id: kpiIds[2],

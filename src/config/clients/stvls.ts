@@ -23,5 +23,11 @@ export const stvlsConfig: ClientConfig = {
     admin: 'administracion@stvls.com',
     from: 'Facturación STVLS <administracion@stvls.com>',
   },
+  loginDescription: 'Plataforma líder en logística inteligente y gestión de suministros globales. Tecnología punta para tu cadena de valor.',
+  features: [
+    { icon: 'Truck', label: 'Logística Global', desc: 'Red de transporte optimizada' },
+    { icon: 'BarChart3', label: 'Analítica Real', desc: 'Datos precisos al instante' },
+    { icon: 'Globe', label: 'Presencia Mundial', desc: 'Gestión sin fronteras' },
+  ],
   multiEmpresa: true,
 }

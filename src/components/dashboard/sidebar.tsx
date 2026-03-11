@@ -102,7 +102,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
     const isClientAdmin = baseEmail === clientConfig.email.admin.toLowerCase()
     const footerName = isClientAdmin ? (clientConfig.nombreCorto || 'Administrador') : (userEmail?.split('@')[0] || 'Usuario')
     const footerInitials = isClientAdmin
-        ? (clientConfig.id === 'nike' ? 'N' : clientConfig.nombreCorto?.[0] || 'A')
+        ? (clientConfig.nombreCorto?.[0] || 'A')
         : (baseEmail.split('@')[0] || 'us')
               .substring(0, 2)
               .toUpperCase()
@@ -181,12 +181,12 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
     return (
         <aside
             className={cn(
-                'fixed left-0 top-0 z-40 h-screen w-64 flex flex-col bg-[#1a2332]/95 backdrop-blur-xl text-slate-200 border-r border-white/5 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.5)] transition-all duration-500 overflow-hidden',
+                'fixed left-0 top-0 z-40 h-screen w-64 flex flex-col bg-black/95 backdrop-blur-xl text-slate-200 border-r border-white/5 shadow-[20px_0_40px_-15px_rgba(0,0,0,0.5)] transition-all duration-500 overflow-hidden',
                 className
             )}
         >
             {/* Logo Section - responsive padding y safe area */}
-            <div className="flex-shrink-0 flex h-16 sm:h-20 items-center gap-2 sm:gap-3 px-4 sm:px-6 pt-[env(safe-area-inset-top)] border-b border-white/5 bg-[#171f2c]">
+            <div className="flex-shrink-0 flex h-16 sm:h-20 items-center gap-2 sm:gap-3 px-4 sm:px-6 pt-[env(safe-area-inset-top)] border-b border-white/5 bg-[#050505]">
                 <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg bg-white/5 p-1 ring-1 ring-white/10">
                     <Image
                         src={clientConfig.logoPath}
@@ -197,7 +197,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                 </div>
                 <div className="min-w-0 flex-1">
                     <p className="font-serif font-bold text-base sm:text-lg text-white tracking-wide truncate">{clientConfig.nombre}</p>
-                    <p className="text-[10px] font-bold text-primary tracking-[0.2em] uppercase">Enterprise</p>
+                    <p className="text-[10px] font-bold text-primary tracking-[0.2em] uppercase">ERP Platform</p>
                 </div>
             </div>
 
