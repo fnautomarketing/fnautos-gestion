@@ -182,9 +182,9 @@ export function InformesRankingConceptos({ fechaDesde, fechaHasta, empresaId, li
                                 <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                                 <XAxis type="number" fontSize={10} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
                                 <YAxis type="category" dataKey="name" width={90} fontSize={10} tick={{ fontSize: 10 }} />
-                                <Tooltip formatter={(v: number) => [formatCurrency(v), 'Ingresos']} />
+                                <Tooltip formatter={(v: unknown) => [formatCurrency(v as number), 'Ingresos']} />
                                 <Bar dataKey="ingresos" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]}>
-                                    <LabelList position="right" formatter={(v: number) => formatCurrency(v)} />
+                                    <LabelList position="right" formatter={(v: unknown) => formatCurrency(v as number)} />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>

@@ -19,13 +19,14 @@ import { Edit, FileText, MoreVertical, Star, Trash2, ToggleLeft, RotateCcw, Load
 import { toast } from 'sonner'
 import { toggleActivaSerieAction, establecerPredeterminadaAction, eliminarSerieAction, resetearNumeracionAction } from '@/app/actions/series'
 import { useRouter } from 'next/navigation'
+import { SerieWithEmpresa } from '@/types/ventas'
 
 interface SeriesGridProps {
-    series: any[]
+    series: SerieWithEmpresa[]
 }
 
-function groupByEmpresa(series: any[]) {
-    const groups: Record<string, any[]> = {}
+function groupByEmpresa(series: SerieWithEmpresa[]) {
+    const groups: Record<string, SerieWithEmpresa[]> = {}
     for (const s of series) {
         const eid = s.empresa_id
         if (!groups[eid]) groups[eid] = []
@@ -57,50 +58,76 @@ export function SeriesGrid({ series }: SeriesGridProps) {
     const [isResetting, setIsResetting] = useState(false)
 
     const handleToggleActiva = async (serieId: string, activa: boolean) => {
-        const result = await toggleActivaSerieAction(serieId, !activa)
-        if (result.success) {
-            toast.success(activa ? 'Serie desactivada' : 'Serie activada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await toggleActivaSerieAction(serieId, !activa)
+            if (result.success) {
+                toast.success(activa ? 'Serie desactivada' : 'Serie activada')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleToggleActiva]', error)
+            const message = error instanceof Error ? error.message : 'Error al cambiar estado de la serie'
+            toast.error(message)
         }
     }
 
     const handleSetPredeterminada = async (serieId: string) => {
-        const result = await establecerPredeterminadaAction(serieId)
-        if (result.success) {
-            toast.success('Serie establecida como predeterminada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await establecerPredeterminadaAction(serieId)
+            if (result.success) {
+                toast.success('Serie establecida como predeterminada')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleSetPredeterminada]', error)
+            const message = error instanceof Error ? error.message : 'Error al establecer serie predeterminada'
+            toast.error(message)
         }
     }
 
     const handleEliminar = async () => {
         if (!deleteTarget) return
         setIsDeleting(true)
-        const result = await eliminarSerieAction(deleteTarget.id)
-        setIsDeleting(false)
-        setDeleteTarget(null)
-        if (result.success) {
-            toast.success('Serie eliminada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await eliminarSerieAction(deleteTarget.id)
+            if (result.success) {
+                toast.success('Serie eliminada')
+                router.refresh()
+                setDeleteTarget(null)
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleEliminar]', error)
+            const message = error instanceof Error ? error.message : 'Error al eliminar serie'
+            toast.error(message)
+        } finally {
+            setIsDeleting(false)
         }
     }
 
     const handleResetear = async () => {
         if (!resetTarget) return
         setIsResetting(true)
-        const result = await resetearNumeracionAction(resetTarget.id)
-        setIsResetting(false)
-        setResetTarget(null)
-        if (result.success) {
-            toast.success('Numeración reseteada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await resetearNumeracionAction(resetTarget.id)
+            if (result.success) {
+                toast.success('Numeración reseteada')
+                router.refresh()
+                setResetTarget(null)
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleResetear]', error)
+            const message = error instanceof Error ? error.message : 'Error al resetear numeración'
+            toast.error(message)
+        } finally {
+            setIsResetting(false)
         }
     }
 

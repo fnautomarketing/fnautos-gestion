@@ -64,8 +64,7 @@ export default async function NuevaFacturaPage() {
     const empresaIdsParaClientes = isGlobal ? empresaIds : (empresaId ? [empresaId] : [])
     const clientesByEmpresa: Record<string, any[]> = {}
     for (const eid of empresaIdsParaClientes) {
-        const { data: ces } = await supabase
-            .from('clientes_empresas')
+        const { data: ces } = await (supabase.from as any)('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', eid)
         const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)
@@ -133,7 +132,11 @@ export default async function NuevaFacturaPage() {
             <NuevaFacturaForm
                 clientes={clientes || []}
                 clientesByEmpresa={clientesByEmpresa}
-                series={series || []}
+                series={(series || []).map(s => ({
+                    ...s,
+                    predeterminada: s.predeterminada === null ? undefined : s.predeterminada,
+                    empresa_id: s.empresa_id === null ? undefined : s.empresa_id
+                }))}
                 empresaId={empresaIdParaForm}
                 empresaConfig={empresa}
                 empresasConfigs={empresasConfigsMap}

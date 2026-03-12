@@ -12,8 +12,10 @@ import { toast } from 'sonner'
 import { eliminarConceptoAction, duplicarConceptoAction } from '@/app/actions/conceptos'
 import Link from 'next/link'
 
+import { ConceptoCatalogo } from '@/types/conceptos'
+
 interface ConceptosTablaProps {
-    conceptos: any[]
+    conceptos: ConceptoCatalogo[]
 }
 
 export function ConceptosTabla({ conceptos }: ConceptosTablaProps) {
@@ -44,24 +46,36 @@ export function ConceptosTabla({ conceptos }: ConceptosTablaProps) {
     }
 
     const handleDuplicar = async (conceptoId: string) => {
-        const result = await duplicarConceptoAction(conceptoId)
-        if (result.success) {
-            toast.success('Concepto duplicado')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await duplicarConceptoAction(conceptoId)
+            if (result.success) {
+                toast.success('Concepto duplicado')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleDuplicar]', error)
+            const message = error instanceof Error ? error.message : 'Error al duplicar concepto'
+            toast.error(message)
         }
     }
 
     const handleEliminar = async (conceptoId: string) => {
         if (!confirm('¿Eliminar este concepto? Esta acción no se puede deshacer.')) return
 
-        const result = await eliminarConceptoAction(conceptoId)
-        if (result.success) {
-            toast.success('Concepto eliminado')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await eliminarConceptoAction(conceptoId)
+            if (result.success) {
+                toast.success('Concepto eliminado')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleEliminar]', error)
+            const message = error instanceof Error ? error.message : 'Error al eliminar concepto'
+            toast.error(message)
         }
     }
 

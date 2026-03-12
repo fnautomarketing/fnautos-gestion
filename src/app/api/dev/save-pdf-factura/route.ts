@@ -112,12 +112,12 @@ export async function GET(request: Request) {
     }
 
     const stream = await renderToStream(
-      React.createElement(FacturaPdfDocument, {
+      React.createElement(FacturaPdfDocument as any, {
         factura: fullFactura,
         empresa,
         options: pdfOptions,
         logoUrl,
-      })
+      }) as any
     )
     const pdfBuffer = await streamToBuffer(stream as any)
 

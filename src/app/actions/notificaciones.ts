@@ -2,7 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
-import type { NotificacionCreate } from '@/types/notificaciones'
+import type { NotificacionCreate, Notificacion } from '@/types/notificaciones'
 
 /**
  * Crear una notificación para un usuario
@@ -11,24 +11,26 @@ export async function crearNotificacionAction(data: NotificacionCreate) {
     try {
         const supabase = await createServerClient()
 
-        const { error } = await supabase.rpc('crear_notificacion', {
-            p_user_id: data.user_id,
-            p_empresa_id: data.empresa_id || null,
+        const rpcArgs: Record<string, unknown> = {
+            p_user_id: data.user_id ?? '',
+            p_empresa_id: data.empresa_id ?? '',
             p_tipo: data.tipo,
             p_categoria: data.categoria,
             p_titulo: data.titulo,
             p_mensaje: data.mensaje,
-            p_enlace: data.enlace || null,
-            p_metadata: data.metadata || {}
-        })
+            p_metadata: data.metadata ?? {}
+        }
+        if (data.enlace) rpcArgs.p_enlace = data.enlace
+        const { error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient).rpc('crear_notificacion', rpcArgs)
 
         if (error) throw error
 
         revalidatePath('/', 'layout')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[crearNotificacionAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -56,17 +58,18 @@ export async function obtenerNotificacionesAction(limite: number = 10, soloNoLei
         }
 
         const { data, error } = await query
+        const typedData = (data || []) as Notificacion[]
 
         if (error) {
             console.error('[obtenerNotificacionesAction] Error:', error)
             throw error
         }
 
-
-        return { success: true, data: data || [] }
-    } catch (error: any) {
+        return { success: true, data: typedData }
+    } catch (error: unknown) {
         console.error('[obtenerNotificacionesAction]', error)
-        return { success: false, error: error.message, data: [] }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message, data: [] }
     }
 }
 
@@ -90,9 +93,10 @@ export async function marcarNotificacionLeidaAction(notificacionId: string) {
 
         revalidatePath('/', 'layout')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[marcarNotificacionLeidaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -116,9 +120,10 @@ export async function marcarTodasLeidasAction() {
 
         revalidatePath('/', 'layout')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[marcarTodasLeidasAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -142,9 +147,10 @@ export async function eliminarNotificacionAction(notificacionId: string) {
 
         revalidatePath('/', 'layout')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[eliminarNotificacionAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -167,8 +173,9 @@ export async function contarNotificacionesNoLeidasAction() {
         if (error) throw error
 
         return { success: true, count: count || 0 }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[contarNotificacionesNoLeidasAction]', error)
-        return { success: false, error: error.message, count: 0 }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message, count: 0 }
     }
 }

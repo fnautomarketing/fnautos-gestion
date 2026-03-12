@@ -20,17 +20,13 @@ import {
 } from '@/components/ui/dropdown-menu'
 
 
+import { Factura } from '@/types/ventas'
+
 interface DetalleFacturaHeaderProps {
-    factura: {
-        id: string
-        numero: string
-        serie?: string | null
-        estado: string
-        fecha_emision: string
-        total: number
+    factura: Factura & {
         cliente: {
             nombre_fiscal?: string | null
-        }
+        } | null
     }
 }
 
@@ -88,14 +84,14 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
                         {formatFacturaDisplayNumero(factura.serie, factura.numero)}
                     </h1>
                     {getEstadoBadge(factura.estado)}
-                    {(factura as any).es_rectificativa && (
+                    {factura.es_rectificativa && (
                         <Badge variant="destructive" className="ml-2">Rectificativa</Badge>
                     )}
                 </div>
                 <p className="text-slate-600 dark:text-slate-400">
                     Fecha emisión: {format(new Date(factura.fecha_emision), 'dd MMM, yyyy', { locale: es })}
                 </p>
-                {factura.estado === 'borrador' && (factura as any).es_externa && (factura as any).numero !== '000' && factura.serie && (
+                {factura.estado === 'borrador' && factura.es_externa && factura.numero !== '000' && factura.serie && (
                     <p className="mt-2 text-sm text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-3 py-2 rounded-lg inline-block">
                         Envía este número a la empresa externa: <strong className="font-mono">{formatFacturaDisplayNumero(factura.serie, factura.numero)}</strong>
                     </p>
@@ -103,7 +99,7 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
             </div>
 
             <div className="flex flex-wrap gap-2 w-full sm:w-auto">
-                {factura.estado === 'borrador' && (factura as any).es_externa && !(factura as any).archivo_url && (
+                {factura.estado === 'borrador' && factura.es_externa && !factura.archivo_url && (
                     <SeedPdfExternaButton facturaId={factura.id} />
                 )}
                 {factura.estado === 'borrador' && (
@@ -125,7 +121,7 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
                         {emitindo ? 'Emitiendo...' : <><Send className="h-4 w-4 shrink-0 mr-2" /><span className="hidden sm:inline">Emitir Factura</span><span className="sm:hidden">Emitir</span></>}
                     </Button>
                 )}
-                {!(factura as any).es_rectificativa && factura.estado !== 'anulada' && factura.estado !== 'borrador' && (
+                {!factura.es_rectificativa && factura.estado !== 'anulada' && factura.estado !== 'borrador' && (
                     <div className="flex items-center gap-1">
                         <Button
                             variant="outline"
@@ -158,7 +154,7 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
                 <Button
                     variant="outline"
                     onClick={() => router.push(`/ventas/facturas/${factura.id}/editar`)}
-                    disabled={factura.estado === 'anulada' || (factura as any).es_rectificativa}
+                    disabled={factura.estado === 'anulada' || !!factura.es_rectificativa}
                 >
                     <Edit className="h-4 w-4 mr-2" />
                     Editar
@@ -171,10 +167,10 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
                     <Download className="h-4 w-4 mr-2" />
                     Descargar PDF
                 </Button>
-                {(factura as any).archivo_url && (
+                {factura.archivo_url && (
                     <Button
                         variant="outline"
-                        onClick={() => window.open((factura as any).archivo_url, '_blank')}
+                        onClick={() => window.open(factura.archivo_url!, '_blank')}
                     >
                         <Download className="h-4 w-4 mr-2" />
                         Descargar PDF original
@@ -211,7 +207,7 @@ export function DetalleFacturaHeader({ factura }: DetalleFacturaHeaderProps) {
                         </DropdownMenuItem>
                         <DropdownMenuItem
                             onClick={() => setShowAnularModal(true)}
-                            disabled={factura.estado === 'anulada' || (factura as any).es_rectificativa}
+                            disabled={factura.estado === 'anulada' || !!factura.es_rectificativa}
                         >
                             <XCircle className="h-4 w-4 mr-2" />
                             Anular Factura

@@ -44,13 +44,13 @@ export async function getUserContext() {
             .select('id, razon_social, nombre_comercial, logo_url, tipo_empresa')
 
         if (todasLasEmpresas) {
-            const existingIds = new Set(allEmpresas.map((ue: any) => ue.empresa_id))
+            const existingIds = new Set(allEmpresas.map((ue) => ue.empresa_id))
             const additionalEmpresas = todasLasEmpresas
-                .filter((e: any) => !existingIds.has(e.id))
-                .map((e: any) => ({
-                    id: e.id, // Virtual ID using company ID
+                .filter((e) => !existingIds.has(e.id))
+                .map((e) => ({
+                    id: e.id, 
                     empresa_id: e.id,
-                    rol: 'admin',
+                    rol: 'admin' as const,
                     empresa_activa: false,
                     empresa: e
                 }))
@@ -81,9 +81,7 @@ export async function getUserContext() {
     }
 
     // Encontrar empresa activa
-    // Encontrar empresa activa
-    // Encontrar empresa activa
-    const empresaActiva = allEmpresas.find((ue: any) => ue.empresa_activa)
+    const empresaActiva = allEmpresas.find((ue) => ue.empresa_activa)
 
     // Si ES admin y NO hay empresa activa, es MODO GLOBAL (return null)
     // Si NO es admin, forzamos la primera
@@ -118,11 +116,11 @@ export async function getUserContext() {
  */
 export async function listarEmpresasUsuarioAction() {
     try {
-        const { empresas, empresaId, rol, isAdmin } = await getUserContext()
+        const { empresas, empresaId, isAdmin } = await getUserContext()
         return {
             success: true,
             data: {
-                empresas: empresas.filter((ue: any) => ue.empresa_id).map((ue: any) => ({
+                empresas: empresas.filter((ue) => ue.empresa_id).map((ue) => ({
                     id: ue.empresa_id!,
                     razon_social: ue.empresa?.razon_social || 'Sin nombre',
                     nombre_comercial: ue.empresa?.nombre_comercial,
@@ -136,9 +134,10 @@ export async function listarEmpresasUsuarioAction() {
                 isAdmin
             }
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[listarEmpresasUsuarioAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -211,9 +210,10 @@ export async function cambiarEmpresaActivaAction(nuevaEmpresaId: string) {
 
         return { success: false, error: 'No tienes acceso a esta empresa' }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[cambiarEmpresaActivaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -235,9 +235,10 @@ export async function getEmpresaActivaAction() {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getEmpresaActivaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -298,9 +299,10 @@ export async function crearNuevaEmpresaAction(formData: FormData) {
 
         revalidatePath('/configuracion/empresas')
         return { success: true, data: nuevaEmpresa }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[crearNuevaEmpresaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -335,7 +337,7 @@ export async function listarPlantillasEmpresaAction(empresaId?: string) {
                 .eq('activa', true)
                 .order('predeterminada', { ascending: false })
             if (error) throw error
-            const mapped = (data || []).map((p: any) => ({ ...p, nombre: nombreDisplay[p.id] ?? p.nombre }))
+            const mapped = (data || []).map((p) => ({ ...p, nombre: nombreDisplay[p.id] ?? p.nombre }))
             return { success: true, data: mapped }
         }
 
@@ -350,7 +352,7 @@ export async function listarPlantillasEmpresaAction(empresaId?: string) {
 
         let filtered = data || []
         if (isVillegas) {
-            filtered = filtered.filter((p: any) => p.id === PLANTILLA_CORPORATIVA_ID)
+            filtered = filtered.filter((p) => p.id === PLANTILLA_CORPORATIVA_ID)
             if (filtered.length === 0) {
                 const { data: fallback } = await context.supabase
                     .from('plantillas_pdf')
@@ -361,7 +363,7 @@ export async function listarPlantillasEmpresaAction(empresaId?: string) {
             }
         } else {
             // Yenifer, Edison, etc.: usar plantillas de la empresa (excluir Premium si existiera)
-            filtered = filtered.filter((p: any) => p.id !== PLANTILLA_CORPORATIVA_ID)
+            filtered = filtered.filter((p) => p.id !== PLANTILLA_CORPORATIVA_ID)
             if (filtered.length === 0) {
                 // Fallback: crear virtual Estándar si no hay plantillas (no debería ocurrir tras migración)
                 filtered = [{
@@ -376,13 +378,14 @@ export async function listarPlantillasEmpresaAction(empresaId?: string) {
             }
         }
 
-        const dataWithNames = filtered.map((p: any) => ({
+        const dataWithNames = filtered.map((p) => ({
             ...p,
             nombre: nombreDisplay[p.id] ?? p.nombre,
         }))
         return { success: true, data: dataWithNames }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[listarPlantillasEmpresaAction]', error)
-        return { success: false, error: error.message, data: [] }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message, data: [] }
     }
 }

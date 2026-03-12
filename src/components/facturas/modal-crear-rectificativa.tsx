@@ -27,6 +27,8 @@ import {
     getFacturaParaRectificarAction
 } from '@/app/actions/facturas-rectificativas'
 
+import { FacturaCompleta } from '@/types/ventas'
+
 interface Props {
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -37,7 +39,7 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [loadingFactura, setLoadingFactura] = useState(true)
-    const [factura, setFactura] = useState<any>(null)
+    const [factura, setFactura] = useState<FacturaCompleta | null>(null)
 
     const [tipoRectificativa, setTipoRectificativa] = useState<'total' | 'parcial' | 'error'>('parcial')
     const [motivo, setMotivo] = useState('')
@@ -50,9 +52,10 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
             const result = await getFacturaParaRectificarAction(facturaId)
 
             if (result.success && result.data) {
-                setFactura(result.data)
+                // Forzamos el tipo FacturaCompleta ya que cumple con lo mínimo necesario para el modal
+                setFactura(result.data as unknown as FacturaCompleta)
                 // Pre-seleccionar todas las líneas por defecto
-                setLineasSeleccionadas(result.data.lineas.map((l: any) => l.id))
+                setLineasSeleccionadas(result.data.lineas.map((l: { id: string }) => l.id))
             } else {
                 toast.error(result.error || 'Error al cargar la factura')
                 onOpenChange(false)
@@ -82,8 +85,8 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
         }
 
         return factura.lineas
-            .filter((l: any) => lineasSeleccionadas.includes(l.id))
-            .reduce((sum: number, l: any) => {
+            .filter((l) => lineasSeleccionadas.includes(l.id))
+            .reduce((sum: number, l) => {
                 const subtotal = Number(l.subtotal) || 0
                 const ivaAmount = subtotal * (Number(l.iva_porcentaje) || 0) / 100
                 return sum + subtotal + ivaAmount
@@ -200,7 +203,7 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
                         <div className="grid grid-cols-4 gap-4 text-sm">
                             <div>
                                 <div className="text-slate-500 text-xs uppercase mb-1">Cliente</div>
-                                <div className="font-medium">{factura.cliente.nombre_fiscal}</div>
+                                <div className="font-medium">{factura.cliente?.nombre_fiscal}</div>
                             </div>
                             <div>
                                 <div className="text-slate-500 text-xs uppercase mb-1">Fecha</div>
@@ -337,7 +340,7 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
                                         if (lineasSeleccionadas.length === factura.lineas.length) {
                                             setLineasSeleccionadas([])
                                         } else {
-                                            setLineasSeleccionadas(factura.lineas.map((l: any) => l.id))
+                                            setLineasSeleccionadas(factura.lineas.map((l) => l.id))
                                         }
                                     }}
                                 >
@@ -346,7 +349,7 @@ export function ModalCrearRectificativa({ open, onOpenChange, facturaId }: Props
                             </div>
 
                             <div className="space-y-2 max-h-60 overflow-y-auto border rounded-lg p-3">
-                                {factura.lineas.map((linea: any) => (
+                                {factura.lineas.map((linea) => (
                                     <label
                                         key={linea.id}
                                         className={`

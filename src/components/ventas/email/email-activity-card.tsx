@@ -3,8 +3,10 @@ import { formatDistanceToNow } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { Mail, AlertCircle, CheckCircle2 } from 'lucide-react'
 
+import { EmailFactura } from '@/types/ventas'
+
 interface EmailActivityCardProps {
-    historial: any[]
+    historial: EmailFactura[]
 }
 
 export function EmailActivityCard({ historial }: EmailActivityCardProps) {

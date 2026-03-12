@@ -2,6 +2,7 @@
 
 import { createServerClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { Factura, LineaFactura as LineaFacturaDB } from '@/types/ventas'
 import { z } from 'zod'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 import { GuardarBorradorSchema, CrearFacturaSchema, EditarFacturaSchema, AnularFacturaSchema, DuplicarFacturaSchema, LineaFacturaSchema } from '@/lib/validations/ventas'
@@ -12,7 +13,7 @@ type LineaFactura = z.infer<typeof LineaFacturaSchema>
 // Retorna { numero, serieCodigo } - el RPC devuelve "V2026-0001", parseamos a numero="0001", serieCodigo="V2026"
 async function obtenerSiguienteNumero(empresaId: string, serieId: string): Promise<{ numero: string; serieCodigo: string }> {
     const supabase = await createServerClient()
-    const { data: resultado, error } = await (supabase as any)
+    const { data: resultado, error } = await supabase
         .rpc('obtener_siguiente_numero_serie', {
             p_serie_id: serieId
         })
@@ -30,7 +31,8 @@ async function obtenerSiguienteNumero(empresaId: string, serieId: string): Promi
 // Liberar número reservado cuando se elimina borrador externa
 async function liberarNumeroSerie(serieId: string) {
     const supabase = await createServerClient()
-    const { error } = await (supabase as any).rpc('liberar_numero_serie', { p_serie_id: serieId })
+    const supabaseClient = supabase as unknown as { rpc: (method: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: Error | null }> }
+    const { error } = await supabaseClient.rpc('liberar_numero_serie', { p_serie_id: serieId })
     if (error) {
         console.error('[liberarNumeroSerie] Error:', error)
     }
@@ -41,13 +43,15 @@ export async function obtenerProximoNumeroPreviewAction(serieId: string | null):
     if (!serieId) return null
     try {
         const supabase = await createServerClient()
-        const { data, error } = await (supabase as any).rpc('obtener_proximo_numero_preview', { p_serie_id: serieId })
+        const supabaseClient = supabase as unknown as { rpc: (method: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: Error | null }> }
+        const { data, error } = await supabaseClient.rpc('obtener_proximo_numero_preview', { p_serie_id: serieId })
         if (error) {
             console.error('[obtenerProximoNumeroPreview] Error:', error)
             return null
         }
         return (data as string) || null
-    } catch {
+    } catch (error: unknown) {
+        console.error('[obtenerProximoNumeroPreview] Unexpected error:', error)
         return null
     }
 }
@@ -109,19 +113,17 @@ export async function guardarBorradorAction(formData: FormData) {
         }
 
         // Insertar factura
-        const { data: factura, error: errorFactura } = await supabase
-            .from('facturas')
+        const { data: factura, error: errorFactura } = await supabase.from('facturas')
             .insert({
                 empresa_id: validatedData.empresa_id,
                 numero: numero,
-                serie: serieCodigo || null, // Guardar código de serie si existe
+                serie: serieCodigo || null, 
                 serie_id: validatedData.serie || null,
                 cliente_id: validatedData.cliente_id,
                 fecha_emision: validatedData.fecha_emision,
                 fecha_vencimiento: validatedData.fecha_vencimiento || null,
                 subtotal: validatedData.subtotal,
-                // Nuevos campos
-                plantilla_pdf_id: validatedData.plantilla_pdf_id || null, // Explicit null if undefined
+                plantilla_pdf_id: validatedData.plantilla_pdf_id || null,
                 descuento_tipo: validatedData.descuento_tipo,
                 descuento_valor: validatedData.descuento_valor,
                 recargo_equivalencia: validatedData.recargo_equivalencia,
@@ -130,17 +132,16 @@ export async function guardarBorradorAction(formData: FormData) {
                 es_externa: validatedData.es_externa,
                 numero_manual: validatedData.numero_manual || null,
                 archivo_url: validatedData.archivo_url || null,
-
                 base_imponible: validatedData.base_imponible,
                 iva: validatedData.iva,
                 total: validatedData.total,
-                importe_descuento: (validatedData as any).importe_descuento ?? 0,
-                importe_retencion: (validatedData as any).importe_retencion ?? 0,
+                importe_descuento: validatedData.importe_descuento ?? 0,
+                importe_retencion: validatedData.importe_retencion ?? 0,
                 divisa: validatedData.divisa,
                 tipo_cambio: validatedData.tipo_cambio,
                 estado: 'borrador',
                 notas: validatedData.notas,
-            } as any)
+            })
             .select()
             .single()
 
@@ -234,27 +235,18 @@ export async function crearFacturaAction(formData: FormData) {
                 .eq('id', validatedData.cliente_id)
                 .single()
 
-            if (cliente && (cliente as any).tipo_cliente === 'particular') {
+            if (cliente && 'tipo_cliente' in cliente && cliente.tipo_cliente === 'particular') {
                 return { success: false, error: 'No se puede aplicar retención IRPF a particulares' }
             }
         }
 
         // Obtener número de factura
-        let numero: string
-        let serieCodigo: string
-
-        if (validatedData.es_externa) {
-            if (!validatedData.archivo_url) throw new Error('El PDF es obligatorio para emitir una factura externa')
-        }
-
-        if (!validatedData.serie) throw new Error('La serie es obligatoria para emitir la factura')
-
         const { numero: num, serieCodigo: cod } = await obtenerSiguienteNumero(
             validatedData.empresa_id,
-            validatedData.serie
+            validatedData.serie as string
         )
-        numero = num
-        serieCodigo = cod
+        const numero = num
+        const serieCodigo = cod
 
         // Insertar factura
         const { data: factura, error: errorFactura } = await supabase
@@ -282,13 +274,13 @@ export async function crearFacturaAction(formData: FormData) {
                 base_imponible: validatedData.base_imponible,
                 iva: validatedData.iva,
                 total: validatedData.total,
-                importe_descuento: (validatedData as any).importe_descuento ?? 0,
-                importe_retencion: (validatedData as any).importe_retencion ?? 0,
+                importe_descuento: ('importe_descuento' in validatedData ? Number(validatedData.importe_descuento) : 0),
+                importe_retencion: ('importe_retencion' in validatedData ? Number(validatedData.importe_retencion) : 0),
                 divisa: validatedData.divisa,
                 tipo_cambio: validatedData.tipo_cambio,
                 estado: 'emitida',
                 notas: validatedData.notas,
-            } as any)
+            })
             .select()
             .single()
 
@@ -385,28 +377,30 @@ export async function editarFacturaAction(formData: FormData) {
 
         const validatedData = EditarFacturaSchema.parse(rawData)
 
-        const { factura_id, empresa_id, cliente_id, fecha_emision, notas, lineas, archivo_url, es_externa } = validatedData
+        const { factura_id, empresa_id, cliente_id, fecha_emision, notas, lineas, archivo_url } = validatedData
 
         // Verificar que la factura pertenece a la empresa
-        const { data: factura } = await supabase
+        const { data, error } = await supabase
             .from('facturas')
             .select('id, empresa_id, estado, fecha_emision, fecha_vencimiento, notas, serie_id, cliente_id, descuento_tipo, descuento_valor, recargo_equivalencia, recargo_porcentaje, retencion_porcentaje, plantilla_pdf_id, divisa, tipo_cambio, archivo_url, es_externa')
             .eq('id', factura_id)
             .eq('empresa_id', empresa_id)
             .single()
 
-        if (!factura) throw new Error('Factura no encontrada')
-        if ((factura as any).estado === 'anulada') throw new Error('No se puede editar una factura anulada')
+        const factura = data as Factura | null
+
+        if (error || !factura) throw new Error('Factura no encontrada')
+        if (factura.estado === 'anulada') throw new Error('No se puede editar una factura anulada')
 
         // Validar retención si cambia
         if (validatedData.retencion_porcentaje !== undefined && validatedData.retencion_porcentaje > 0) {
             const { data: cliente } = await supabase
                 .from('clientes')
                 .select('tipo_cliente')
-                .eq('id', (factura as any).cliente_id)
+                .eq('id', factura.cliente_id!)
                 .single()
 
-            if (cliente && (cliente as any).tipo_cliente === 'particular') {
+            if (cliente && 'tipo_cliente' in cliente && cliente.tipo_cliente === 'particular') {
                 return { success: false, error: 'No se puede aplicar retención IRPF a particulares' }
             }
         }
@@ -432,64 +426,64 @@ export async function editarFacturaAction(formData: FormData) {
         const updates: FacturaUpdate = {}
         const cambios: string[] = []
 
-        if (validatedData.plantilla_pdf_id !== undefined && validatedData.plantilla_pdf_id !== (factura as any).plantilla_pdf_id) {
+        if (validatedData.plantilla_pdf_id !== undefined && validatedData.plantilla_pdf_id !== factura.plantilla_pdf_id) {
             updates.plantilla_pdf_id = validatedData.plantilla_pdf_id
             cambios.push(`Plantilla PDF actualizada`)
         }
 
-        if (notas !== undefined && notas !== ((factura as any).notas || '')) {
+        if (notas !== undefined && notas !== (factura.notas || '')) {
             updates.notas = notas
             cambios.push(`Notas actualizadas`)
         }
 
-        if (archivo_url !== undefined && archivo_url !== ((factura as any).archivo_url || null)) {
-            (updates as any).archivo_url = archivo_url
+        if (archivo_url !== undefined && archivo_url !== (factura.archivo_url || null)) {
+            (updates as FacturaUpdate & { archivo_url?: string }).archivo_url = archivo_url
             cambios.push(`PDF actualizado`)
         }
 
         // Handle Draft Full Edit (Lines & Series & Financials)
         // También permitir edición completa si es factura externa emitida (datos pendientes de empresa externa)
-        const puedeEditarCompleto = (factura as any).estado === 'borrador' || ((factura as any).es_externa && (factura as any).estado === 'emitida')
+        const puedeEditarCompleto = factura.estado === 'borrador' || (factura.es_externa && factura.estado === 'emitida')
         if (puedeEditarCompleto) {
-            if (cliente_id && cliente_id !== (factura as any).cliente_id) {
-                (updates as any).cliente_id = cliente_id
+            if (cliente_id && cliente_id !== factura.cliente_id) {
+                updates.cliente_id = cliente_id
                 cambios.push(`Cliente actualizado`)
             }
-            if (fecha_emision && fecha_emision !== (factura as any).fecha_emision) {
-                (updates as any).fecha_emision = fecha_emision
+            if (fecha_emision && fecha_emision !== factura.fecha_emision) {
+                updates.fecha_emision = fecha_emision
                 cambios.push(`Fecha de emisión actualizada`)
             }
-            if (validatedData.serie && validatedData.serie !== (factura as any).serie_id) {
+            if (validatedData.serie && validatedData.serie !== factura.serie_id) {
                 updates.serie_id = validatedData.serie
                 cambios.push(`Serie actualizada`)
             }
 
             // Update financial fields if provided and passed validation
-            if (validatedData.descuento_tipo && validatedData.descuento_tipo !== (factura as any).descuento_tipo) {
+            if (validatedData.descuento_tipo && validatedData.descuento_tipo !== factura.descuento_tipo) {
                 updates.descuento_tipo = validatedData.descuento_tipo
                 cambios.push('Tipo de descuento actualizado')
             }
-            if (validatedData.descuento_valor !== undefined && validatedData.descuento_valor !== (factura as any).descuento_valor) {
+            if (validatedData.descuento_valor !== undefined && validatedData.descuento_valor !== factura.descuento_valor) {
                 updates.descuento_valor = validatedData.descuento_valor
                 cambios.push('Valor de descuento actualizado')
             }
-            if (validatedData.recargo_equivalencia !== undefined && validatedData.recargo_equivalencia !== (factura as any).recargo_equivalencia) {
+            if (validatedData.recargo_equivalencia !== undefined && validatedData.recargo_equivalencia !== factura.recargo_equivalencia) {
                 updates.recargo_equivalencia = validatedData.recargo_equivalencia
                 cambios.push('Recargo equivalencia actualizado')
             }
-            if (validatedData.recargo_porcentaje !== undefined && validatedData.recargo_porcentaje !== (factura as any).recargo_porcentaje) {
+            if (validatedData.recargo_porcentaje !== undefined && validatedData.recargo_porcentaje !== factura.recargo_porcentaje) {
                 updates.recargo_porcentaje = validatedData.recargo_porcentaje
                 cambios.push('Porcentaje recargo actualizado')
             }
-            if (validatedData.retencion_porcentaje !== undefined && validatedData.retencion_porcentaje !== (factura as any).retencion_porcentaje) {
+            if (validatedData.retencion_porcentaje !== undefined && validatedData.retencion_porcentaje !== factura.retencion_porcentaje) {
                 updates.retencion_porcentaje = validatedData.retencion_porcentaje
                 cambios.push('Retención IRPF actualizada')
             }
-            if (validatedData.divisa !== undefined && validatedData.divisa !== (factura as any).divisa) {
+            if (validatedData.divisa !== undefined && validatedData.divisa !== factura.divisa) {
                 updates.divisa = validatedData.divisa
                 cambios.push('Divisa actualizada')
             }
-            if (validatedData.tipo_cambio !== undefined && validatedData.tipo_cambio !== (factura as any).tipo_cambio) {
+            if (validatedData.tipo_cambio !== undefined && validatedData.tipo_cambio !== factura.tipo_cambio) {
                 updates.tipo_cambio = validatedData.tipo_cambio
                 cambios.push('Tipo de cambio actualizado')
             }
@@ -531,7 +525,7 @@ export async function editarFacturaAction(formData: FormData) {
             // Actualizar factura
             const { error: errorUpdate } = await supabase
                 .from('facturas')
-                .update(updates as any)
+                .update(updates as unknown as import('@/types/supabase').Database['public']['Tables']['facturas']['Update'])
                 .eq('id', factura_id)
 
             if (errorUpdate) throw errorUpdate
@@ -585,26 +579,27 @@ export async function emitirDesdeBorradorAction(facturaId: string) {
             .select('id, empresa_id, serie_id, estado, es_externa, archivo_url, numero, serie')
             .eq('id', facturaId)
         if (empresaFiltro) query = query.eq('empresa_id', empresaFiltro)
-        const { data: factura, error: errFactura } = await query.single()
+        const { data, error: errFactura } = await query.single()
+        const factura = data as Factura | null
 
         if (errFactura || !factura) throw new Error('Factura no encontrada')
-        if ((factura as any).estado !== 'borrador') throw new Error('Solo se pueden emitir facturas en borrador')
+        if (factura.estado !== 'borrador') throw new Error('Solo se pueden emitir facturas en borrador')
 
         // Validar PDF si es externa
-        if ((factura as any).es_externa && !(factura as any).archivo_url) {
+        if (factura.es_externa && !factura.archivo_url) {
             throw new Error('Debes subir el PDF de la factura externa antes de emitirla. Edita la factura para añadir el archivo.')
         }
 
-        if (!(factura as any).serie_id) throw new Error('La factura debe tener una serie asignada')
+        if (!factura.serie_id) throw new Error('La factura debe tener una serie asignada')
 
-        let numero = (factura as any).numero
-        let serieCodigo = (factura as any).serie
+        let numero = factura.numero
+        let serieCodigo = factura.serie
 
         // Externa con número ya reservado (≠'000'): usar el que tiene. Si no, generar nuevo.
-        if (!(factura as any).es_externa || ((factura as any).es_externa && numero === '000')) {
+        if (!factura.es_externa || (factura.es_externa && numero === '000')) {
             const { numero: n, serieCodigo: sc } = await obtenerSiguienteNumero(
-                (factura as any).empresa_id,
-                (factura as any).serie_id
+                factura.empresa_id,
+                factura.serie_id
             )
             numero = n
             serieCodigo = sc
@@ -679,7 +674,7 @@ export async function anularFacturaAction(formData: FormData) {
         }
 
         // Validaciones de negocio
-        if ((factura as any).estado === 'anulada') {
+        if ('estado' in factura && factura.estado === 'anulada') {
             throw new Error('Esta factura ya está anulada')
         }
 
@@ -759,6 +754,10 @@ export async function duplicarFacturaAction(formData: FormData) {
         const validatedData = DuplicarFacturaSchema.parse(rawData)
         const { facturaIdOriginal, fechaEmision, serie, mantenerCliente } = validatedData
 
+        interface FacturaOriginal extends Factura {
+            lineas: LineaFacturaDB[]
+        }
+
         const copiarLineas = formData.get('copiar_lineas') === 'true'
         const copiarNotas = formData.get('copiar_notas') === 'true'
 
@@ -785,6 +784,8 @@ export async function duplicarFacturaAction(formData: FormData) {
             .eq('empresa_id', perfil.empresa_id!)
             .single()
 
+        const facturaOriginal = data as FacturaOriginal
+
         if (errorFactura || !facturaOriginal) {
             throw new Error('Factura original no encontrada')
         }
@@ -793,7 +794,7 @@ export async function duplicarFacturaAction(formData: FormData) {
 
         const empresaId = perfil.empresa_id
         // Generar número mediante RPC
-        const numero = await obtenerSiguienteNumero(empresaId, serie) as string
+        const { numero } = await obtenerSiguienteNumero(empresaId, serie)
 
 
         // Crear nueva factura
@@ -824,27 +825,27 @@ export async function duplicarFacturaAction(formData: FormData) {
             empresa_id: perfil.empresa_id,
             serie_id: serie,
             numero: numero,
-            cliente_id: mantenerCliente ? (facturaOriginal as any).cliente_id : null,
+            cliente_id: mantenerCliente ? facturaOriginal.cliente_id : null,
             fecha_emision: fechaEmision,
             fecha_vencimiento: null,
-            subtotal: copiarLineas ? (facturaOriginal as any).subtotal : 0,
+            subtotal: copiarLineas ? facturaOriginal.subtotal : 0,
 
-            descuento_tipo: (facturaOriginal as any).descuento_tipo || 'porcentaje',
-            descuento_valor: (facturaOriginal as any).descuento_valor || 0,
-            recargo_equivalencia: (facturaOriginal as any).recargo_equivalencia || false,
-            recargo_porcentaje: (facturaOriginal as any).recargo_porcentaje || 5.2,
-            retencion_porcentaje: (facturaOriginal as any).retencion_porcentaje || 0,
+            descuento_tipo: facturaOriginal.descuento_tipo || 'porcentaje',
+            descuento_valor: facturaOriginal.descuento_valor || 0,
+            recargo_equivalencia: facturaOriginal.recargo_equivalencia || false,
+            recargo_porcentaje: facturaOriginal.recargo_porcentaje || 5.2,
+            retencion_porcentaje: facturaOriginal.retencion_porcentaje || 0,
 
-            base_imponible: copiarLineas ? (facturaOriginal as any).base_imponible : 0,
-            iva: copiarLineas ? (facturaOriginal as any).iva : 0,
-            total: copiarLineas ? (facturaOriginal as any).total : 0,
+            base_imponible: copiarLineas ? facturaOriginal.base_imponible : 0,
+            iva: copiarLineas ? facturaOriginal.iva : 0,
+            total: copiarLineas ? facturaOriginal.total : 0,
             estado: 'borrador', // Always draft initially
-            notas: copiarNotas ? (facturaOriginal as any).notas : null,
+            notas: copiarNotas ? facturaOriginal.notas : null,
         }
 
         const { data: facturaCreada, error: errorCrear } = await supabase
             .from('facturas')
-            .insert(nuevaFactura as any)
+            .insert(nuevaFactura as unknown as import('@/types/supabase').Database['public']['Tables']['facturas']['Insert'])
             .select()
             .single()
 
@@ -854,7 +855,7 @@ export async function duplicarFacturaAction(formData: FormData) {
 
         // Copiar líneas si está activado
         if (copiarLineas && facturaOriginal.lineas && facturaOriginal.lineas.length > 0) {
-            const lineasNuevas = facturaOriginal.lineas.map((linea: any) => ({
+            const lineasNuevas = facturaOriginal.lineas.map((linea) => ({
                 factura_id: facturaCreada.id,
                 concepto: linea.concepto,
                 descripcion: linea.descripcion,
@@ -923,7 +924,7 @@ export async function eliminarFacturaAction(facturaId: string) {
         }
 
         // No permitir eliminar facturas pagadas
-        if ((factura as any).estado === 'pagada') {
+        if ('estado' in factura && factura.estado === 'pagada') {
             return { success: false, error: 'No se puede eliminar una factura pagada. Anúlala primero si necesitas descartarla.' }
         }
 
@@ -938,8 +939,8 @@ export async function eliminarFacturaAction(facturaId: string) {
         }
 
         // Liberar número si es borrador externa con número reservado (para que quede libre para la siguiente)
-        if ((factura as any).estado === 'borrador' && (factura as any).es_externa && (factura as any).serie_id && (factura as any).numero !== '000') {
-            await liberarNumeroSerie((factura as any).serie_id)
+        if ('estado' in factura && factura.estado === 'borrador' && 'es_externa' in factura && factura.es_externa && 'serie_id' in factura && factura.serie_id && 'numero' in factura && factura.numero !== '000') {
+            await liberarNumeroSerie(String(factura.serie_id))
         }
 
         // 1. Eliminar líneas de factura

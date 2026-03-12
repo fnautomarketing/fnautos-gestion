@@ -17,6 +17,17 @@ interface InformacionFacturaProps {
     }
 }
 
+const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
+    <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
+        <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
+            {label}
+        </dt>
+        <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
+            {children}
+        </dd>
+    </div>
+)
+
 export function InformacionFactura({ factura }: InformacionFacturaProps) {
     const formatDate = (dateStr: string) => {
         return format(new Date(dateStr), 'dd MMM, yyyy', { locale: es })
@@ -60,17 +71,6 @@ export function InformacionFactura({ factura }: InformacionFacturaProps) {
     const formaPagoDisplay = rawFormaPagoStr.includes('_')
         ? formaPago.replace(/(\d+)/, '($1 días)')
         : formaPago
-
-    const InfoRow = ({ label, children }: { label: string; children: ReactNode }) => (
-        <div className="flex items-baseline justify-between gap-4 py-2.5 border-b border-slate-100 dark:border-slate-700 last:border-0 last:pb-0 first:pt-0">
-            <dt className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider shrink-0">
-                {label}
-            </dt>
-            <dd className="text-slate-900 dark:text-slate-100 font-medium text-sm text-right break-words">
-                {children}
-            </dd>
-        </div>
-    )
 
     return (
         <Card className="shadow-sm border-slate-200 dark:border-slate-700">

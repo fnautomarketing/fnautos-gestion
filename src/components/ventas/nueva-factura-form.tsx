@@ -14,34 +14,41 @@ import { Textarea } from '@/components/ui/textarea'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { EmpresaSelector } from '@/components/empresa-selector'
 import { PlantillaSelector } from '@/components/plantilla-selector'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import { SimpleCombobox } from '@/components/ui/simple-combobox'
+import { Cliente, Serie } from '@/types/ventas'
+import { Empresa } from '@/types/empresa'
+
+interface LineaForm {
+    concepto: string
+    cantidad: number
+    precio_unitario: number
+    iva_porcentaje: number
+    descuento_porcentaje: number
+    subtotal: number
+}
 
 interface NuevaFacturaFormProps {
-    clientes: any[]
-    clientesByEmpresa?: Record<string, any[]>
-    series: Array<{ id: string; codigo: string; nombre: string; predeterminada?: boolean; empresa_id?: string }>
+    clientes: Cliente[]
+    clientesByEmpresa?: Record<string, Cliente[]>
+    series: Serie[]
     empresaId: string
-    empresaConfig: any
+    empresaConfig: Partial<Empresa>
     empresasConfigs?: Record<string, { retencion_predeterminada?: number | null }>
     defaultEmpresaId?: string
     empresas?: Array<{ id: string; nombre: string }>
 }
 
-const EMPRESA_VISION_GLOBAL_ID = 'ALL'
-
 // Template IDs
-const PLANTILLA_ESTANDAR_ID = '42c849e4-e1e2-4eaa-b719-9bb64ab1fabd'
-const PLANTILLA_CORPORATIVA_ID = '5e63ff58-2cd5-4234-805a-fd93f50ee84c'
+const EMPRESA_VISION_GLOBAL_ID = 'ALL'
 
 const EMPRESA_EDISON_ID = 'af15f25a-7ade-4de8-9241-a42e1b8407da'
 
 export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, empresaId, empresaConfig, empresasConfigs = {}, defaultEmpresaId, empresas = [] }: NuevaFacturaFormProps) {
     const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [lineas, setLineas] = useState<any[]>([
+    const [lineas, setLineas] = useState<LineaForm[]>([
         { concepto: '', cantidad: 1, precio_unitario: 0, iva_porcentaje: 21, descuento_porcentaje: 0, subtotal: 0 }
     ])
 
@@ -62,9 +69,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
     const [descuentoTipo, setDescuentoTipo] = useState<'porcentaje' | 'fijo'>('porcentaje')
     const [descuentoValor, setDescuentoValor] = useState(0)
     const [esExterna, setEsExterna] = useState(false)
-    const [numeroManual, setNumeroManual] = useState('')
     const [archivo, setArchivo] = useState<File | null>(null)
-    const [isUploading, setIsUploading] = useState(false)
     const supabase = createClient()
 
     // Divisa (RFC-029)
@@ -89,7 +94,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
     })
 
     const seriesParaMostrar = empresaId === EMPRESA_VISION_GLOBAL_ID
-        ? series.filter((s: any) => s.empresa_id === selectedEmpresaId)
+        ? series.filter((s: Serie) => s.empresa_id === selectedEmpresaId)
         : series
 
     const clientesParaMostrar = (empresaId === EMPRESA_VISION_GLOBAL_ID && clientesByEmpresa[selectedEmpresaId])
@@ -111,9 +116,9 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
 
     useEffect(() => {
         if (seriesParaMostrar.length > 0 && !serieId) {
-            const empresaSerieId = (empresaConfig as any)?.serie_predeterminada_id
-            const fromEmpresa = empresaSerieId && seriesParaMostrar.some((s: any) => s.id === empresaSerieId) ? empresaSerieId : null
-            const fromPredeterminada = seriesParaMostrar.find((s: any) => s.predeterminada)?.id
+            const empresaSerieId = empresaConfig?.serie_predeterminada_id
+            const fromEmpresa = empresaSerieId && seriesParaMostrar.some((s: Serie) => s.id === empresaSerieId) ? empresaSerieId : null
+            const fromPredeterminada = seriesParaMostrar.find((s: Serie) => s.predeterminada)?.id
             setSerieId(fromEmpresa || fromPredeterminada || seriesParaMostrar[0].id)
         }
     }, [seriesParaMostrar, serieId, empresaConfig, esExterna])
@@ -126,7 +131,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
     // Effect: retención por defecto según empresa (Edison: 1% IRPF por defecto)
     useEffect(() => {
         const config = empresasConfigs[selectedEmpresaId]
-        const fromConfig = config?.retencion_predeterminada ?? (empresaConfig as any)?.retencion_predeterminada
+        const fromConfig = config?.retencion_predeterminada ?? empresaConfig?.retencion_predeterminada
         const defaultRetencion = fromConfig ?? (selectedEmpresaId === EMPRESA_EDISON_ID ? -1 : 0)
         setRetencionPorcentaje(Number(defaultRetencion) || 0)
     }, [selectedEmpresaId, empresasConfigs, empresaConfig])
@@ -166,9 +171,14 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         }
     }
 
-    const updateLinea = (index: number, field: string, value: any) => {
+    const updateLinea = (index: number, field: keyof LineaForm, value: string | number) => {
         const newLineas = [...lineas]
-        newLineas[index][field] = value
+        const linea = newLineas[index]
+        if (field === 'concepto') {
+            linea[field] = value as string
+        } else {
+            linea[field] = value as number
+        }
         setLineas(newLineas)
     }
 
@@ -205,13 +215,11 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         fd.set('divisa', divisa)
         fd.set('tipo_cambio', String(tipoCambio))
         fd.set('es_externa', String(esExterna))
-        fd.set('numero_manual', numeroManual)
         return fd
     }
 
     const uploadFile = async (): Promise<string | null> => {
         if (!archivo) return null
-        setIsUploading(true)
         try {
             const fileExt = archivo.name.split('.').pop()
             const fileName = `${empresaId}/${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
@@ -227,12 +235,13 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                 .getPublicUrl(fileName)
 
             return publicUrl
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error uploading file:', error)
-            toast.error(`Error al subir el archivo: ${error.message || error.error || 'Desconocido'}`)
+            const message = error instanceof Error ? error.message : 'Error desconocido'
+            toast.error(`Error al subir el archivo: ${message}`)
             return null
         } finally {
-            setIsUploading(false)
+            // No cleanup needed
         }
     }
 
@@ -289,8 +298,9 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
             } else {
                 toast.error(result.error || 'Error al guardar borrador')
             }
-        } catch (err: any) {
-            toast.error(err.message || 'Error al guardar borrador')
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Error al guardar borrador'
+            toast.error(message)
         } finally {
             setIsSubmitting(false)
         }
@@ -325,8 +335,9 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
             } else {
                 toast.error(result.error || 'Error al emitir factura')
             }
-        } catch (err: any) {
-            toast.error(err.message || 'Error al emitir factura')
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Error al emitir factura'
+            toast.error(message)
         } finally {
             setIsSubmitting(false)
         }
@@ -413,7 +424,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                                             <SelectValue placeholder="Seleccionar serie..." />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {seriesParaMostrar.map((s: any) => (
+                                            {seriesParaMostrar.map((s: Serie) => (
                                                 <SelectItem key={s.id} value={s.id}>
                                                     {s.nombre} ({s.codigo})
                                                 </SelectItem>

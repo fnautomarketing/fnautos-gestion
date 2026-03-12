@@ -94,10 +94,10 @@ export async function GET(request: Request) {
     // Generar PDF
     try {
         const stream = await renderToStream(
-            React.createElement(DatosFiscalesPdfDocument, {
+            React.createElement(DatosFiscalesPdfDocument as any, {
                 empresa,
                 logoUrl,
-            })
+            }) as any
         )
 
         const nombreArchivo = `Datos-fiscales-${empresa.razon_social.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '-')}.pdf`

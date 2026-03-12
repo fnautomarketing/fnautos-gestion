@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Copy, X, Info } from 'lucide-react'
+import { Copy, Info } from 'lucide-react'
 
 import {
     Dialog,
@@ -31,15 +31,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 
 import { duplicarFacturaAction } from '@/app/actions/ventas'
 
+import { Factura, LineaFactura } from '@/types/ventas'
+
 interface DuplicarFacturaModalProps {
-    factura: {
-        id: string
-        serie: string
-        numero: string
-        cliente: { nombre_fiscal: string }
-        total: number
-        fecha_emision: string
-        lineas?: any[]
+    factura: Factura & {
+        cliente: { nombre_fiscal?: string | null } | null
+        lineas?: LineaFactura[]
     }
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -59,7 +56,7 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
     const [fechaEmisionPersonalizada, setFechaEmisionPersonalizada] = useState<Date>(new Date())
 
     // Serie
-    const [serieSeleccionada, setSerieSeleccionada] = useState(factura.serie)
+    const [serieSeleccionada, setSerieSeleccionada] = useState(factura.serie || '')
 
     const getFechaEmision = () => {
         return tipoFechaEmision === 'hoy' ? new Date() : fechaEmisionPersonalizada
@@ -67,25 +64,30 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
 
     const handleDuplicar = async () => {
         setIsSubmitting(true)
+        try {
+            const formData = new FormData()
+            formData.append('factura_id_original', factura.id)
+            formData.append('mantener_cliente', mantenerCliente.toString())
+            formData.append('copiar_lineas', copiarLineas.toString())
+            formData.append('copiar_notas', copiarNotas.toString())
+            formData.append('fecha_emision', format(getFechaEmision(), 'yyyy-MM-dd'))
+            formData.append('serie', serieSeleccionada)
 
-        const formData = new FormData()
-        formData.append('factura_id_original', factura.id)
-        formData.append('mantener_cliente', mantenerCliente.toString())
-        formData.append('copiar_lineas', copiarLineas.toString())
-        formData.append('copiar_notas', copiarNotas.toString())
-        formData.append('fecha_emision', format(getFechaEmision(), 'yyyy-MM-dd'))
-        formData.append('serie', serieSeleccionada)
+            const result = await duplicarFacturaAction(formData)
 
-        const result = await duplicarFacturaAction(formData)
-
-        setIsSubmitting(false)
-
-        if (result.success && result.data?.id) {
-            toast.success('Factura duplicada correctamente')
-            onOpenChange(false)
-            router.push(`/ventas/facturas/${result.data.id}/editar`)
-        } else {
-            toast.error(result.error || 'Error al duplicar factura')
+            if (result.success && result.data?.id) {
+                toast.success('Factura duplicada correctamente')
+                onOpenChange(false)
+                router.push(`/ventas/facturas/${result.data.id}/editar`)
+            } else {
+                toast.error(result.error || 'Error al duplicar factura')
+            }
+        } catch (error: unknown) {
+            console.error('[handleDuplicar]', error)
+            const message = error instanceof Error ? error.message : 'Error al duplicar factura'
+            toast.error(message)
+        } finally {
+            setIsSubmitting(false)
         }
     }
 
@@ -107,7 +109,7 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
                         <div className="flex-1">
                             <DialogTitle className="text-2xl font-serif">Duplicar Factura</DialogTitle>
                             <DialogDescription className="text-base mt-1">
-                                Crear nueva factura basada en {factura.serie}-{factura.numero}
+                                Crear nueva factura basada en {factura.serie || ''}-{factura.numero}
                             </DialogDescription>
                         </div>
                     </div>
@@ -121,12 +123,12 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
                             <div>
                                 <p className="text-slate-500 text-xs mb-1">Número</p>
                                 <p className="font-semibold">
-                                    {factura.serie}-{factura.numero}
+                                    {factura.serie || ''}-{factura.numero}
                                 </p>
                             </div>
                             <div>
                                 <p className="text-slate-500 text-xs mb-1">Cliente</p>
-                                <p className="font-semibold">{factura.cliente.nombre_fiscal}</p>
+                                <p className="font-semibold">{factura.cliente?.nombre_fiscal || 'Sin Cliente'}</p>
                             </div>
                             <div>
                                 <p className="text-slate-500 text-xs mb-1">Fecha Original</p>
@@ -194,7 +196,7 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
                             <Label className="text-sm font-medium uppercase text-slate-500">
                                 Fecha de Emisión
                             </Label>
-                            <RadioGroup value={tipoFechaEmision} onValueChange={(v: any) => setTipoFechaEmision(v)}>
+                            <RadioGroup value={tipoFechaEmision} onValueChange={(v: 'hoy' | 'personalizada') => setTipoFechaEmision(v)}>
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="hoy" id="fecha-hoy" />
                                     <Label htmlFor="fecha-hoy" className="font-normal cursor-pointer">
@@ -259,7 +261,7 @@ export function DuplicarFacturaModal({ factura, open, onOpenChange }: DuplicarFa
                             {mantenerCliente && (
                                 <p>
                                     <span className="text-slate-500">Cliente:</span>{' '}
-                                    <strong>{factura.cliente.nombre_fiscal}</strong>
+                                    <strong>{factura.cliente?.nombre_fiscal || 'Sin Cliente'}</strong>
                                 </p>
                             )}
                             <p>

@@ -117,7 +117,7 @@ export default async function PreviewPlantillaPage({ params }: PreviewPlantillaP
                                 </p>
                             </div>
                             <div className="text-right">
-                                <p className="font-black text-3xl mb-2" style={{ color: (plantilla.color_primario || undefined) as any }}>
+                                <p className="font-black text-3xl mb-2" style={{ color: (plantilla.color_primario || undefined) as string }}>
                                     FACTURA
                                 </p>
                                 <p className="text-slate-700 text-lg">Nº FAC-2024-001</p>
@@ -131,7 +131,7 @@ export default async function PreviewPlantillaPage({ params }: PreviewPlantillaP
                         {/* Tabla de conceptos */}
                         <table className="w-full mb-8">
                             <thead>
-                                <tr style={{ backgroundColor: (plantilla.color_encabezado_tabla || undefined) as any }} className="text-white text-sm">
+                                <tr style={{ backgroundColor: (plantilla.color_encabezado_tabla || undefined) as string }} className="text-white text-sm">
                                     <th className="p-3 text-left rounded-tl-lg">Concepto</th>
                                     <th className="p-3 text-center">Cantidad</th>
                                     <th className="p-3 text-right">Precio</th>
@@ -179,7 +179,7 @@ export default async function PreviewPlantillaPage({ params }: PreviewPlantillaP
                                     <span>IVA (21%):</span>
                                     <span>245,70€</span>
                                 </div>
-                                <div className="flex justify-between text-lg font-black pt-3 mt-2 border-t-2" style={{ color: (plantilla.color_primario || undefined) as any }}>
+                                <div className="flex justify-between text-lg font-black pt-3 mt-2 border-t-2" style={{ color: (plantilla.color_primario || undefined) as string }}>
                                     <span>TOTAL:</span>
                                     <span>1.415,70€</span>
                                 </div>

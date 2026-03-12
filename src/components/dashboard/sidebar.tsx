@@ -22,11 +22,11 @@ import {
 interface NavItem {
     name: string
     href: string
-    icon: any
+    icon: React.ElementType
     submenu?: {
         name: string
         href: string
-        icon: any
+        icon: React.ElementType
     }[]
 }
 

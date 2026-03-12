@@ -1,8 +1,26 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 
+interface VencidaNivelStats {
+    importe: number
+    num_facturas: number
+    num_clientes: number
+}
+
+interface VencidasStatsData {
+    critico: VencidaNivelStats
+    urgente: VencidaNivelStats
+    atencion: VencidaNivelStats
+    total: {
+        total_impagado: number
+        total_facturas: number
+        tasa_morosidad: number
+        recordatorios_enviados: number
+    }
+}
+
 interface VencidasStatsProps {
-    stats: any
+    stats: VencidasStatsData
 }
 
 export function VencidasStats({ stats }: VencidasStatsProps) {

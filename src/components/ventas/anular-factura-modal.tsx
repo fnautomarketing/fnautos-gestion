@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { AlertTriangle, X } from 'lucide-react'
+import { AlertTriangle } from 'lucide-react'
 
 import {
     Dialog,
@@ -28,15 +28,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 import { anularFacturaAction } from '@/app/actions/ventas'
 
+import { Factura } from '@/types/ventas'
+
 interface AnularFacturaModalProps {
-    factura: {
-        id: string
-        serie: string
-        numero: string
-        cliente: { nombre_fiscal: string }
-        total: number
-        estado: string
-        fecha_emision: string
+    factura: Factura & {
+        cliente: { nombre_fiscal?: string | null } | null
     }
     open: boolean
     onOpenChange: (open: boolean) => void
@@ -125,7 +121,7 @@ export function AnularFacturaModal({ factura, open, onOpenChange }: AnularFactur
                         <div className="flex-1">
                             <DialogTitle className="text-2xl font-serif">Anular Factura</DialogTitle>
                             <DialogDescription className="text-base mt-1">
-                                {factura.serie}-{factura.numero} · {factura.cliente.nombre_fiscal}
+                                {factura.serie || ''}-{factura.numero} · {factura.cliente?.nombre_fiscal || 'Sin Cliente'}
                             </DialogDescription>
                         </div>
                     </div>
@@ -138,7 +134,7 @@ export function AnularFacturaModal({ factura, open, onOpenChange }: AnularFactur
                             <div>
                                 <p className="text-slate-500 text-xs uppercase mb-1">Número</p>
                                 <p className="font-semibold">
-                                    {factura.serie}-{factura.numero}
+                                    {factura.serie || ''}-{factura.numero}
                                 </p>
                             </div>
                             <div>

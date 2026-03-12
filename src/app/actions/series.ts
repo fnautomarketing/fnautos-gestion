@@ -15,16 +15,14 @@ const ANO_ACTUAL = new Date().getFullYear()
 export async function obtenerOCrearSerieAnualAction(empresaId: string) {
     try {
         const adminClient = createAdminClient()
-        const { data: empresa } = await adminClient
-            .from('empresas')
-            .select('id, razon_social, nombre_comercial, prefijo_serie')
+        const { data: empresa } = await adminClient.from('empresas')
+            .select('id, razon_social, nombre_comercial')
             .eq('id', empresaId)
             .single()
 
         if (!empresa) return { success: false, error: 'Empresa no encontrada' }
 
-        const emp = empresa as { prefijo_serie?: string; razon_social: string; nombre_comercial?: string }
-        const prefijo = emp.prefijo_serie || (emp.razon_social ? emp.razon_social[0].toUpperCase() : 'F')
+        const prefijo = 'prefijo_serie' in empresa ? String(empresa.prefijo_serie) : (empresa.razon_social ? empresa.razon_social[0].toUpperCase() : 'F')
         const codigoAnual = `${prefijo}${ANO_ACTUAL}`
 
         const { data: existente } = await adminClient
@@ -45,7 +43,7 @@ export async function obtenerOCrearSerieAnualAction(empresaId: string) {
             .insert({
                 empresa_id: empresaId,
                 codigo: codigoAnual,
-                nombre: `Facturación ${emp.nombre_comercial || emp.razon_social} ${ANO_ACTUAL}`,
+                nombre: `Facturación ${empresa.nombre_comercial || empresa.razon_social} ${ANO_ACTUAL}`,
                 prefijo: '',
                 sufijo: '',
                 digitos: 4,
@@ -63,9 +61,10 @@ export async function obtenerOCrearSerieAnualAction(empresaId: string) {
         revalidatePath('/ventas/facturas/nueva')
         revalidatePath('/ventas/configuracion/series')
         return { success: true, data: nueva }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[obtenerOCrearSerieAnualAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -82,7 +81,7 @@ async function getSerieEmpresaId(supabase: Awaited<ReturnType<typeof createServe
 export async function crearSerieAction(formData: FormData) {
     try {
         const { supabase, empresaId, empresas } = await getUserContext()
-        const empresaIdFinal = empresaId || (empresas as any[])?.[0]?.empresa_id
+        const empresaIdFinal = empresaId || empresas?.[0]?.empresa_id
         if (!empresaIdFinal) throw new Error('Usuario sin empresa asignada')
 
         const rawData = Object.fromEntries(formData.entries())
@@ -118,9 +117,9 @@ export async function crearSerieAction(formData: FormData) {
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[crearSerieAction]', error)
-        const message = error.errors ? error.errors[0].message : error.message
+        const message = error instanceof Error ? error.message : 'Error desconocido'
         return { success: false, error: message }
     }
 }
@@ -182,9 +181,9 @@ export async function actualizarSerieAction(serieId: string, formData: FormData)
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[actualizarSerieAction]', error)
-        const message = error.errors ? error.errors[0].message : error.message
+        const message = error instanceof Error ? error.message : 'Error desconocido'
         return { success: false, error: message }
     }
 }
@@ -213,9 +212,10 @@ export async function eliminarSerieAction(serieId: string) {
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[eliminarSerieAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -234,9 +234,10 @@ export async function toggleActivaSerieAction(serieId: string, activa: boolean) 
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[toggleActivaSerieAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -260,9 +261,10 @@ export async function establecerPredeterminadaAction(serieId: string) {
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[establecerPredeterminadaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -290,8 +292,9 @@ export async function resetearNumeracionAction(serieId: string) {
 
         revalidatePath('/ventas/configuracion/series')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[resetearNumeracionAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }

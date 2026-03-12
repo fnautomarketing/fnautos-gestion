@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@/lib/supabase/server'
 import { z } from 'zod'
 import { pagoSchema } from '@/lib/validations/pago-schema'
 import { Pago } from '@/types/ventas'
@@ -16,19 +15,24 @@ export async function registrarPagoAction(formData: FormData) {
             ...rawData,
             importe: Number(rawData.importe),
             marcar_como_pagada: rawData.marcar_como_pagada === 'true',
+            conciliado: rawData.conciliado === 'true',
         }
 
         const validated = pagoSchema.parse(dataToValidate)
 
         const isGlobal = !contextEmpresaId && rol === 'admin'
 
-        // Obtener factura: en Vision Global no filtrar por empresa; si no, filtrar
         let query = supabase
             .from('facturas')
             .select('id, total, pagado, cliente_id, numero, empresa_id')
             .eq('id', validated.factura_id)
-        if (!isGlobal) query = query.eq('empresa_id', contextEmpresaId!)
-        const { data: factura } = await query.single() as any
+            
+        if (!isGlobal) {
+            query = query.eq('empresa_id', contextEmpresaId!)
+        }
+
+        // Obtener factura: en Vision Global no filtrar por empresa; si no, filtrar
+        const { data: factura } = await query.single() as unknown as { data: { id: string, total: number, pagado: number, cliente_id: string, numero: string, empresa_id: string } | null }
 
         if (!factura) {
             return { success: false, error: 'Factura no encontrada' }
@@ -62,8 +66,7 @@ export async function registrarPagoAction(formData: FormData) {
 
         if (errorPago) throw errorPago
 
-        // Registrar también en pagos (vista_pagos_dashboard lee de aquí)
-        const { error: errorPagos } = await (supabase as any)
+        const { error: errorPagos } = await supabase
             .from('pagos')
             .insert({
                 factura_id: validated.factura_id,
@@ -75,7 +78,7 @@ export async function registrarPagoAction(formData: FormData) {
                 notas: validated.notas || null,
                 empresa_id: empresaId,
                 creado_por: userId,
-                conciliado: false,
+                conciliado: validated.conciliado || false,
                 anulado: false,
             })
 
@@ -85,7 +88,7 @@ export async function registrarPagoAction(formData: FormData) {
 
         // Actualizar total pagado en la factura
         const nuevoPagado = totalPagado + validated.importe
-        const actualizacion: Record<string, any> = {
+        const actualizacion: Record<string, unknown> = {
             pagado: nuevoPagado,
             updated_at: new Date().toISOString(),
         }
@@ -141,14 +144,15 @@ export async function registrarPagoAction(formData: FormData) {
     } catch (error: unknown) {
         console.error('[registrarPagoAction]', error)
         if (error instanceof z.ZodError) {
-            return { success: false, error: error.issues[0]?.message }
+            return { success: false, error: error.issues[0]?.message || 'Error de validación' }
         }
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
 async function getEmpresaIdForPagos() {
-    const { supabase, empresaId, rol, empresas } = await getUserContext() as any
+    const { supabase, empresaId, rol, empresas } = await getUserContext()
 
     let empresaIdUsada = empresaId
 
@@ -175,7 +179,7 @@ export async function anularPagoAction(pagoId: string, motivo: string) {
     try {
         const { supabase, empresaId } = await getEmpresaIdForPagos()
 
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .update({
                 anulado: true,
@@ -195,7 +199,8 @@ export async function anularPagoAction(pagoId: string, motivo: string) {
         return { success: true, data: data as Pago }
     } catch (error: unknown) {
         console.error('[anularPagoAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -210,7 +215,7 @@ export async function toggleConciliadoAction(pagoId: string, conciliado: boolean
             updateData.fecha_conciliacion = null
         }
 
-        const { error } = await (supabase as any)
+        const { error } = await (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .update(updateData)
             .eq('id', pagoId)
@@ -223,7 +228,8 @@ export async function toggleConciliadoAction(pagoId: string, conciliado: boolean
         return { success: true }
     } catch (error: unknown) {
         console.error('[toggleConciliadoAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -254,7 +260,7 @@ export async function subirComprobanteAction(pagoId: string, formData: FormData)
             .from('comprobantes')
             .getPublicUrl(fileName)
 
-        const { error: updateError } = await (supabase as any)
+        const { error: updateError } = await (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .update({ comprobante_url: urlData.publicUrl })
             .eq('id', pagoId)
@@ -267,13 +273,14 @@ export async function subirComprobanteAction(pagoId: string, formData: FormData)
         return { success: true, data: { url: urlData.publicUrl } }
     } catch (error: unknown) {
         console.error('[subirComprobanteAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
 export async function getEstadisticasPagosAction() {
     try {
-        const { supabase, empresaId, rol } = (await getUserContext()) as any
+        const { supabase, empresaId, rol } = await getUserContext()
 
         const isGlobalAdmin = !empresaId && rol === 'admin'
 
@@ -286,7 +293,7 @@ export async function getEstadisticasPagosAction() {
         inicioMes.setHours(0, 0, 0, 0)
 
         // Pagos del mes (agregado o por empresa)
-        let pagosQuery = (supabase as any)
+        let pagosQuery = (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .select('importe')
             .eq('anulado', false)
@@ -295,8 +302,7 @@ export async function getEstadisticasPagosAction() {
             pagosQuery = pagosQuery.eq('empresa_id', filtroEmpresa)
         }
         const { data: pagosMes } = await pagosQuery
-
-        const totalCobradoMes = pagosMes?.reduce((sum: number, p: any) => sum + (p.importe || 0), 0) || 0
+        const totalCobradoMes = (pagosMes as Array<{ importe: number }> | null)?.reduce((sum: number, p) => sum + (p.importe || 0), 0) || 0
 
         // Facturas pendientes (emitidas / parciales)
         let facturasPendientesQuery = supabase
@@ -307,8 +313,7 @@ export async function getEstadisticasPagosAction() {
             facturasPendientesQuery = facturasPendientesQuery.eq('empresa_id', filtroEmpresa)
         }
         const { data: facturasPendientes } = await facturasPendientesQuery
-
-        const pendienteCobro = facturasPendientes?.reduce((sum: number, f: any) =>
+        const pendienteCobro = (facturasPendientes as Array<{ total: number, pagado: number }> | null)?.reduce((sum: number, f) =>
             sum + (f.total - (f.pagado || 0)), 0
         ) || 0
 
@@ -329,15 +334,14 @@ export async function getEstadisticasPagosAction() {
             facturasVencenSemanaQuery = facturasVencenSemanaQuery.eq('empresa_id', filtroEmpresa)
         }
         const { data: facturasVencenSemana } = await facturasVencenSemanaQuery
-
-        const venceSemana = facturasVencenSemana?.reduce((sum: number, f: any) =>
+        const venceSemana = (facturasVencenSemana as Array<{ total: number, pagado: number }> | null)?.reduce((sum: number, f) =>
             sum + (f.total - (f.pagado || 0)), 0
         ) || 0
 
         const numVencenSemana = facturasVencenSemana?.length || 0
 
         // Conteo de pagos totales
-        let totalPagosQuery = (supabase as any)
+        let totalPagosQuery = (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .select('id', { count: 'exact', head: true })
             .eq('anulado', false)
@@ -347,7 +351,7 @@ export async function getEstadisticasPagosAction() {
         const { count: totalPagos } = await totalPagosQuery
 
         // Conteo de pagos conciliados
-        let pagosConciliadosQuery = (supabase as any)
+        let pagosConciliadosQuery = (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
             .from('pagos')
             .select('id', { count: 'exact', head: true })
             .eq('anulado', false)
@@ -371,7 +375,8 @@ export async function getEstadisticasPagosAction() {
         }
     } catch (error: unknown) {
         console.error('[getEstadisticasPagosAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 

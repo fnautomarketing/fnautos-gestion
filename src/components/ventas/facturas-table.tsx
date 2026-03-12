@@ -112,7 +112,7 @@ export function FacturasTable({
 
     const getEstadoBadge = (factura: FacturaWithCliente) => {
         const estado = factura.estado
-        const esExterna = !!(factura as any).es_externa
+        const esExterna = !!factura.es_externa
         const esEnviada = enviadaIds.includes(factura.id)
 
         const variants: Record<string, { label: string; className: string }> = {
@@ -144,7 +144,7 @@ export function FacturasTable({
 
         // Externa: siempre mostrar "Externa" (coincide con filtro)
         if (esExterna) {
-            if (estado === 'borrador' && !(factura as any).archivo_url) {
+            if (estado === 'borrador' && !factura.archivo_url) {
                 return (
                     <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 border-amber-200 dark:border-amber-800 px-2.5 py-1 font-medium text-xs whitespace-nowrap max-w-full truncate" variant="outline" title="Externa (Pendiente PDF)">
                         Externa (Pend. PDF)
@@ -212,14 +212,14 @@ export function FacturasTable({
             f.cliente?.cif || '',
             f.fecha_emision || '',
             f.fecha_vencimiento || '',
-            String((f as any).base_imponible ?? ''),
-            String((f as any).cuota_iva ?? ''),
-            String((f as any).descuento ?? ''),
-            String((f as any).retencion_irpf ?? ''),
+            String(f.base_imponible ?? ''),
+            String(f.cuota_iva ?? ''),
+            String(f.descuento ?? ''),
+            String(f.retencion_irpf ?? ''),
             String(f.total),
             f.estado,
-            (f as any).es_externa ? 'Sí' : 'No',
-            (f as any).empresa?.nombre_comercial ?? '',
+            f.es_externa ? 'Sí' : 'No',
+            f.empresa?.nombre_comercial ?? '',
         ])
         const csv = [headers.join(';'), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';'))].join('\n')
         const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })

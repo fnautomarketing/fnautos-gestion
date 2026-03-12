@@ -139,7 +139,7 @@ export default async function FacturasPage({
                 .from('emails_factura')
                 .select('factura_id')
                 .eq('estado', 'enviado')
-            const idsEnviadas = [...new Set((facturasEnviadas || []).map((e: any) => e.factura_id))]
+            const idsEnviadas = [...new Set((facturasEnviadas || []).map((e: { factura_id: string }) => e.factura_id))]
             if (idsEnviadas.length > 0) {
                 query = query.in('id', idsEnviadas)
             } else {
@@ -152,7 +152,7 @@ export default async function FacturasPage({
                 .from('emails_factura')
                 .select('factura_id')
                 .eq('estado', 'enviado')
-            const idsEnviadas = new Set((facturasEnviadas || []).map((e: any) => e.factura_id))
+            const idsEnviadas = new Set((facturasEnviadas || []).map((e: { factura_id: string }) => e.factura_id))
             query = query.eq('estado', 'emitida')
             if (idsEnviadas.size > 0) {
                 const idsStr = Array.from(idsEnviadas).map((id) => `"${id}"`).join(',')
@@ -193,14 +193,14 @@ export default async function FacturasPage({
     // IDs de facturas enviadas por email (para mostrar badge "Enviada" en la tabla)
     let enviadaIds: string[] = []
     if (facturas && facturas.length > 0) {
-        const ids = facturas.map((f: any) => f.id)
+        const ids = facturas.map((f: { id: string }) => f.id)
         const { data: emails } = await adminClient
             .from('emails_factura')
             .select('factura_id')
             .in('factura_id', ids)
             .eq('estado', 'enviado')
         if (emails) {
-            enviadaIds = [...new Set(emails.map((e: any) => e.factura_id))]
+            enviadaIds = [...new Set(emails.map((e: { factura_id: string }) => e.factura_id))]
         }
     }
 
@@ -216,7 +216,7 @@ export default async function FacturasPage({
         const qNorm = q.replace(/[\s\-.]/g, '')
         const cifPatterns = qNorm !== q ? [`cif.ilike.%${q}%`, `cif.ilike.%${qNorm}%`] : [`cif.ilike.%${q}%`]
         const { data: clientesMatch } = await adminClient.from('clientes').select('id').or(`nombre_fiscal.ilike.%${q}%,nombre_comercial.ilike.%${q}%,${cifPatterns.join(',')}`)
-        const clienteIds = clientesMatch?.map((c: any) => c.id) ?? []
+        const clienteIds = clientesMatch?.map((c: { id: string }) => c.id) ?? []
         const orParts: string[] = [`numero.ilike.%${q}%`, `serie.ilike.%${q}%`]
         if (clienteIds.length > 0) orParts.push(`cliente_id.in.(${clienteIds.join(',')})`)
         const importeNum = parseFloat(q.replace(/\./g, '').replace(',', '.'))
@@ -227,11 +227,11 @@ export default async function FacturasPage({
         if (params.estado === 'externa-emitida') statsQuery = statsQuery.eq('es_externa', true)
         else if (params.estado === 'enviada') {
             const { data: fe } = await adminClient.from('emails_factura').select('factura_id').eq('estado', 'enviado')
-            const ids = [...new Set((fe || []).map((e: any) => e.factura_id))]
+            const ids = [...new Set((fe || []).map((e: { factura_id: string }) => e.factura_id))]
             statsQuery = ids.length > 0 ? statsQuery.in('id', ids) : statsQuery.eq('id', '00000000-0000-0000-0000-000000000000')
         } else if (params.estado === 'emitida') {
             const { data: fe } = await adminClient.from('emails_factura').select('factura_id').eq('estado', 'enviado')
-            const idsEnviadas = new Set((fe || []).map((e: any) => e.factura_id))
+            const idsEnviadas = new Set((fe || []).map((e: { factura_id: string }) => e.factura_id))
             statsQuery = statsQuery.eq('estado', 'emitida')
             if (idsEnviadas.size > 0) {
                 const idsStr = Array.from(idsEnviadas).map((id) => `"${id}"`).join(',')

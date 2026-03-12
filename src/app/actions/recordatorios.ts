@@ -52,7 +52,7 @@ export async function enviarRecordatorioAction(formData: FormData) {
 
         for (const facturaId of facturasIds) {
             // Obtener datos de la factura
-            const { data: factura } = await (supabase as any)
+            const { data: factura } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
                 .from('facturas')
                 .select('*, clientes(*)')
                 .eq('id', facturaId)
@@ -84,7 +84,7 @@ export async function enviarRecordatorioAction(formData: FormData) {
         }
 
         // Insertar recordatorios
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
             .from('recordatorios')
             .insert(recordatorios)
             .select()
@@ -97,9 +97,14 @@ export async function enviarRecordatorioAction(formData: FormData) {
         revalidatePath('/ventas/facturas-vencidas')
 
         return { success: true, data, count: recordatorios.length }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[enviarRecordatorioAction]', error)
-        return { success: false, error: error.errors?.[0]?.message || error.message }
+        let message = 'Error desconocido'
+        if (error instanceof Error) {
+            const zodErr = error as Error & { issues?: { message: string }[] }
+            message = zodErr.issues?.[0]?.message ?? error.message
+        }
+        return { success: false, error: message }
     }
 }
 
@@ -124,7 +129,7 @@ export async function registrarLlamadaAction(formData: FormData) {
             fecha_envio: rawData.fecha_hora_llamada || new Date().toISOString(),
         }
 
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
             .from('recordatorios')
             .insert(recordatorio)
             .select()
@@ -135,9 +140,10 @@ export async function registrarLlamadaAction(formData: FormData) {
         revalidatePath('/ventas/facturas-vencidas')
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[registrarLlamadaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -145,7 +151,7 @@ export async function getHistorialRecordatoriosAction(facturaId: string) {
     try {
         const { supabase, empresaId } = await getEmpresaId()
 
-        const { data, error } = await (supabase as any)
+        const { data, error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
             .from('recordatorios')
             .select('*, perfiles!recordatorios_creado_por_fkey(nombre)')
             .eq('factura_id', facturaId)
@@ -155,9 +161,10 @@ export async function getHistorialRecordatoriosAction(facturaId: string) {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getHistorialRecordatoriosAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -165,7 +172,7 @@ export async function marcarEmailAbierto(recordatorioId: string) {
     try {
         const { supabase, empresaId } = await getEmpresaId()
 
-        const { error } = await (supabase as any)
+        const { error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient)
             .from('recordatorios')
             .update({
                 estado: 'abierto',
@@ -177,9 +184,10 @@ export async function marcarEmailAbierto(recordatorioId: string) {
         if (error) throw error
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[marcarEmailAbierto]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -188,15 +196,16 @@ export async function getEstadisticasVencidasAction() {
         const { supabase, empresaId } = await getEmpresaId()
 
         // Llamada a la función RPC
-        const { data, error } = await (supabase as any).rpc('get_estadisticas_vencidas', {
+        const { data, error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient).rpc('get_estadisticas_vencidas', {
             p_empresa_id: empresaId
         })
 
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getEstadisticasVencidasAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }

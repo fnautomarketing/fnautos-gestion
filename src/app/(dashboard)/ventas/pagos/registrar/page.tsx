@@ -19,7 +19,7 @@ export default async function RegistrarPagoPage() {
 
     // Cargar facturas pendientes
     const { data: facturas } = await supabase
-        .from('facturas' as any)
+        .from('facturas')
         .select(`
       id, 
       serie, 

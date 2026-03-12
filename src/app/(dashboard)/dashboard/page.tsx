@@ -2,7 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { Suspense } from 'react'
 import {
-    TrendingUp, Wallet, Receipt, CalendarClock, AlertCircle,
+    TrendingUp, Receipt, AlertCircle,
     CheckCircle2, Clock, FileText, AlertTriangle, ExternalLink, ArrowRight
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,7 +34,7 @@ export default async function DashboardPage({
     let welcomeText = 'Resumen de ventas'
     let empresaId: string | null = null
     let isGlobal = false
-    let adminClient = createAdminClient()
+    const adminClient = createAdminClient()
 
     if (userContext) {
         const ctx = userContext
@@ -44,7 +44,7 @@ export default async function DashboardPage({
             companyName = 'Visión Global'
             welcomeText = 'Resumen consolidado de todas las empresas'
         } else if (ctx.empresaId) {
-            const active = ctx.empresas.find((e: any) => e.empresa_id === ctx.empresaId) as any
+            const active = ctx.empresas.find((e: { empresa_id: string }) => e.empresa_id === ctx.empresaId) as any
             companyName = active?.empresa?.nombre_comercial || active?.empresa?.razon_social || 'Tu Empresa'
             welcomeText = `Bienvenido al panel de control de ${companyName}`
         }
@@ -92,8 +92,9 @@ export default async function DashboardPage({
     }
 
     // ── Alertas: vencimientos próximos (7 días) ────────────────────────────────
-    const hoy = new Date().toISOString().slice(0, 10)
-    const en7dias = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+    const nowLocal = new Date()
+    const hoy = nowLocal.toISOString().slice(0, 10)
+    const en7dias = new Date(nowLocal.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
     let vencimientosQuery = adminClient
         .from('facturas')
         .select('id, numero, serie, total, fecha_vencimiento, cliente:clientes(nombre_fiscal, nombre_comercial)')

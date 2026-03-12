@@ -24,6 +24,7 @@ type EmailFactura = Tables<'emails_factura'>
 interface FacturaWithDetails extends Factura {
     cliente: Cliente
     lineas: LineaFactura[]
+    empresa?: { razon_social: string | null; nombre_comercial: string | null } | null
 }
 
 export default function FacturaEmailPage({ params }: PageProps) {

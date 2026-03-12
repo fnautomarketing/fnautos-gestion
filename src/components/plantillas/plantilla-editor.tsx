@@ -13,10 +13,11 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Upload, Loader2 } from 'lucide-react'
 import { crearPlantillaAction, actualizarPlantillaAction, subirLogoAction } from '@/app/actions/plantillas'
+import { PlantillaPDF } from '@/types/ventas'
 
 interface PlantillaEditorProps {
     plantillaId?: string
-    defaultValues?: any
+    defaultValues?: Partial<PlantillaPDF>
 }
 
 /**
@@ -152,7 +153,7 @@ export function PlantillaEditor({ plantillaId, defaultValues }: PlantillaEditorP
                             <Textarea
                                 id="descripcion"
                                 name="descripcion"
-                                defaultValue={defaultValues?.descripcion}
+                                defaultValue={defaultValues?.descripcion || ''}
                                 placeholder="Descripción breve de la plantilla..."
                                 className="mt-1 bg-white/5 border-white/10 focus:border-primary min-h-[80px]"
                             />
@@ -240,7 +241,7 @@ export function PlantillaEditor({ plantillaId, defaultValues }: PlantillaEditorP
                             <Label className="mb-2 block">Posición del Logo</Label>
                             <RadioGroup
                                 value={logoPosicion}
-                                onValueChange={setLogoPosicion}
+                                onValueChange={(val: 'izquierda' | 'centro' | 'derecha') => setLogoPosicion(val)}
                                 className="flex gap-6"
                             >
                                 <div className="flex items-center space-x-2">

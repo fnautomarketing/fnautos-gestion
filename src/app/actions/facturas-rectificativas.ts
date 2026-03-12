@@ -46,14 +46,14 @@ export async function getFacturaParaRectificarAction(facturaId: string) {
         }
 
         return { success: true, data: factura }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getFacturaParaRectificarAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
 import { facturaRectificativaSchema, type FacturaRectificativaFormData } from '@/lib/validations/factura-rectificativa-schema'
-import { z } from 'zod'
 
 export async function crearFacturaRectificativaAction(datos: FacturaRectificativaFormData) {
     try {
@@ -114,9 +114,10 @@ export async function crearFacturaRectificativaAction(datos: FacturaRectificativ
             data: { id: rectificativaId },
             message: 'Factura rectificativa creada correctamente'
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[crearFacturaRectificativaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -135,9 +136,10 @@ export async function getRectificativasDeFacturaAction(facturaId: string) {
         if (error) throw error
 
         return { success: true, data: data || [] }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getRectificativasDeFacturaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -182,8 +184,9 @@ export async function getListadoRectificativasAction(params?: {
                 totalPages: Math.ceil((count || 0) / limit),
             },
         }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getListadoRectificativasAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }

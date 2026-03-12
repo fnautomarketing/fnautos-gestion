@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
-import { Banknote, CreditCard, Building2, CheckCircle2 } from 'lucide-react'
+import { Banknote, CreditCard, Building2 } from 'lucide-react'
 
 import { PagoFactura } from '@/types/ventas'
 

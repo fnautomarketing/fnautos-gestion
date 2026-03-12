@@ -51,11 +51,10 @@ export async function GET(request: Request) {
 
         if (empresaId) {
             const adminSb = createAdminClient()
-            const { data: ceRows } = await adminSb
-                .from('clientes_empresas')
+            const { data: ceRows } = await (adminSb.from as any)('clientes_empresas')
                 .select('cliente_id')
                 .eq('empresa_id', empresaId)
-            const ids = (ceRows || []).map((r: any) => r.cliente_id)
+            const ids = (ceRows || []).map((r: { cliente_id: string }) => r.cliente_id)
             if (ids.length === 0) {
                 return NextResponse.json({ items: [], total: 0, page: 1, totalPages: 0 })
             }

@@ -42,7 +42,7 @@ interface PdfOptionsPanelProps {
 }
 
 export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tieneArchivoOriginal, empresaActivaId = null, facturaId = null }: PdfOptionsPanelProps) {
-    const handleChange = (key: keyof PdfOptions, value: any) => {
+    const handleChange = <K extends keyof PdfOptions>(key: K, value: PdfOptions[K]) => {
         onChange({ ...options, [key]: value })
     }
 
@@ -58,7 +58,7 @@ export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tien
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
                         <Label>Plantilla</Label>
-                        <Select value={options.plantilla} onValueChange={(val) => handleChange('plantilla', val)}>
+                        <Select value={options.plantilla} onValueChange={(val) => handleChange('plantilla', val as 'estandar' | 'premium')}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Selecciona plantilla" />
                             </SelectTrigger>
@@ -72,7 +72,7 @@ export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tien
 
                     <div className="space-y-2">
                         <Label>Idioma</Label>
-                        <Select value={options.idioma} onValueChange={(val) => handleChange('idioma', val)}>
+                        <Select value={options.idioma} onValueChange={(val) => handleChange('idioma', val as 'es' | 'en' | 'fr')}>
                             <SelectTrigger>
                                 <SelectValue />
                             </SelectTrigger>

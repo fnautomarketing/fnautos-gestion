@@ -1,5 +1,7 @@
 import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
+import { UsuarioEmpresa } from '@/types/ventas'
+import { Empresa } from '@/types/empresa'
 
 export interface EmpresaContext {
     userId: string
@@ -24,18 +26,20 @@ export async function getEmpresaContext(): Promise<EmpresaContext> {
     // Note: using 'any' cast because usuarios_empresas isn't in generated types yet (pending migration)
     // FIX: Usamos createAdminClient para evitar bloqueo por falta de RLS policies en esta tabla crítica
     const adminClient = createAdminClient()
-    const { data: userEmpresas } = await (adminClient
-        .from('usuarios_empresas' as 'perfiles') as any)
+    const { data: userEmpresas } = await adminClient
+        .from('usuarios_empresas' as 'perfiles')
         .select('empresa_id, rol, empresa_activa')
         .eq('user_id', user.id)
         .eq('empresa_activa', true)
+        .returns<UsuarioEmpresa>()
         .single()
 
-    if ((userEmpresas as any)?.empresa_id) {
+    if ((userEmpresas as unknown as UsuarioEmpresa)?.empresa_id) {
+        const ue = userEmpresas as unknown as UsuarioEmpresa
         return {
             userId: user.id,
-            empresaId: (userEmpresas as any).empresa_id,
-            rol: (userEmpresas as any).rol,
+            empresaId: ue.empresa_id,
+            rol: ue.rol || 'operador',
         }
     }
 
@@ -68,7 +72,7 @@ export async function getAllUserEmpresas() {
 
     // Intentar nuevo modelo
     const { data: userEmpresas } = await supabase
-        .from('usuarios_empresas' as any)
+        .from('usuarios_empresas' as 'perfiles')
         .select(`
             empresa_id,
             rol,
@@ -76,9 +80,10 @@ export async function getAllUserEmpresas() {
             empresa:empresas(id, razon_social, nombre_comercial, logo_url, tipo_empresa)
         `)
         .eq('user_id', user.id)
+        .returns<(UsuarioEmpresa & { empresa: Partial<Empresa> })[]>()
 
     if (userEmpresas && userEmpresas.length > 0) {
-        return userEmpresas.map((ue: any) => ({
+        return userEmpresas.map((ue) => ({
             id: ue.empresa_id,
             razon_social: ue.empresa?.razon_social || 'Sin nombre',
             nombre_comercial: ue.empresa?.nombre_comercial,

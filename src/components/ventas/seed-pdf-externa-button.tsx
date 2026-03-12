@@ -22,8 +22,9 @@ export function SeedPdfExternaButton({ facturaId }: SeedPdfExternaButtonProps) {
             if (!res.ok) throw new Error(data.error || 'Error')
             toast.success('PDF de prueba cargado. Puedes emitir la factura.')
             router.refresh()
-        } catch (e: any) {
-            toast.error(e.message || 'Error al cargar PDF')
+        } catch (e) {
+            const err = e as Error
+            toast.error(err.message || 'Error al cargar PDF')
         } finally {
             setLoading(false)
         }

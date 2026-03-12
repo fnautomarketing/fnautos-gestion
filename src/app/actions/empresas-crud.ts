@@ -176,7 +176,7 @@ export async function crearEmpresaAction(formData: FormData) {
             .maybeSingle()
 
         if (existingCompany) {
-            if ((existingCompany as any).deleted_at) {
+            if ('deleted_at' in existingCompany && existingCompany.deleted_at) {
                 // Reactivar empresa eliminada
                 const { data: reactivated, error: reactivationError } = await supabase
                     .from('empresas')
@@ -212,14 +212,16 @@ export async function crearEmpresaAction(formData: FormData) {
         revalidatePath('/configuracion/empresas')
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const err = error as Record<string, unknown> | null
         console.error('[crearEmpresaAction] Error:', error)
-        if (error?.code) {
-            console.error('[crearEmpresaAction] DB Error Code:', error.code)
-            console.error('[crearEmpresaAction] DB Error Details:', error.details)
-            console.error('[crearEmpresaAction] DB Error Hint:', error.hint)
+        if (err?.code) {
+            console.error('[crearEmpresaAction] DB Error Code:', err.code)
+            console.error('[crearEmpresaAction] DB Error Details:', err.details)
+            console.error('[crearEmpresaAction] DB Error Hint:', err.hint)
         }
-        return { success: false, error: error?.message || error?.details || 'Error al crear la empresa en el servidor' }
+        const message = (err?.message as string) || (err?.details as string) || 'Error al crear la empresa en el servidor'
+        return { success: false, error: message }
     }
 }
 
@@ -287,13 +289,15 @@ export async function actualizarEmpresaGlobalAction(empresaId: string, formData:
         revalidatePath('/configuracion/empresas')
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const err = error as Record<string, unknown> | null
         console.error(`[actualizarEmpresaGlobalAction] Error CRÍTICO (ID: ${empresaId}):`, error)
-        if (error?.code) {
-            console.error('[actualizarEmpresaGlobalAction] DB Error Code:', error.code)
-            console.error('[actualizarEmpresaGlobalAction] DB Error Details:', error.details)
+        if (err?.code) {
+            console.error('[actualizarEmpresaGlobalAction] DB Error Code:', err.code)
+            console.error('[actualizarEmpresaGlobalAction] DB Error Details:', err.details)
         }
-        return { success: false, error: error?.message || error?.details || 'Error al actualizar los datos de la empresa' }
+        const message = (err?.message as string) || (err?.details as string) || 'Error al actualizar los datos de la empresa'
+        return { success: false, error: message }
     }
 }
 
@@ -524,12 +528,13 @@ export async function subirLogoEmpresaAction(empresaId: string, formData: FormDa
 
         revalidatePath('/configuracion/empresas')
         return { success: true, data: { url: publicUrl } }
-    } catch (error: any) {
+    } catch (error: unknown) {
+        const err = error as Record<string, unknown> | null
         console.error('[subirLogoEmpresaAction] Error:', error)
-        if (error?.message === 'Payload too large') {
+        if ((err?.message as string) === 'Payload too large') {
             return { success: false, error: 'La imagen excede el límite de 4MB permitido.' }
         }
-        return { success: false, error: error?.message || 'Error al procesar la subida del logo' }
+        return { success: false, error: (err?.message as string) || 'Error al procesar la subida del logo' }
     }
 }
 

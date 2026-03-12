@@ -75,9 +75,13 @@ export async function crearPlantillaAction(formData: FormData) {
 
         revalidatePath('/ventas/configuracion/plantillas')
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[crearPlantillaAction]', error)
-        const message = error.errors ? error.errors[0].message : error.message
+        let message = 'Error desconocido'
+        if (error instanceof Error) {
+            const zodErr = error as Error & { issues?: { message: string }[] }
+            message = zodErr.issues?.[0]?.message ?? error.message
+        }
         return { success: false, error: message }
     }
 }
@@ -133,9 +137,13 @@ export async function actualizarPlantillaAction(plantillaId: string, formData: F
 
         revalidatePath('/ventas/configuracion/plantillas')
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[actualizarPlantillaAction]', error)
-        const message = error.errors ? error.errors[0].message : error.message
+        let message = 'Error desconocido'
+        if (error instanceof Error) {
+            const zodErr = error as Error & { issues?: { message: string }[] }
+            message = zodErr.issues?.[0]?.message ?? error.message
+        }
         return { success: false, error: message }
     }
 }
@@ -174,9 +182,10 @@ export async function subirLogoAction(formData: FormData) {
             .getPublicUrl(fileName)
 
         return { success: true, data: { url: urlData.publicUrl } }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[subirLogoAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -208,9 +217,10 @@ export async function eliminarPlantillaAction(plantillaId: string) {
 
         revalidatePath('/ventas/configuracion/plantillas')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[eliminarPlantillaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -238,9 +248,10 @@ export async function establecerPredeterminadaAction(plantillaId: string) {
 
         revalidatePath('/ventas/configuracion/plantillas')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[establecerPredeterminadaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -261,8 +272,9 @@ export async function toggleActivaPlantillaAction(plantillaId: string, activa: b
 
         revalidatePath('/ventas/configuracion/plantillas')
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[toggleActivaPlantillaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }

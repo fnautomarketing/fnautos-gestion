@@ -191,7 +191,6 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
     const BRAND_PRIMARY = clientConfig.colors.brandGold || '#CC0108'
     const BRAND_PRIMARY_LIGHT = clientConfig.colors.brandGoldLight || '#FF4D4D'
     const BRAND_DARK = clientConfig.colors.brandDark || '#020202'
-    const BRAND_DARK_LIGHT = '#1A1A1A'
 
     const colorPrimary = options.colorAcento || (variant === 'premium' ? BRAND_PRIMARY : BRAND_DARK)
     const isPremium = variant === 'premium'
@@ -279,20 +278,20 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
     }
 
     const descuentoTotal = factura.importe_descuento || factura.descuento || 0
-    const divisa = (factura as any).divisa || 'EUR'
-    const cliente = factura.cliente || {} as any
+    const divisa = factura.divisa || 'EUR'
+    const cliente = factura.cliente
 
     // Porcentajes para el resumen
     const baseImponible = factura.base_imponible || factura.subtotal || 0
     const ivaPct = baseImponible > 0 && factura.iva
         ? Math.round((Number(factura.iva) / baseImponible) * 100)
-        : (factura.lineas?.[0] as any)?.iva_porcentaje ?? 0
-    const retencionPct = (factura as any).retencion_porcentaje ?? 0
+        : (factura.lineas?.[0])?.iva_porcentaje ?? 0
+    const retencionPct = factura.retencion_porcentaje ?? 0
     const importeRetencion = (factura.importe_retencion != null && factura.importe_retencion > 0)
         ? factura.importe_retencion
         : (retencionPct !== 0 && baseImponible > 0 ? (baseImponible * Math.abs(retencionPct)) / 100 : 0)
-    const descuentoTipo = (factura as any).descuento_tipo as string | undefined
-    const descuentoValor = (factura as any).descuento_valor ?? 0
+    const descuentoTipo = factura.descuento_tipo
+    const descuentoValor = factura.descuento_valor ?? 0
 
     // Datos cliente con fallbacks para nulls (requisitos legales España)
     const clienteDireccion = cliente.direccion || '-'
@@ -391,7 +390,7 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                         <Text style={[styles.th, styles.colIva]}>{t.iva}</Text>
                         <Text style={[styles.th, styles.colTotal]}>{t.total}</Text>
                     </View>
-                    {(factura.lineas || []).map((linea: any, i: number) => (
+                    {(factura.lineas || []).map((linea, i: number) => (
                         <View key={i} style={[styles.tableRow, i === (factura.lineas?.length || 1) - 1 ? { borderBottomWidth: 0 } : {}]}>
                             <View style={styles.colConcepto}>
                                 <Text style={[styles.td, { fontWeight: 'bold' }]}>{linea.concepto}</Text>

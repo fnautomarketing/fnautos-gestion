@@ -39,9 +39,10 @@ export async function getEmpresaAction() {
         if (error) throw error
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[getEmpresaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error al cargar los datos'
+        return { success: false, error: message }
     }
 }
 
@@ -158,15 +159,16 @@ export async function actualizarEmpresaAction(formData: FormData) {
         revalidatePath('/ventas/configuracion/empresa')
 
         return { success: true, data }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[actualizarEmpresaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error al actualizar los datos'
+        return { success: false, error: message }
     }
 }
 
 export async function subirLogoEmpresaAction(formData: FormData) {
     try {
-        const { supabase, empresaId, rol } = await getEmpresaId()
+        const { empresaId, rol } = await getEmpresaId()
 
         if (rol !== 'administrador' && rol !== 'admin') {
             return { success: false, error: 'No tienes permisos' }
@@ -225,15 +227,16 @@ export async function subirLogoEmpresaAction(formData: FormData) {
         revalidatePath('/ventas/configuracion/empresa')
 
         return { success: true, data: { url: publicUrl } }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[subirLogoEmpresaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error al subir el logo'
+        return { success: false, error: message }
     }
 }
 
 export async function eliminarLogoEmpresaAction() {
     try {
-        const { supabase, empresaId, rol } = await getEmpresaId()
+        const { empresaId, rol } = await getEmpresaId()
 
         if (rol !== 'administrador' && rol !== 'admin') {
             return { success: false, error: 'No tienes permisos' }
@@ -272,9 +275,10 @@ export async function eliminarLogoEmpresaAction() {
         revalidatePath('/ventas/configuracion/empresa')
 
         return { success: true }
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('[eliminarLogoEmpresaAction]', error)
-        return { success: false, error: error.message }
+        const message = error instanceof Error ? error.message : 'Error al eliminar el logo'
+        return { success: false, error: message }
     }
 }
 

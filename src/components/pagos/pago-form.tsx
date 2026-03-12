@@ -15,30 +15,38 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { pagoSchema, PagoFormData } from '@/lib/validations/pago-schema'
 import { registrarPagoAction } from '@/app/actions/pagos'
 
+import { FacturaWithCliente } from '@/types/ventas'
+
 interface PagoFormProps {
-    facturas: any[]
+    facturas: FacturaWithCliente[]
 }
+
+type PagoFormValues = PagoFormData
 
 export function PagoForm({ facturas }: PagoFormProps) {
     const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
-    const [selectedFactura, setSelectedFactura] = useState<any>(null)
+    const [selectedFactura, setSelectedFactura] = useState<FacturaWithCliente | null>(null)
 
-    const form = useForm<PagoFormData>({
-        resolver: zodResolver(pagoSchema),
+    const form = useForm<PagoFormValues>({
+        resolver: zodResolver(pagoSchema) as any,
         defaultValues: {
             factura_id: '',
-            importe: 0,
+            importe: 0.01,
             fecha_pago: new Date().toISOString().split('T')[0],
             metodo_pago: 'transferencia',
             conciliado: false,
+            marcar_como_pagada: false,
+            referencia: '',
+            cuenta_bancaria: '',
+            notas: '',
         },
     })
 
     // Update selected factura details when changed
     const handleFacturaChange = (facturaId: string) => {
         const factura = facturas.find(f => f.id === facturaId)
-        setSelectedFactura(factura)
+        setSelectedFactura(factura || null)
         form.setValue('factura_id', facturaId)
 
         // Set max importe based on pending amount
@@ -48,7 +56,7 @@ export function PagoForm({ facturas }: PagoFormProps) {
         }
     }
 
-    const onSubmit = async (data: PagoFormData) => {
+    const onSubmit = async (data: PagoFormValues) => {
         setIsSubmitting(true)
         try {
             const formData = new FormData()
@@ -69,8 +77,10 @@ export function PagoForm({ facturas }: PagoFormProps) {
             } else {
                 toast.error(result.error)
             }
-        } catch (_error) {
-            toast.error('Error al registrar pago')
+        } catch (error: unknown) {
+            console.error('[PagoForm]', error)
+            const message = error instanceof Error ? error.message : 'Error al registrar pago'
+            toast.error(message)
         } finally {
             setIsSubmitting(false)
         }
@@ -134,7 +144,7 @@ export function PagoForm({ facturas }: PagoFormProps) {
                 <div className="space-y-2">
                     <Label htmlFor="metodo_pago">Método de Pago</Label>
                     <Select
-                        onValueChange={(val) => form.setValue('metodo_pago', val as any)}
+                        onValueChange={(val) => form.setValue('metodo_pago', val as PagoFormData['metodo_pago'])}
                         value={form.watch('metodo_pago')}
                     >
                         <SelectTrigger>

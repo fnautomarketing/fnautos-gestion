@@ -95,7 +95,7 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                                     tickFormatter={(value) => `${value}€`}
                                 />
                                 <Tooltip
-                                    formatter={(value: any) => [`${Number(value).toFixed(2)}€`, 'Facturación']}
+                                    formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Facturación']}
                                     labelStyle={{ color: 'black' }}
                                 />
                                 <Line
@@ -161,7 +161,7 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                                     width={100}
                                     tick={{ fontSize: 12 }}
                                 />
-                                <Tooltip formatter={(value: any) => [`${Number(value).toFixed(2)}€`, 'Facturado']} />
+                                <Tooltip formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Facturado']} />
                                 <Bar 
                                     dataKey="facturacion" 
                                     fill="hsl(var(--primary))" 
@@ -191,13 +191,13 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                                     outerRadius={80}
                                     dataKey="facturacion"
                                     nameKey="categoria"
-                                    label={({ categoria, percent }: any) => `${categoria} ${(percent * 100).toFixed(0)}%`}
+                                    label={(props: any) => `${props.payload.categoria} ${(props.percent * 100).toFixed(0)}%`}
                                 >
                                     {categorias.map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: any) => [`${Number(value).toFixed(2)}€`, 'Ingresos']} />
+                                <Tooltip formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Ingresos']} />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>

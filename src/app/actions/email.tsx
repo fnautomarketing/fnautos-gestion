@@ -75,8 +75,7 @@ export async function sendFacturaEmailAction(formData: FormData) {
 
         if (!factura) throw new Error('Factura no encontrada')
 
-        const fullFactura = factura as unknown as any
-        fullFactura.descuento_tipo = factura.descuento_tipo as 'porcentaje' | 'fijo' | null
+        const fullFactura = factura as unknown as import('@/components/ventas/pdf/pdf-document').FacturaWithRelations
 
         // Load empresa (emisor)
         const { data: empresaRow } = await supabase
@@ -148,7 +147,7 @@ export async function sendFacturaEmailAction(formData: FormData) {
                 logoUrl={logoUrl}
             />
         )
-        const pdfBuffer = await streamToBuffer(stream as any)
+        const pdfBuffer = await streamToBuffer(stream as unknown as NodeJS.ReadableStream)
 
         const ccFinal = [...cc]
         if (sendCopy && user.email) {
@@ -193,7 +192,7 @@ export async function sendFacturaEmailAction(formData: FormData) {
             incluir_logo: incluirLogo,
             plantilla: plantillaMsg,
             enviado_at: new Date().toISOString()
-        } as any)
+        } as unknown as import('@/types/supabase').Database['public']['Tables']['emails_factura']['Insert'])
 
         await supabase.from('eventos_factura').insert({
             factura_id: factura.id,
@@ -204,8 +203,9 @@ export async function sendFacturaEmailAction(formData: FormData) {
 
         return { success: true }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Server Action Error:', error)
+        const message = error instanceof Error ? error.message : 'Error desconocido'
 
         if (facturaId) {
             const { data: perfil } = await supabase.from('perfiles').select('empresa_id').eq('user_id', user.id).single()
@@ -217,11 +217,11 @@ export async function sendFacturaEmailAction(formData: FormData) {
                     asunto: subject,
                     mensaje: message,
                     estado: 'error',
-                    error_mensaje: error.message
-                } as any)
+                    error_mensaje: message
+                } as unknown as import('@/types/supabase').Database['public']['Tables']['emails_factura']['Insert'])
             }
         }
 
-        return { success: false, error: error.message || 'Error desconocido' }
+        return { success: false, error: message }
     }
 }

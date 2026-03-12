@@ -8,7 +8,7 @@ export interface Notificacion {
     mensaje: string
     leida: boolean
     enlace: string | null
-    metadata: Record<string, any>
+    metadata: Record<string, string | number | boolean | null>
     created_at: string
 }
 
@@ -20,5 +20,5 @@ export interface NotificacionCreate {
     titulo: string
     mensaje: string
     enlace?: string | null
-    metadata?: Record<string, any>
+    metadata?: Record<string, string | number | boolean | null>
 }

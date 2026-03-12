@@ -79,4 +79,6 @@ export interface Empresa {
     activo: boolean
 }
 
-export interface EmpresaFormData extends Omit<Empresa, 'id' | 'created_at' | 'updated_at'> { }
+// Eliminada interfaz vacía EmpresaWithContext que causaba error de lint
+// EmpresaFormData ya hereda de Omit<Empresa, ...> lo cual es aceptable si se prefiere sobre un type alias
+export type EmpresaFormData = Omit<Empresa, 'id' | 'created_at' | 'updated_at'>

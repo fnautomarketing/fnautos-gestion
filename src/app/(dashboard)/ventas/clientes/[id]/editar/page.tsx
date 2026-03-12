@@ -1,5 +1,4 @@
-import { createServerClient } from '@/lib/supabase/server'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { ClienteForm } from '@/components/clientes/cliente-form'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 
@@ -15,15 +14,15 @@ export default async function EditarClientePage({ params }: { params: Promise<{ 
 
     if (!cliente) notFound()
 
-    const { data: ces } = await supabase
+    const { data: ces } = await (supabase as any)
         .from('clientes_empresas')
         .select('empresa_id')
         .eq('cliente_id', id)
-    const empresasCliente = (ces || []).map((c: { empresa_id: string }) => c.empresa_id)
+    const empresasCliente = (ces || []).map((c: any) => c.empresa_id as string)
 
     const empresasOptions = (empresas as { empresa_id: string; empresa?: { razon_social: string; nombre_comercial?: string } }[])
-        .filter((e: any) => e.empresa_id)
-        .map((e: any) => ({
+        .filter((e) => e.empresa_id)
+        .map((e) => ({
             id: e.empresa_id,
             razon_social: e.empresa?.razon_social || 'Sin nombre',
             nombre_comercial: e.empresa?.nombre_comercial,
@@ -50,7 +49,7 @@ export default async function EditarClientePage({ params }: { params: Promise<{ 
             </div>
             <ClienteForm
                 clienteId={id}
-                defaultValues={cliente as unknown as any}
+                defaultValues={cliente as any}
                 empresas={empresasOptions}
                 empresasCliente={empresasCliente}
             />

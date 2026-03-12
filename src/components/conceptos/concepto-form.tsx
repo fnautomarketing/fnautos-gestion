@@ -32,9 +32,10 @@ import { Separator } from '@/components/ui/separator'
 
 import { conceptoSchema, type ConceptoFormData } from '@/lib/validations/concepto-schema'
 import { crearConceptoAction, actualizarConceptoAction } from '@/app/actions/conceptos'
+import { ConceptoCatalogo } from '@/types/ventas'
 
 interface ConceptoFormProps {
-    initialData?: any
+    initialData?: Partial<ConceptoCatalogo> & { id?: string }
     isEditing?: boolean
 }
 
@@ -47,11 +48,11 @@ export function ConceptoForm({ initialData, isEditing = false }: ConceptoFormPro
         codigo: initialData?.codigo || '',
         nombre: initialData?.nombre || '',
         descripcion: initialData?.descripcion || '',
-        categoria: initialData?.categoria || 'otros',
-        tipo: initialData?.tipo || 'servicio',
+        categoria: (initialData?.categoria as any) || 'otros',
+        tipo: (initialData?.tipo as any) || 'servicio',
         precio_base: initialData?.precio_base || 0,
         iva_porcentaje: initialData?.iva_porcentaje || 21,
-        unidad_medida: initialData?.unidad_medida || 'servicio',
+        unidad_medida: (initialData?.unidad_medida as any) || 'servicio',
         codigo_interno: initialData?.codigo_interno || '',
         proveedor: initialData?.proveedor || '',
         coste_interno: initialData?.coste_interno || 0,
@@ -124,7 +125,7 @@ export function ConceptoForm({ initialData, isEditing = false }: ConceptoFormPro
                             Volver al listado
                         </Button>
                         <h1 className="text-3xl font-bold tracking-tight">
-                            {isEditing ? `Editar Concepto: ${initialData.codigo}` : 'Nuevo Concepto'}
+                            {isEditing ? `Editar Concepto: ${initialData?.codigo}` : 'Nuevo Concepto'}
                         </h1>
                         <p className="text-muted-foreground">
                             {isEditing

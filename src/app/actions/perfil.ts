@@ -28,9 +28,10 @@ export async function actualizarNombrePerfilAction(nombre: string) {
 
         revalidatePath('/perfil')
         return { success: true }
-    } catch (e: any) {
-        console.error('[actualizarNombrePerfilAction]', e)
-        return { success: false, error: e?.message || 'Error al actualizar' }
+    } catch (error: unknown) {
+        console.error('[actualizarNombrePerfilAction]', error)
+        const message = error instanceof Error ? error.message : 'Error al actualizar'
+        return { success: false, error: message }
     }
 }
 
@@ -82,9 +83,10 @@ export async function subirAvatarPerfilAction(formData: FormData) {
         auditLog('avatar_upload', user.id, {})
         revalidatePath('/perfil')
         return { success: true, data: { url: urlWithCacheBust } }
-    } catch (e: any) {
-        console.error('[subirAvatarPerfilAction]', e)
-        return { success: false, error: e?.message || 'Error al subir avatar' }
+    } catch (error: unknown) {
+        console.error('[subirAvatarPerfilAction]', error)
+        const message = error instanceof Error ? error.message : 'Error al subir avatar'
+        return { success: false, error: message }
     }
 }
 
@@ -113,8 +115,9 @@ export async function eliminarAvatarPerfilAction() {
         auditLog('avatar_delete', user.id, {})
         revalidatePath('/perfil')
         return { success: true }
-    } catch (e: any) {
-        console.error('[eliminarAvatarPerfilAction]', e)
-        return { success: false, error: e?.message || 'Error al eliminar avatar' }
+    } catch (error: unknown) {
+        console.error('[eliminarAvatarPerfilAction]', error)
+        const message = error instanceof Error ? error.message : 'Error al eliminar avatar'
+        return { success: false, error: message }
     }
 }

@@ -39,18 +39,20 @@ import { format } from 'date-fns'
 import { toast } from 'sonner'
 import { enviarRecordatorioAction, registrarLlamadaAction } from '@/app/actions/recordatorios'
 
+import { FacturaVencida } from '@/types/ventas'
+
 interface VencidasTablaProps {
-    facturas: any[]
+    facturas: FacturaVencida[]
     nivel: string
 }
 
-export function VencidasTabla({ facturas, nivel: _nivel }: VencidasTablaProps) {
+export function VencidasTabla({ facturas }: VencidasTablaProps) {
     const router = useRouter()
     const [selectedFacturas, setSelectedFacturas] = useState<string[]>([])
     const [isSending, setIsSending] = useState(false)
     const [openEmailModal, setOpenEmailModal] = useState(false)
     const [openCallModal, setOpenCallModal] = useState(false)
-    const [currentFactura, setCurrentFactura] = useState<any>(null)
+    const [currentFactura, setCurrentFactura] = useState<FacturaVencida | null>(null)
 
     // Estados para formularios
     const [emailAsunto, setEmailAsunto] = useState('Recordatorio de Pago Factura Vencida')
@@ -84,68 +86,82 @@ export function VencidasTabla({ facturas, nivel: _nivel }: VencidasTablaProps) {
         if (!currentFactura && selectedFacturas.length === 0) return
 
         setIsSending(true)
-        const formData = new FormData()
+        try {
+            const formData = new FormData()
 
-        if (currentFactura) {
-            formData.append('factura_id', currentFactura.id)
-            formData.append('email_destinatario', currentFactura.cliente_email)
-        } else {
-            formData.append('factura_id', JSON.stringify(selectedFacturas))
+            if (currentFactura) {
+                formData.append('factura_id', currentFactura.id)
+                formData.append('email_destinatario', currentFactura.cliente_email || '')
+            } else {
+                formData.append('factura_id', JSON.stringify(selectedFacturas))
+            }
+
+            formData.append('tipo', 'email')
+            formData.append('asunto', emailAsunto)
+            formData.append('contenido', emailContenido)
+            formData.append('adjuntar_factura', 'true')
+
+            const result = await enviarRecordatorioAction(formData)
+
+            if (result.success) {
+                toast.success(currentFactura ? 'Recordatorio enviado' : 'Recordatorios enviados correctamente')
+                setOpenEmailModal(false)
+                setSelectedFacturas([])
+                setCurrentFactura(null)
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleEnviarRecordatorio]', error)
+            const message = error instanceof Error ? error.message : 'Error al enviar recordatorio'
+            toast.error(message)
+        } finally {
+            setIsSending(false)
         }
-
-        formData.append('tipo', 'email')
-        formData.append('asunto', emailAsunto)
-        formData.append('contenido', emailContenido)
-        formData.append('adjuntar_factura', 'true')
-
-        const result = await enviarRecordatorioAction(formData)
-
-        if (result.success) {
-            toast.success(currentFactura ? 'Recordatorio enviado' : 'Recordatorios enviados correctamente')
-            setOpenEmailModal(false)
-            setSelectedFacturas([])
-            setCurrentFactura(null)
-            router.refresh()
-        } else {
-            toast.error(result.error)
-        }
-        setIsSending(false)
     }
 
     const handleRegistrarLlamada = async () => {
         if (!currentFactura) return
 
         setIsSending(true)
-        const formData = new FormData()
-        formData.append('factura_id', currentFactura.id)
-        formData.append('tipo', 'llamada')
-        formData.append('notas', callNotas)
-        formData.append('resultado_llamada', callResultado)
-        formData.append('persona_contactada', callPersona)
-        if (callCompromiso) formData.append('fecha_compromiso_pago', callCompromiso)
+        try {
+            const formData = new FormData()
+            formData.append('factura_id', currentFactura.id)
+            formData.append('tipo', 'llamada')
+            formData.append('notas', callNotas)
+            formData.append('resultado_llamada', callResultado)
+            formData.append('persona_contactada', callPersona)
+            if (callCompromiso) formData.append('fecha_compromiso_pago', callCompromiso)
 
-        const result = await registrarLlamadaAction(formData)
+            const result = await registrarLlamadaAction(formData)
 
-        if (result.success) {
-            toast.success('Llamada registrada correctamente')
-            setOpenCallModal(false)
-            setCurrentFactura(null)
-            setCallNotas('')
-            setCallPersona('')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+            if (result.success) {
+                toast.success('Llamada registrada correctamente')
+                setOpenCallModal(false)
+                setCurrentFactura(null)
+                setCallNotas('')
+                setCallPersona('')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleRegistrarLlamada]', error)
+            const message = error instanceof Error ? error.message : 'Error al registrar llamada'
+            toast.error(message)
+        } finally {
+            setIsSending(false)
         }
-        setIsSending(false)
     }
 
-    const openEmailDialog = (factura: any) => {
+    const openEmailDialog = (factura: FacturaVencida) => {
         setCurrentFactura(factura)
         setEmailAsunto(`Recordatorio Factura ${factura.serie}-${factura.numero} - VENCIDA`)
         setOpenEmailModal(true)
     }
 
-    const openCallDialog = (factura: any) => {
+    const openCallDialog = (factura: FacturaVencida) => {
         setCurrentFactura(factura)
         setCallPersona(factura.cliente_nombre?.split(' ')[0] || '')
         setOpenCallModal(true)

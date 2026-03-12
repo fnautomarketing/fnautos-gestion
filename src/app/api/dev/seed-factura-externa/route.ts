@@ -64,7 +64,7 @@ export async function GET(request: Request) {
 
     const { error: updateError } = await supabase
         .from('facturas')
-        .update({ archivo_url: publicUrl })
+        .update({ archivo_url: publicUrl } as any)
         .eq('id', facturaId)
 
     if (updateError) {

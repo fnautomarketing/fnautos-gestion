@@ -1,15 +1,16 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 import { clienteSchema } from '@/lib/validations/cliente-schema'
 import { z } from 'zod'
 
 /** Obtiene IDs de empresas del usuario (para notificaciones y fallback) */
-function getEmpresaIds(empresas: { empresa_id?: string }[]): string[] {
-    return empresas.filter((e: any) => e.empresa_id).map((e: any) => e.empresa_id!)
+function getEmpresaIds(empresas: Array<{ empresa_id?: string | null }>): string[] {
+    return empresas
+        .filter((e) => e.empresa_id)
+        .map((e) => e.empresa_id as string)
 }
 
 export async function crearClienteAction(formData: FormData) {
@@ -52,7 +53,7 @@ export async function crearClienteAction(formData: FormData) {
         const adminClient = createAdminClient()
         const { data, error } = await adminClient
             .from('clientes')
-            .insert(insertData as any)
+            .insert({ ...insertData, empresa_id: null } as unknown as import('@/types/supabase').Database['public']['Tables']['clientes']['Insert'])
             .select()
             .single()
 
@@ -63,8 +64,8 @@ export async function crearClienteAction(formData: FormData) {
 
         const idsToInsert = compartido ? empresaIds : empresasIds
         if (idsToInsert.length > 0) {
-            const { error: ceError } = await adminClient
-                .from('clientes_empresas')
+            const adminFlexible = adminClient as unknown as import('@supabase/supabase-js').SupabaseClient
+            const { error: ceError } = await adminFlexible.from('clientes_empresas')
                 .insert(idsToInsert.map((empresa_id: string) => ({ cliente_id: data.id, empresa_id })))
 
             if (ceError) {
@@ -92,11 +93,8 @@ export async function crearClienteAction(formData: FormData) {
             console.error('[crearClienteAction] Error creando notificación:', notifError)
         }
 
-        revalidatePath('/ventas/clientes')
-        return { success: true, data }
-
-    } catch (error: any) {
-        console.error('[crearClienteAction]', error, 'message:', error?.message, 'code:', error?.code)
+    } catch (error: unknown) {
+        console.error('[crearClienteAction]', error)
 
         if (error instanceof z.ZodError) {
             const issues = error.issues
@@ -106,7 +104,7 @@ export async function crearClienteAction(formData: FormData) {
             return { success: false, error: 'Error de validación' }
         }
 
-        const errorMessage = error instanceof Error ? error.message : (typeof error === 'object' && error !== null && 'message' in error ? String((error as any).message) : 'Error desconocido')
+        const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
         return { success: false, error: errorMessage }
     }
 }
@@ -145,18 +143,18 @@ export async function actualizarClienteAction(clienteId: string, formData: FormD
         const adminClient = createAdminClient()
         const { data, error } = await adminClient
             .from('clientes')
-            .update({ ...validated, empresa_id: null } as any)
+            .update({ ...validated, empresa_id: null } as unknown as import('@/types/supabase').Database['public']['Tables']['clientes']['Update'])
             .eq('id', clienteId)
             .select()
             .single()
 
         if (error) throw error
 
-        await adminClient.from('clientes_empresas').delete().eq('cliente_id', clienteId)
+        const adminFlexible = adminClient as unknown as import('@supabase/supabase-js').SupabaseClient
+        await adminFlexible.from('clientes_empresas').delete().eq('cliente_id', clienteId)
         const idsToInsert = compartido ? empresaIds : empresasIds
         if (idsToInsert.length > 0) {
-            const { error: ceError } = await adminClient
-                .from('clientes_empresas')
+            const { error: ceError } = await adminFlexible.from('clientes_empresas')
                 .insert(idsToInsert.map((empresa_id: string) => ({ cliente_id: clienteId, empresa_id })))
 
             if (ceError) {

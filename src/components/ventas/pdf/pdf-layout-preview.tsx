@@ -3,14 +3,10 @@
 import { useState, useEffect } from 'react'
 import { Skeleton } from '@/components/ui/skeleton'
 import type { Empresa, PdfOptions } from './pdf-document'
-import type { Factura, Cliente, LineaFactura } from '@/types/ventas'
-import { Loader2, AlertCircle } from 'lucide-react'
-
-// We need to import the component but @react-pdf/renderer must be loaded dynamically
-import { FacturaPdfDocument } from './pdf-document'
-
-import { FacturaWithRelations } from './pdf-document'
+// Factura se usa en Props
+import { FacturaPdfDocument, FacturaWithRelations } from './pdf-document'
 import { clientConfig } from '@/config/clients'
+import { Loader2, AlertCircle } from 'lucide-react'
 
 interface PdfLayoutPreviewProps {
     factura: FacturaWithRelations
@@ -55,10 +51,11 @@ export function PdfLayoutPreview({ factura, empresa, options }: PdfLayoutPreview
                 if (isMounted) {
                     setUrl(objectUrl)
                 }
-            } catch (err: any) {
-                console.error('PDF Generation failed:', err)
+            } catch (err) {
+                const e = err as Error
+                console.error('PDF Generation failed:', e)
                 if (isMounted) {
-                    setError(err.message || 'Error desconocido al generar PDF')
+                    setError(e.message || 'Error desconocido al generar PDF')
                 }
             } finally {
                 if (isMounted) {

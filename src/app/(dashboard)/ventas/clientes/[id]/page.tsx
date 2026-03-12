@@ -359,7 +359,7 @@ export default async function DetalleClientePage({ params }: { params: Promise<{
                                 </p>
                             ) : (
                                 <ul className="space-y-2" data-testid="cliente-ultimas-facturas-list">
-                                    {facturas.map((f: { id: string; serie?: string; numero: string; fecha_emision: string; total: number; estado: string }) => (
+                                    {(facturas as any[]).map((f: { id: string; serie?: string | null; numero: string; fecha_emision: string | null; total: number | null; estado: string | null }) => (
                                         <li key={f.id}>
                                             <Link
                                                 href={`/ventas/facturas/${f.id}`}
@@ -374,7 +374,7 @@ export default async function DetalleClientePage({ params }: { params: Promise<{
                                                             {f.serie ?? ''}-{f.numero}
                                                         </p>
                                                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                                                            <span suppressHydrationWarning>{new Date(f.fecha_emision).toLocaleDateString('es-ES')}</span>
+                                                            <span suppressHydrationWarning>{new Date(f.fecha_emision || '').toLocaleDateString('es-ES')}</span>
                                                         </p>
                                                     </div>
                                                 </div>

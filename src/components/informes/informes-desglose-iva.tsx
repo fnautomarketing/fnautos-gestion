@@ -197,9 +197,9 @@ export function InformesDesgloseIVA({ fechaDesde, fechaHasta, empresaId, cliente
                                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(148,163,184,0.4)" />
                                 <XAxis dataKey="name" fontSize={12} tick={{ fill: 'hsl(var(--foreground))' }} tickLine={false} axisLine={false} />
                                 <YAxis fontSize={11} tick={{ fill: 'hsl(var(--foreground))' }} tickLine={false} axisLine={false} width={44} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k€`} />
-                                <Tooltip formatter={(v: number) => [formatCurrency(v), 'Total']} />
+                                <Tooltip formatter={(v: unknown) => [formatCurrency(v as number), 'Total']} />
                                 <Bar dataKey="total" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} barSize={28}>
-                                    <LabelList position="top" formatter={(v: number) => formatCurrency(v)} />
+                                    <LabelList position="top" formatter={(v: unknown) => formatCurrency(v as number)} />
                                 </Bar>
                             </BarChart>
                         </ResponsiveContainer>

@@ -43,12 +43,12 @@ export async function crearConceptoAction(formData: FormData) {
         // Generar código automático si no se proporcionó
         let codigo = validated.codigo
         if (!codigo) {
-            const { data: codigoGenerado, error: genError } = await (supabase as any).rpc('generar_codigo_concepto', {
+            const { data: codigoGenerado, error: genError } = await (supabase as unknown as { rpc: (name: string, params: Record<string, unknown>) => Promise<{ data: string | null, error: unknown }> }).rpc('generar_codigo_concepto', {
                 p_empresa_id: empresaId,
                 p_categoria: validated.categoria
             })
             if (genError) throw genError
-            codigo = codigoGenerado
+            codigo = codigoGenerado ?? undefined
         }
 
         const { data, error } = await supabase
@@ -70,7 +70,8 @@ export async function crearConceptoAction(formData: FormData) {
         if (error instanceof z.ZodError) {
             return { success: false, error: error.issues[0]?.message }
         }
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -109,7 +110,8 @@ export async function actualizarConceptoAction(conceptoId: string, formData: For
         if (error instanceof z.ZodError) {
             return { success: false, error: error.issues[0]?.message }
         }
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -144,7 +146,8 @@ export async function eliminarConceptoAction(conceptoId: string) {
         return { success: true }
     } catch (error: unknown) {
         console.error('[eliminarConceptoAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -163,7 +166,7 @@ export async function duplicarConceptoAction(conceptoId: string) {
         if (fetchError || !original) throw new Error('Concepto no encontrado')
 
         // Generar nuevo código
-        const { data: nuevoCodigo, error: genError } = await (supabase as any).rpc('generar_codigo_concepto', {
+        const { data: nuevoCodigo, error: genError } = await (supabase as unknown as { rpc: (name: string, params: Record<string, unknown>) => Promise<{ data: string | null, error: unknown }> }).rpc('generar_codigo_concepto', {
             p_empresa_id: empresaId,
             p_categoria: original.categoria
         })
@@ -176,13 +179,13 @@ export async function duplicarConceptoAction(conceptoId: string) {
             .insert({
                 ...original,
                 id: undefined, // Let DB generate new ID
-                codigo: nuevoCodigo,
+                codigo: nuevoCodigo ?? `COPIA-${Date.now()}`,
                 nombre: `${original.nombre} (Copia)`,
                 veces_usado: 0,
                 ultima_vez_usado: null,
                 created_at: undefined, // Let DB handle defaults
                 updated_at: undefined,
-            })
+            } as unknown as import('@/types/supabase').Database['public']['Tables']['conceptos_catalogo']['Insert'])
             .select()
             .single()
 
@@ -192,7 +195,8 @@ export async function duplicarConceptoAction(conceptoId: string) {
         return { success: true, data }
     } catch (error: unknown) {
         console.error('[duplicarConceptoAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -250,7 +254,8 @@ export async function importarCSVAction(csvData: string) {
         if (error instanceof z.ZodError) {
             return { success: false, error: 'Error de validación en el CSV' }
         }
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }
 
@@ -286,6 +291,7 @@ export async function getEstadisticasConceptosAction() {
         }
     } catch (error: unknown) {
         console.error('[getEstadisticasConceptosAction]', error)
-        return { success: false, error: (error as Error).message }
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
     }
 }

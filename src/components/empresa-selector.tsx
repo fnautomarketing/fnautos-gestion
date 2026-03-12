@@ -27,9 +27,9 @@ interface Empresa {
     razon_social: string
     nombre_comercial?: string | null
     logo_url?: string | null
-    tipo_empresa: string
-    rol: string
-    activa: boolean
+    tipo_empresa: string | null
+    rol: string | null
+    activa: boolean | null
 }
 
 interface EmpresaSelectorProps {
@@ -52,7 +52,7 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
         const result = await listarEmpresasUsuarioAction()
         if (result.success && result.data) {
             setEmpresas(result.data.empresas)
-            setIsAdmin(!!result.data.isAdmin) // Cast to boolean
+            setIsAdmin(!!result.data.isAdmin)
 
             // Determine active company
             if (result.data.isGlobal) {
@@ -65,7 +65,7 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                     activa: true
                 })
             } else {
-                const activa = result.data.empresas.find((e: Empresa) => e.activa) || result.data.empresas[0]
+                const activa = result.data.empresas.find(e => e.activa) || result.data.empresas[0]
                 setEmpresaActiva(activa)
             }
         }
@@ -169,9 +169,11 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                                     <Building2 className="w-4 h-4 text-white" />
                                 </div>
                             ) : empresaActiva?.logo_url ? (
-                                <img
+                                <Image
                                     src={empresaActiva.logo_url}
                                     alt={empresaActiva.razon_social}
+                                    width={32}
+                                    height={32}
                                     className="w-8 h-8 rounded-lg object-cover shadow-sm group-hover:scale-105 transition-transform"
                                 />
                             ) : (
@@ -239,9 +241,11 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                             >
                                 <div className="flex items-center gap-4">
                                     {empresa.logo_url ? (
-                                        <img
+                                        <Image
                                             src={empresa.logo_url}
                                             alt={empresa.razon_social}
+                                            width={44}
+                                            height={44}
                                             className="w-11 h-11 rounded-xl object-cover border-2 border-white dark:border-slate-800 shadow-lg"
                                         />
                                     ) : (

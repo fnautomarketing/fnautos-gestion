@@ -12,10 +12,11 @@ import { Badge } from '@/components/ui/badge'
 import { crearSerieAction, actualizarSerieAction } from '@/app/actions/series'
 import { Card, CardContent } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
+import { Serie } from '@/types/ventas'
 
 interface SerieFormProps {
     serieId?: string
-    defaultValues?: any
+    defaultValues?: Partial<Serie>
 }
 
 /**
@@ -129,7 +130,7 @@ export function SerieForm({ serieId, defaultValues }: SerieFormProps) {
                                     <Input
                                         id="prefijo"
                                         name="prefijo"
-                                        defaultValue={defaultValues?.prefijo}
+                                        defaultValue={defaultValues?.prefijo || ''}
                                         placeholder="FAC26-"
                                         className="bg-white/5 border-white/10 text-slate-900 dark:text-white h-11"
                                     />
@@ -139,7 +140,7 @@ export function SerieForm({ serieId, defaultValues }: SerieFormProps) {
                                     <Input
                                         id="sufijo"
                                         name="sufijo"
-                                        defaultValue={defaultValues?.sufijo}
+                                        defaultValue={defaultValues?.sufijo || ''}
                                         placeholder="/A"
                                         className="bg-white/5 border-white/10 text-slate-900 dark:text-white h-11"
                                     />

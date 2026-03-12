@@ -9,8 +9,10 @@ import { toast } from 'sonner'
 import { toggleActivaPlantillaAction, establecerPredeterminadaAction, eliminarPlantillaAction } from '@/app/actions/plantillas'
 import { useRouter } from 'next/navigation'
 
+import { PlantillaPDF } from '@/types/ventas'
+
 interface PlantillasGridProps {
-    plantillas: any[]
+    plantillas: PlantillaPDF[]
 }
 
 /**
@@ -21,34 +23,52 @@ export function PlantillasGrid({ plantillas }: PlantillasGridProps) {
     const router = useRouter()
 
     const handleToggleActiva = async (plantillaId: string, activa: boolean) => {
-        const result = await toggleActivaPlantillaAction(plantillaId, !activa)
-        if (result.success) {
-            toast.success(activa ? 'Plantilla desactivada' : 'Plantilla activada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await toggleActivaPlantillaAction(plantillaId, !activa)
+            if (result.success) {
+                toast.success(activa ? 'Plantilla desactivada' : 'Plantilla activada')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleToggleActiva]', error)
+            const message = error instanceof Error ? error.message : 'Error al cambiar estado de la plantilla'
+            toast.error(message)
         }
     }
 
     const handleSetPredeterminada = async (plantillaId: string) => {
-        const result = await establecerPredeterminadaAction(plantillaId)
-        if (result.success) {
-            toast.success('Plantilla establecida como predeterminada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await establecerPredeterminadaAction(plantillaId)
+            if (result.success) {
+                toast.success('Plantilla establecida como predeterminada')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleSetPredeterminada]', error)
+            const message = error instanceof Error ? error.message : 'Error al establecer plantilla predeterminada'
+            toast.error(message)
         }
     }
 
     const handleEliminar = async (plantillaId: string) => {
         if (!confirm('¿Eliminar esta plantilla? Esta acción no se puede deshacer.')) return
 
-        const result = await eliminarPlantillaAction(plantillaId)
-        if (result.success) {
-            toast.success('Plantilla eliminada')
-            router.refresh()
-        } else {
-            toast.error(result.error)
+        try {
+            const result = await eliminarPlantillaAction(plantillaId)
+            if (result.success) {
+                toast.success('Plantilla eliminada')
+                router.refresh()
+            } else {
+                toast.error(result.error)
+            }
+        } catch (error: unknown) {
+            console.error('[handleEliminar]', error)
+            const message = error instanceof Error ? error.message : 'Error al eliminar plantilla'
+            toast.error(message)
         }
     }
 

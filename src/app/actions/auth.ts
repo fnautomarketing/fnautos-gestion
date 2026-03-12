@@ -69,7 +69,7 @@ export async function loginAction(formData: FormData) {
                 },
             },
         }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error en loginAction:', error)
 
         if (error instanceof z.ZodError) {
@@ -79,9 +79,10 @@ export async function loginAction(formData: FormData) {
             }
         }
 
+        const message = error instanceof Error ? error.message : 'Error desconocido'
         return {
             success: false,
-            error: 'Error al iniciar sesión. Por favor, inténtalo de nuevo.',
+            error: message,
         }
     }
 }
@@ -103,7 +104,7 @@ export async function logoutAction() {
         return {
             success: true,
         }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('Error en logoutAction:', error)
         // Fallback to success to force redirect
         return {

@@ -4,8 +4,8 @@ import { getUserContext } from '@/app/actions/usuarios-empresas'
 export default async function NuevoClientePage() {
     const { empresas } = await getUserContext()
     const empresasOptions = (empresas as { empresa_id: string; empresa?: { razon_social: string; nombre_comercial?: string } }[])
-        .filter((e: any) => e.empresa_id)
-        .map((e: any) => ({
+        .filter((e) => e.empresa_id)
+        .map((e) => ({
             id: e.empresa_id,
             razon_social: e.empresa?.razon_social || 'Sin nombre',
             nombre_comercial: e.empresa?.nombre_comercial,

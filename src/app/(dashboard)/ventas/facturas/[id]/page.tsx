@@ -1,4 +1,3 @@
-import { createServerClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
@@ -132,9 +131,9 @@ export default async function DetalleFacturaPage({
     const pendiente = Math.max(0, totalEfectivo - totalPagado)
 
     // Combinar eventos de estado con eventos de envío de email
-    const emailEventos: EventoFactura[] = (emailsFactura || [])
-        .filter((e: any) => e.estado === 'enviado')
-        .map((e: any) => {
+    const emailEventos: EventoFactura[] = ((emailsFactura || []) as { id: string, factura_id: string, enviado_at: string | null, created_at: string, para: string[] | string, estado: string }[])
+        .filter((e) => e.estado === 'enviado')
+        .map((e) => {
             const paraTexto =
                 Array.isArray(e.para)
                     ? (e.para[0] || '')
@@ -149,10 +148,11 @@ export default async function DetalleFacturaPage({
                 descripcion: paraTexto
                     ? `Factura enviada por email a ${paraTexto}`
                     : 'Factura enviada por email',
-                created_at: (e.enviado_at || e.created_at) as string | null,
+                created_at: (e.enviado_at || e.created_at) as string,
                 // Rellenamos campos opcionales que no usa el UI
-                user_id: null as any,
-                empresa_id: null as any,
+                user_id: '', 
+                empresa_id: '',
+                datos_adicionales: null,
             } as unknown as EventoFactura
         })
 
@@ -247,7 +247,7 @@ export default async function DetalleFacturaPage({
                                 </div>
                                 {rect.motivo_rectificacion && (
                                     <div className="text-sm text-slate-500 mt-1 line-clamp-1 italic">
-                                        "{rect.motivo_rectificacion}"
+                                        &quot;{rect.motivo_rectificacion}&quot;
                                     </div>
                                 )}
                             </Link>

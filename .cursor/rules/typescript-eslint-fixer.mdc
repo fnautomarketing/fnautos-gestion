@@ -1,0 +1,92 @@
+---
+description: Corrección automática de errores TypeScript y ESLint. Se aplica SIEMPRE en cada modificación de código del proyecto fnautos-gestion.
+globs: ["src/**/*.ts", "src/**/*.tsx", "src/**/*.js", "src/**/*.jsx"]
+alwaysApply: true
+---
+
+# Regla: Corrección Automática de TypeScript y ESLint
+
+> **Esta regla se aplica automáticamente en CADA edición de código del proyecto fnautos-gestion. No hay excepciones.**
+
+## ⚡ Acción Inmediata Tras Cada Edición y ANTES de Commit
+
+Al modificar cualquier archivo `.ts` o `.tsx`, o **ANTES de realizar un git commit**:
+
+1. **Lee todo el feedback de lint** que aparezca como «lint errors may be related to your recent edits».
+2. **Corrige los errores en la misma respuesta**. No pospongas la corrección al siguiente mensaje.
+3. **Antes de commit**: Ejecuta obligatoriamente `npx eslint <archivos_tocados>` y verifica que no queden errores.
+4. Si el error involucra `any`, aplica los **patrones de la skill `typescript_eslint_fixer`**.
+
+## 🚫 Prohibiciones Absolutas
+
+- **Nunca** añadir `as any` directamente — usa `as unknown as TipoEspecifico`.
+- **Nunca** añadir `// eslint-disable-next-line` sin comentar el motivo técnico.
+- **Nunca** marcar una tarea como completada con errores de lint pendientes.
+- **Nunca** usar `@ts-ignore` como solución permanente.
+
+## ✅ Patrones Obligatorios del Proyecto
+
+### Para Supabase RPC sin tipo definido:
+```typescript
+// ✅ CORRECTO
+(supabase as unknown as { rpc: (n: string, p: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc(...)
+
+// ✅ O bien, para uso general:
+(supabase as unknown as import('@supabase/supabase-js').SupabaseClient).from(...)
+```
+
+### Para tablas no en los tipos generados («clientes_empresas», «pagos», «recordatorios»):
+```typescript
+// ✅ CORRECTO
+const flexClient = adminClient as unknown as import('@supabase/supabase-js').SupabaseClient
+await flexClient.from('clientes_empresas').insert(data)
+```
+
+### Para Insert/Update con campos extra:
+```typescript
+// ✅ CORRECTO
+await supabase.from('tabla').insert(data as unknown as Database['public']['Tables']['tabla']['Insert'])
+```
+
+### Para propiedades desconocidas en objetos:
+```typescript
+// ✅ CORRECTO — narrowing con 'in'
+if ('propiedad' in obj && obj.propiedad) { ... }
+```
+
+### Para errores de Zod sin `any`:
+```typescript
+// ✅ CORRECTO — tipo intersectado
+const zodErr = error as Error & { issues?: { message: string }[] }
+message = zodErr.issues?.[0]?.message ?? error.message
+```
+
+### Para variables no usadas:
+```typescript
+// ✅ CORRECTO — solo desestructura lo que uses
+const { supabase, empresaId } = await getUserContext()
+// NO desestructures variables que no vayas a usar
+```
+
+## 🔍 Verificación Obligatoria Al Terminar Una Tarea
+
+Ejecuta **ambos** comandos y corrige hasta que devuelvan exit code 0:
+
+```bash
+# 1. ESLint sobre los archivos afectados
+npx eslint src/app/actions --ext .ts,.tsx
+
+# 2. TypeScript completo
+npx tsc --noEmit
+```
+
+## 📚 Skill Relacionada
+
+Para patrones completos y ejemplos detallados, leer:
+`.agent/skills/typescript_eslint_fixer/SKILL.md`
+
+Esta skill contiene:
+- Todos los patrones `no-explicit-any` específicos del proyecto
+- Tipos de Supabase disponibles y cómo usarlos
+- Tablas que no tienen tipos generados
+- Checklist de salida completo

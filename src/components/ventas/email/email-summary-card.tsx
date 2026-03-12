@@ -2,10 +2,10 @@ import { FileText } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
+import type { FacturaWithCliente } from '@/types/ventas'
 
 interface EmailSummaryCardProps {
-    factura: any
+    factura: FacturaWithCliente
 }
 
 export function EmailSummaryCard({ factura }: EmailSummaryCardProps) {
@@ -21,7 +21,7 @@ export function EmailSummaryCard({ factura }: EmailSummaryCardProps) {
             <CardContent className="space-y-6">
                 <div className="space-y-1">
                     <p className="text-xs text-slate-400 font-semibold uppercase">Cliente</p>
-                    <p className="font-medium text-slate-700 dark:text-slate-200">{factura.cliente.nombre_fiscal}</p>
+                    <p className="font-medium text-slate-700 dark:text-slate-200">{factura.cliente?.nombre_fiscal || 'Sin cliente'}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

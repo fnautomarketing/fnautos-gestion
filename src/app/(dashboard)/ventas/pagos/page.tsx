@@ -27,7 +27,7 @@ export default async function PagosPage({
     const metodo = resolvedSearchParams.metodo || 'todos'
     const today = new Date().toISOString().split('T')[0]
 
-    let pagos: any[] = []
+    let pagos: (any & { esFacturaRow: boolean })[] = [] // Still partially generic due to view structure but typed with row indicator
 
     // IMPORTANTE: Las pestañas "Pendientes" y "Vencidos" deben mostrar FACTURAS pendientes de cobro,
     // no solo registros de pago. vista_pagos_dashboard solo tiene filas por cada PAGO registrado,
@@ -63,7 +63,7 @@ export default async function PagosPage({
                 .from('clientes')
                 .select('id')
                 .or(`nombre_fiscal.ilike.%${q}%,nombre_comercial.ilike.%${q}%`)
-            const clienteIds = clientesMatch?.map((c: any) => c.id) ?? []
+            const clienteIds = (clientesMatch as { id: string }[] | null)?.map((c) => c.id) ?? []
             if (clienteIds.length > 0) {
                 orParts.push(`cliente_id.in.(${clienteIds.join(',')})`)
             }
@@ -75,7 +75,7 @@ export default async function PagosPage({
         const { data: facturas } = await facturasQuery
 
         // Mapear facturas al formato que espera PagosTabla (una fila por factura pendiente)
-        pagos = (facturas || []).map((f: any) => {
+        pagos = (facturas || []).map((f) => {
             const totalPagado = Number(f.pagado) || 0
             const pendiente = Math.max(0, Number(f.total) - totalPagado)
             const clienteNombre = f.cliente?.nombre_fiscal || '-'
@@ -125,7 +125,7 @@ export default async function PagosPage({
         query = query.order('fecha_pago', { ascending: false })
 
         const { data } = await query
-        pagos = (data || []).map((p: any) => ({ ...p, esFacturaRow: false }))
+        pagos = (data || []).map((p) => ({ ...(p as Record<string, any>), esFacturaRow: false }))
     }
 
     // Cargar estadísticas
@@ -169,7 +169,7 @@ export default async function PagosPage({
             <PagosStats stats={stats} />
 
             <PagosTabla
-                pagos={(pagos as any) || []}
+                pagos={pagos}
                 tab={tab}
                 search={resolvedSearchParams.search || ''}
                 metodo={resolvedSearchParams.metodo || 'todos'}

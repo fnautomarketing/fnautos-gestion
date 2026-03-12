@@ -27,9 +27,11 @@ function validateEmails(emails: string[]): string | null {
     return null
 }
 
+import type { Factura, Cliente } from '@/types/ventas'
+
 interface EmailSendFormProps {
-    factura: any
-    cliente: any
+    factura: Factura
+    cliente: Cliente
     empresaNombre?: string
     messageTemplate: string
     incluirLogo: boolean
@@ -86,7 +88,8 @@ export function EmailSendForm({ factura, cliente, empresaNombre = clientConfig.n
             } else {
                 toast.error('Error al enviar el email: ' + result.error)
             }
-        } catch (_error) {
+        } catch (error) {
+            console.error('Error in handleSubmit:', error)
             toast.error('Ocurrió un error inesperado')
         } finally {
             setSending(false)

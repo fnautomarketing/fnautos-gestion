@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import { toast } from 'sonner'
-import { Lock, Info, CalendarIcon, Loader2, Percent, Euro, Plus, Trash2 } from 'lucide-react'
+import { Lock as LockIcon, Info as InfoIcon, Percent, Euro, Plus, Trash2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 import { Button } from '@/components/ui/button'
@@ -15,7 +15,6 @@ import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Calendar } from '@/components/ui/calendar'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Switch } from '@/components/ui/switch'
 import { Separator } from '@/components/ui/separator'
@@ -38,6 +37,15 @@ interface FacturaWithRelations extends Factura {
     cliente: Cliente
     lineas: LineaFactura[]
     serie_id: string | null
+}
+
+interface LineaForm {
+    concepto: string
+    descripcion: string
+    cantidad: number
+    precio_unitario: number
+    descuento_porcentaje: number
+    iva_porcentaje: number
 }
 
 interface EditarFacturaFormProps {
@@ -92,7 +100,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
             todo: true,
             mensaje: 'Esta factura está en borrador. Puedes modificar todos los campos libremente.',
         },
-        emitida: (factura as any).es_externa
+        emitida: factura.es_externa
             ? {
                 todo: true,
                 mensaje: 'Factura externa emitida. Puedes editar todos los campos para completar los datos cuando la empresa externa envíe el PDF.',
@@ -113,13 +121,13 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
         mensaje: 'Esta factura no puede ser editada.',
     }
 
-    const [clienteId, setClienteId] = useState<string>((factura as any).cliente_id || factura.cliente?.id || '')
+    const [clienteId, setClienteId] = useState<string>(factura.cliente_id || factura.cliente?.id || '')
     const [fechaEmision, setFechaEmision] = useState<string>(
         factura.fecha_emision ? format(new Date(factura.fecha_emision), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd')
     )
     const [notas, setNotas] = useState<string>(factura.notas || '')
     // Normalizar líneas para edición (concepto, cantidad, precio_unitario, iva_porcentaje, descuento_porcentaje, descripcion)
-    const lineasIniciales = (factura.lineas || []).map((l: any) => ({
+    const lineasIniciales = (factura.lineas || []).map((l: LineaFactura) => ({
         concepto: l.concepto || '',
         descripcion: l.descripcion || '',
         cantidad: Number(l.cantidad) || 1,
@@ -127,13 +135,18 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
         descuento_porcentaje: Number(l.descuento_porcentaje) || 0,
         iva_porcentaje: Number(l.iva_porcentaje) || 21,
     }))
-    const [lineas, setLineas] = useState(lineasIniciales.length > 0 ? lineasIniciales : [
+    const [lineas, setLineas] = useState<LineaForm[]>(lineasIniciales.length > 0 ? lineasIniciales : [
         { concepto: '', descripcion: '', cantidad: 1, precio_unitario: 0, descuento_porcentaje: 0, iva_porcentaje: 21 }
     ])
 
-    const updateLinea = (index: number, field: string, value: string | number) => {
+    const updateLinea = (index: number, field: keyof LineaForm, value: string | number) => {
         const newLineas = [...lineas]
-            ; (newLineas[index] as any)[field] = value
+        const linea = newLineas[index]
+        if (field === 'concepto' || field === 'descripcion') {
+            linea[field] = value as string
+        } else {
+            linea[field] = value as number
+        }
         setLineas(newLineas)
     }
     const addLinea = () => {
@@ -152,15 +165,9 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
     const [divisa, setDivisa] = useState<string>(factura.divisa || 'EUR')
     const [tipoCambio, setTipoCambio] = useState<number>(factura.tipo_cambio || 1.0)
 
-    const getSimboloDivisa = (cod: string) => {
-        switch (cod) {
-            case 'USD': return '$'
-            case 'GBP': return '£'
-            default: return '€'
-        }
-    }
 
-    // Calcular Totales (Memoized)
+
+    // Totales (Memoized)
     const totales = useMemo(() => {
         // Calcular subtotal de líneas (por si acaso cambió cantidad/precio en futuro)
         // Por ahora usamos las líneas tal cual.
@@ -227,7 +234,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
     }, [lineas, descuentoTipo, descuentoValor, recargoEquivalencia, recargoPorcentaje, retencionPorcentaje])
 
     // Normalizar líneas originales para comparación
-    const lineasOriginales = (factura.lineas || []).map((l: any) => ({
+    const lineasOriginales = (factura.lineas || []).map((l: LineaFactura) => ({
         concepto: l.concepto || '',
         descripcion: l.descripcion || '',
         cantidad: Number(l.cantidad) || 1,
@@ -240,7 +247,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
     // Detectar cambios
     const hayCambios =
         !!archivo ||
-        clienteId !== ((factura as any).cliente_id || factura.cliente?.id || '') ||
+        clienteId !== (factura.cliente_id || factura.cliente?.id || '') ||
         fechaEmision !== (factura.fecha_emision ? format(new Date(factura.fecha_emision), 'yyyy-MM-dd') : '') ||
         notas !== (factura.notas || '') ||
         serieSeleccionada !== (factura.serie_id || '') ||
@@ -250,8 +257,8 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
         recargoEquivalencia !== (factura.recargo_equivalencia || false) ||
         recargoPorcentaje !== (factura.recargo_porcentaje || 5.2) ||
         retencionPorcentaje !== (factura.retencion_porcentaje || 0) ||
-        divisa !== ((factura as any).divisa || 'EUR') ||
-        tipoCambio !== ((factura as any).tipo_cambio || 1.0) ||
+        divisa !== (factura.divisa || 'EUR') ||
+        tipoCambio !== (factura.tipo_cambio || 1.0) ||
         (permisos.todo && lineasChanged)
 
 
@@ -358,9 +365,10 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
             } else {
                 toast.error(result.error || 'Error al actualizar factura')
             }
-        } catch (error) {
+        } catch (error: unknown) {
             console.error(error)
-            toast.error('Error al guardar cambios')
+            const message = error instanceof Error ? error.message : 'Error al guardar cambios'
+            toast.error(message)
             setIsSubmitting(false)
         }
     }
@@ -415,7 +423,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
 
             {/* Alert de restricciones */}
             <Alert className="bg-blue-50 border-blue-200 dark:bg-blue-900/20 dark:border-blue-800">
-                <Info className="h-4 w-4 text-blue-600 shrink-0" />
+                <InfoIcon className="h-4 w-4 text-blue-600 shrink-0" />
                 <AlertDescription className="text-blue-900 dark:text-blue-100 flex items-start gap-2">
                     <span>{permisos.mensaje}</span>
                     {(factura.estado === 'emitida' || factura.estado === 'pagada') && (
@@ -426,7 +434,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                     className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-200 dark:bg-blue-800 text-blue-700 dark:text-blue-200 hover:bg-blue-300 dark:hover:bg-blue-700 transition-colors"
                                     aria-label="¿Qué es una nota de crédito?"
                                 >
-                                    <Info className="h-3 w-3" />
+                                    <InfoIcon className="h-3 w-3" />
                                 </button>
                             </PopoverTrigger>
                             <PopoverContent className="w-80 p-4" align="start">
@@ -482,7 +490,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                     <div className="space-y-2">
                                         <Label>Serie</Label>
                                         <div className="flex items-center gap-2 p-2 bg-slate-50 border rounded-md">
-                                            <Lock className="h-3 w-3 text-slate-400" />
+                                            <LockIcon className="h-3 w-3 text-slate-400" />
                                             <span className="text-sm font-medium">
                                                 {series.find(s => s.id === serieSeleccionada)?.codigo || factura.serie}
                                             </span>
@@ -493,7 +501,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                 <div className="space-y-2">
                                     <Label className="flex items-center gap-2">
                                         Número
-                                        <Lock className="h-3 w-3 text-slate-400" />
+                                        <LockIcon className="h-3 w-3 text-slate-400" />
                                     </Label>
                                     <Input value={factura.numero} disabled className="bg-slate-50" />
                                 </div>
@@ -501,7 +509,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                 <div className="space-y-2">
                                     <Label className={cn("flex items-center gap-2", !permisos.todo && "text-slate-500")}>
                                         Fecha Emisión
-                                        {!permisos.todo && <Lock className="h-3 w-3 text-slate-400" />}
+                                        {!permisos.todo && <LockIcon className="h-3 w-3 text-slate-400" />}
                                     </Label>
                                     {permisos.todo ? (
                                         <Input
@@ -560,7 +568,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                             <CardTitle className="flex items-center gap-2">
                                 <span className="text-slate-400">💱</span>
                                 Divisa y Cambio
-                                {!permisos.todo && <Lock className="h-3 w-3 text-slate-400" />}
+                                {!permisos.todo && <LockIcon className="h-3 w-3 text-slate-400" />}
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
@@ -606,7 +614,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                             <CardTitle className="flex items-center gap-2">
                                 <span className="text-slate-400">👤</span>
                                 Cliente
-                                {!permisos.todo && <Lock className="h-3 w-3 text-slate-400" />}
+                                {!permisos.todo && <LockIcon className="h-3 w-3 text-slate-400" />}
                             </CardTitle>
                         </CardHeader>
                         <CardContent>

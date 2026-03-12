@@ -13,8 +13,8 @@ vi.mock('next/cache', () => ({ revalidatePath: vi.fn() }))
 
 // Supabase query builder encadenable: todos los métodos devuelven `this`,
 // sólo `single()` resuelve la promesa con el valor configurado.
-function makeBuilder(resolveWith: { data?: any; error?: any }) {
-    const b: any = {
+function makeBuilder(resolveWith: { data?: unknown; error?: unknown }) {
+    const b: Record<string, ReturnType<typeof vi.fn>> = {
         select: vi.fn().mockReturnThis(),
         eq: vi.fn().mockReturnThis(),
         update: vi.fn().mockReturnThis(),
@@ -259,10 +259,10 @@ describe('actualizarEmpresaAction', () => {
     // ── lugar_expedicion ───────────────────────────────────────────────────
 
     test('guarda lugar_expedicion correctamente', async () => {
-        let capturedData: any = null
+        let capturedData: Record<string, unknown> | null = null
         const perfilBuilder = makeBuilder(buildPerfil(ID_EMPRESA_PERFIL))
         const empresaUpdateBuilder = {
-            update: vi.fn().mockImplementation((data: any) => {
+            update: vi.fn().mockImplementation((data: Record<string, unknown>) => {
                 capturedData = data
                 return empresaUpdateBuilder
             }),
@@ -280,6 +280,6 @@ describe('actualizarEmpresaAction', () => {
         await actualizarEmpresaAction(
             makeFormData({ empresa_id: ID_EMPRESA_FORM, lugar_expedicion: 'Barcelona' })
         )
-        expect(capturedData?.lugar_expedicion).toBe('Barcelona')
+        expect((capturedData as Record<string, unknown> | null)?.['lugar_expedicion']).toBe('Barcelona')
     })
 })

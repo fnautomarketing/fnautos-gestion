@@ -38,7 +38,7 @@ export default async function EditarSeriePage({ params }: EditarSeriePageProps) 
                 <div className="h-14 w-1 flex-shrink-0 bg-primary rounded-full" />
                 <h1 className="text-5xl font-serif font-bold">Editar Serie</h1>
                 <div className="bg-white/5 px-3 py-1 rounded-lg border border-white/10 font-mono text-slate-400">
-                    {(serie as any).codigo}
+                    {serie.codigo as string}
                 </div>
             </div>
 

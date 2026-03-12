@@ -47,8 +47,7 @@ export async function GET(request: NextRequest) {
         let query = adminClient.from('clientes').select('*')
 
         if (empresaId) {
-            const { data: ces } = await adminClient
-                .from('clientes_empresas')
+            const { data: ces } = await (adminClient.from as any)('clientes_empresas')
                 .select('cliente_id')
                 .eq('empresa_id', empresaId)
             const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)

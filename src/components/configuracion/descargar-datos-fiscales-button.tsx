@@ -35,8 +35,9 @@ export function DescargarDatosFiscalesButton({ empresaId, nombreEmpresa }: Props
             URL.revokeObjectURL(link.href)
 
             toast.success('PDF de datos fiscales descargado')
-        } catch (err: any) {
-            toast.error(err.message || 'Error al generar el PDF')
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : 'Error al generar el PDF'
+            toast.error(message)
         } finally {
             setDescargando(false)
         }

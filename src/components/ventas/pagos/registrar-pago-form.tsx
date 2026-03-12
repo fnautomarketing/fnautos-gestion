@@ -44,7 +44,7 @@ interface RegistrarPagoFormProps {
     onImporteChange: (val: number) => void
 }
 
-export function RegistrarPagoForm({ facturaId, empresaId, pendienteActual, onImporteChange }: RegistrarPagoFormProps) {
+export function RegistrarPagoForm({ facturaId, pendienteActual, onImporteChange }: Omit<RegistrarPagoFormProps, 'empresaId'>) {
     const router = useRouter()
     const [sending, setSending] = useState(false)
 

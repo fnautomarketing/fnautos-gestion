@@ -116,11 +116,12 @@ export async function getKPIsAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_kpis_ventas', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_kpis_ventas', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
-            delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_kpis_ventas', params)
+            const paramsRetry = { ...params }
+            delete paramsRetry.p_cliente_id
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_kpis_ventas', paramsRetry)
             data = retry.data
             error = retry.error
         }
@@ -129,7 +130,7 @@ export async function getKPIsAction(
         const kpis: KPIsData = typeof data === 'string' ? JSON.parse(data) : data
 
         return { success: true, data: kpis }
-    } catch (error) {
+    } catch (error: unknown) {
         const msg = getErrorMessage(error)
         console.error('[getKPIsAction]', msg, error)
         return { success: false, error: msg }
@@ -160,11 +161,11 @@ export async function getEvolucionFacturacionAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_evolucion_facturacion', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_evolucion_facturacion', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_evolucion_facturacion', params)
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_evolucion_facturacion', params)
             data = retry.data
             error = retry.error
         }
@@ -172,7 +173,7 @@ export async function getEvolucionFacturacionAction(
 
         const result: EvolucionData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getEvolucionFacturacionAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -196,11 +197,11 @@ export async function getEstadoFacturasAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_estado_facturas', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_estado_facturas', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_estado_facturas', params)
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_estado_facturas', params)
             data = retry.data
             error = retry.error
         }
@@ -208,7 +209,7 @@ export async function getEstadoFacturasAction(
 
         const result: EstadoData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getEstadoFacturasAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -234,10 +235,10 @@ export async function getTopClientesAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_top_clientes', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_top_clientes', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_top_clientes', params)
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_top_clientes', params)
             data = retry.data
             error = retry.error
         }
@@ -245,7 +246,7 @@ export async function getTopClientesAction(
 
         const result: TopClienteData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getTopClientesAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -269,10 +270,10 @@ export async function getFacturacionPorCategoriaAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_facturacion_por_categoria', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_facturacion_por_categoria', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_facturacion_por_categoria', params)
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_facturacion_por_categoria', params)
             data = retry.data
             error = retry.error
         }
@@ -280,7 +281,7 @@ export async function getFacturacionPorCategoriaAction(
 
         const result: CategoriaData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getFacturacionPorCategoriaAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -304,10 +305,10 @@ export async function getDesgloseIVAAction(
         if (clienteId != null) params.p_cliente_id = clienteId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as any).rpc('get_desglose_iva', params)
+        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_desglose_iva', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as any).rpc('get_desglose_iva', params)
+            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_desglose_iva', params)
             data = retry.data
             error = retry.error
         }
@@ -315,7 +316,7 @@ export async function getDesgloseIVAAction(
 
         const result: DesgloseIVAData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getDesgloseIVAAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -332,7 +333,7 @@ export async function getRankingConceptosAction(
         const empresaId = empresaIdOverride !== undefined ? empresaIdOverride : ctxEmpresaId
 
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as any).rpc('get_ranking_conceptos', {
+        const { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_ranking_conceptos', {
             p_empresa_id: empresaId,
             p_fecha_desde: fechaDesde || null,
             p_fecha_hasta: fechaHasta || null,
@@ -343,7 +344,7 @@ export async function getRankingConceptosAction(
 
         const result: RankingConceptoData[] = typeof data === 'string' ? JSON.parse(data) : (data || [])
         return { success: true, data: result }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[getRankingConceptosAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }
@@ -358,7 +359,7 @@ export async function exportarInformeExcelAction(
     clienteNombre?: string | null
 ) {
     try {
-        const [kpis, evolucion, topClientes, desgloseIVA] = await Promise.all([
+        const [kpis, , topClientes, desgloseIVA] = await Promise.all([
             getKPIsAction(fechaDesde, fechaHasta, empresaId ?? undefined, clienteId ?? undefined),
             getEvolucionFacturacionAction(fechaDesde, fechaHasta, empresaId, clienteId),
             getTopClientesAction(fechaDesde, fechaHasta, 50, empresaId, clienteId),
@@ -464,7 +465,7 @@ export async function exportarInformeExcelAction(
         const base64 = Buffer.from(buffer).toString('base64')
 
         return { success: true, data: base64 }
-    } catch (error) {
+    } catch (error: unknown) {
         console.error('[exportarInformeExcelAction]', error)
         return { success: false, error: getErrorMessage(error) }
     }

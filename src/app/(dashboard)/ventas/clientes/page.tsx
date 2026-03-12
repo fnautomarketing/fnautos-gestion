@@ -38,8 +38,7 @@ export default async function ClientesPage({
     let query = supabase.from('clientes').select('*')
 
     if (empresaId) {
-        const { data: ces } = await supabase
-            .from('clientes_empresas')
+        const { data: ces } = await (supabase.from as any)('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', empresaId)
         const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)

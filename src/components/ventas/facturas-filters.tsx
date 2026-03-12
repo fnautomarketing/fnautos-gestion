@@ -2,7 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useTransition, useEffect, useCallback, useRef } from 'react'
-import { Search, X, Filter, Calendar, ArrowUpDown, SlidersHorizontal, User, ChevronDown, Check } from 'lucide-react'
+import { Search, X, Calendar, ArrowUpDown, SlidersHorizontal, User, ChevronDown, Check } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import {
@@ -169,14 +169,7 @@ const PERIODO_OPTIONS = [
     { value: 'rango', label: 'Rango personalizado' },
 ]
 
-const MESES = [
-    { value: '1', label: 'Enero' }, { value: '2', label: 'Febrero' }, { value: '3', label: 'Marzo' },
-    { value: '4', label: 'Abril' }, { value: '5', label: 'Mayo' }, { value: '6', label: 'Junio' },
-    { value: '7', label: 'Julio' }, { value: '8', label: 'Agosto' }, { value: '9', label: 'Septiembre' },
-    { value: '10', label: 'Octubre' }, { value: '11', label: 'Noviembre' }, { value: '12', label: 'Diciembre' },
-]
-
-const ANIOS = Array.from({ length: 6 }, (_, i) => currentYear - i).map(y => ({ value: String(y), label: String(y) }))
+// Constantes eliminadas por no usarse: MESES, ANIOS
 
 const ESTADOS: { value: string; label: string; color: string }[] = [
     { value: 'todas', label: 'Todos', color: '' },
@@ -255,19 +248,28 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
     const [pageSize, setPageSize] = useState(searchParams.get('pageSize') || String(initialPageSize))
     const [periodoOpen, setPeriodoOpen] = useState(false)
 
-    useEffect(() => { setBusqueda(searchParams.get('q') || '') }, [searchParams.get('q')])
-    useEffect(() => { setEstado(searchParams.get('estado') || 'todas') }, [searchParams.get('estado')])
+    // Sincronizar estado local con la URL de forma eficiente
     useEffect(() => {
+        const q = searchParams.get('q') || ''
+        const est = searchParams.get('estado') || 'todas'
+        const ord = searchParams.get('orden') || 'fecha_desc'
+        const cId = searchParams.get('clienteId') || ''
+        const cLab = searchParams.get('clienteLabel') || ''
+        const sId = searchParams.get('serie') || ''
+        const pSize = searchParams.get('pageSize') || String(initialPageSize)
         const { periodo: p, desde: d, hasta: h } = getPeriodoFromParams(searchParams)
-        setPeriodo(p)
-        setCustomDesde(d)
-        setCustomHasta(h)
-    }, [searchParams.toString()])
-    useEffect(() => { setOrden(searchParams.get('orden') || 'fecha_desc') }, [searchParams.get('orden')])
-    useEffect(() => { setClienteId(searchParams.get('clienteId') || '') }, [searchParams.get('clienteId')])
-    useEffect(() => { setClienteLabel(searchParams.get('clienteLabel') || '') }, [searchParams.get('clienteLabel')])
-    useEffect(() => { setSerieId(searchParams.get('serie') || '') }, [searchParams.get('serie')])
-    useEffect(() => { setPageSize(searchParams.get('pageSize') || String(initialPageSize)) }, [searchParams.get('pageSize'), initialPageSize])
+
+        if (busqueda !== q) setBusqueda(q)
+        if (estado !== est) setEstado(est)
+        if (orden !== ord) setOrden(ord)
+        if (clienteId !== cId) setClienteId(cId)
+        if (clienteLabel !== cLab) setClienteLabel(cLab)
+        if (serieId !== sId) setSerieId(sId)
+        if (pageSize !== pSize) setPageSize(pSize)
+        if (periodo !== p) setPeriodo(p)
+        if (customDesde !== d) setCustomDesde(d)
+        if (customHasta !== h) setCustomHasta(h)
+    }, [searchParams, initialPageSize]) // Eliminados estados locales de las dependencias para evitar bucles
 
     const applySearch = useCallback((q: string) => {
         const trimmed = q.trim()
@@ -305,8 +307,10 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
             params.set('desde', d)
             params.set('hasta', h)
         }
+        
+        const queryString = params.toString()
         startTransition(() => {
-            router.push(`/ventas/facturas?${params.toString()}`)
+            router.push(`/ventas/facturas?${queryString}`)
             router.refresh()
         })
         setPeriodoOpen(false)
@@ -395,9 +399,6 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
             periodo === 'este-mes' ? 'Este mes' :
                 periodo === 'este-anio' ? 'Este año' :
                     customDesde && customHasta ? `${customDesde} – ${customHasta}` : 'Rango personalizado'
-
-    const estadoActual = ESTADOS.find(e => e.value === estado)
-    const ordenActual = ORDEN_OPTIONS.find(o => o.value === orden)
 
     return (
         <Card data-testid="facturas-filters" className="border-slate-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/80 shadow-md overflow-hidden">

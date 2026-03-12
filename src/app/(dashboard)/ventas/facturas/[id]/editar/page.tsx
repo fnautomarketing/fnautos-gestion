@@ -87,8 +87,7 @@ export default async function EditarFacturaPage({
     // Cargar clientes para selector (solo si es borrador), filtrados por empresa de la factura
     let clientes: any[] = []
     if (factura.estado === 'borrador' && factura.empresa_id) {
-        const { data: ces } = await supabase
-            .from('clientes_empresas')
+        const { data: ces } = await (supabase.from as any)('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', factura.empresa_id)
         const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)
