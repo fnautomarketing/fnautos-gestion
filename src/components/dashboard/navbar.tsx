@@ -105,8 +105,14 @@ export function Navbar({ user }: NavbarProps) {
                 </Button>
 
                 {/* Company Selector (RFC-025) - Only show if multi-company is enabled */}
-                {clientConfig.multiEmpresa && (
+                {clientConfig.multiEmpresa ? (
                     <EmpresaSelector variant="header" />
+                ) : (
+                    <div className="hidden sm:flex items-center h-11 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-white/5 shadow-sm">
+                        <span className="font-extrabold text-[13px] tracking-wide text-slate-800 dark:text-slate-200">
+                            JIMMY ANDRES BENITEZ CORTES
+                        </span>
+                    </div>
                 )}
 
                 <div className="h-8 w-px bg-slate-200/50 dark:bg-white/10 mx-1 hidden sm:block" />

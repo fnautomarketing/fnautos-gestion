@@ -45,7 +45,7 @@ export default async function RegistrarPagoPage() {
             </div>
 
             <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6">
-                <PagoForm facturas={facturas || []} />
+                <PagoForm facturas={(facturas || []) as any} />
             </div>
         </div>
     )

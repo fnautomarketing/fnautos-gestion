@@ -1,0 +1,100 @@
+
+> fnautos-gestion@0.1.0 lint
+> eslint
+
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(auth)/login/page.tsx
+  47:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/dashboard/page.tsx
+    5:17   warning  'Wallet' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+    5:34   warning  'CalendarClock' is defined but never used                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   37:9    error    'adminClient' is never reassigned. Use 'const' instead                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               prefer-const
+   47:50   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+   47:93   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+   96:30   error    Error: Cannot call impure function during render
+
+`Date.now` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/dashboard/page.tsx:96:30
+  94 |     // ── Alertas: vencimientos próximos (7 días) ────────────────────────────────
+  95 |     const hoy = new Date().toISOString().slice(0, 10)
+> 96 |     const en7dias = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+     |                              ^^^^^^^^^^ Cannot call impure function
+  97 |     let vencimientosQuery = adminClient
+  98 |         .from('facturas')
+  99 |         .select('id, numero, serie, total, fecha_vencimiento, cliente:clientes(nombre_fiscal, nombre_comercial)')  react-hooks/purity
+  111:55   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  254:63   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  261:64   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  261:104  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  324:56   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  332:60   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  332:100  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  336:64   error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+  336:104  error    Unexpected any. Specify a different type                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/perfil/page.tsx
+  40:57  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/clientes/[id]/editar/page.tsx
+  17:46  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:49  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  52:43  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/clientes/page.tsx
+  73:9  error  'totalFacturadoPorCliente' is never reassigned. Use 'const' instead  prefer-const
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/configuracion/empresa/page.tsx
+  12:41  warning  'empresas' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  12:51  warning  'rol' is assigned a value but never used       @typescript-eslint/no-unused-vars
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/configuracion/plantillas/[id]/preview/page.tsx
+  120:132  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  134:114  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  182:170  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/configuracion/series/[id]/editar/page.tsx
+  41:32  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/configuracion/series/page.tsx
+  55:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  62:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  67:61  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  68:33  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas-vencidas/page.tsx
+  26:44  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/[id]/editar/page.tsx
+   88:19  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/[id]/page.tsx
+  135:21  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  136:18  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:34  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/[id]/pago/page.tsx
+  56:52  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/[id]/pdf/page.tsx
+  161:25  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  162:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  166:37  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  167:48  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/nueva/page.tsx
+  65:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/facturas/page.tsx
+  142:78  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  155:74  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  196:38  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  203:53  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  219:51  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  230:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  234:60  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/home/ubuntu/Escritorio/fnautos-gestion/src/app/(dashboard)/ventas/pagos/page.tsx

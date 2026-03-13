@@ -40,12 +40,12 @@ interface InformesTabClientesProps {
 }
 
 const COLORS = [
-    'hsl(var(--primary))',  // Rojo FNAUTOS
-    '#020202',              // Negro Premium
-    '#4D4D4D',              // Gris oscuro
-    '#CC0108',              // Rojo sólido
-    '#1A1A1A',              // Antracita
-    '#7f0005'               // Rojo oscuro
+    'hsl(var(--primary))',    
+    'hsl(var(--secondary))',  
+    '#64748b',                
+    '#94a3b8',                
+    'hsla(var(--primary), 0.65)',
+    'hsla(var(--secondary), 0.65)'
 ]
 
 export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, clienteId }: InformesTabClientesProps) {

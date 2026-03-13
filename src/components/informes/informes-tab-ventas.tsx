@@ -43,12 +43,12 @@ interface InformesTabVentasProps {
 }
 
 const COLORS = [
-    'hsl(var(--primary))',  // Rojo FNAUTOS
-    '#020202',              // Negro Premium
-    '#4D4D4D',              // Gris oscuro
-    '#CC0108',              // Rojo sólido
-    '#1A1A1A',              // Antracita
-    '#7f0005'               // Rojo oscuro
+    'hsl(var(--primary))',    // Color principal dinámico
+    'hsl(var(--secondary))',  // Color secundario
+    '#475569',                // Neutro Slate
+    '#94a3b8',                // Neutro suave
+    'hsla(var(--primary), 0.7)', // Variante traslúcida
+    'hsla(var(--secondary), 0.7)'
 ]
 
 export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId }: InformesTabVentasProps) {

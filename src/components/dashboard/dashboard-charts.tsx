@@ -43,12 +43,12 @@ function getStoredChartType(): ChartTypeValue {
 }
 
 const COLORS = [
-    'hsl(var(--primary))',  // Rojo FNAUTOS
-    '#1A1A1A',              // Negro suave
-    '#4D4D4D',              // Gris oscuro
-    '#CC0108',              // Rojo sólido
-    '#7f0005',              // Rojo oscuro
-    '#333333'               // Antracita
+    'hsl(var(--primary))',    // Color principal dinámico
+    'hsl(var(--secondary))',  // Color secundario dinámico
+    '#475569',                // Slate 600 para neutralidad
+    '#94a3b8',                // Slate 400
+    'hsla(var(--primary), 0.7)', // Variante traslúcida del principal
+    'hsla(var(--secondary), 0.7)' // Variante traslúcida del secundario
 ]
 
 interface DashboardChartsProps {

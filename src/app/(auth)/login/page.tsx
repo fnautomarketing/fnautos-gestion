@@ -10,7 +10,7 @@ export default function LoginPage() {
             <section className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-slate-950 group/hero">
                 {/* Background: gradient (hero-login.png no existe; evita 404 en prod) */}
                 <div
-                    className="absolute inset-0 bg-gradient-to-br from-black via-primary/20 to-[#050505] opacity-90 transition-transform duration-[2000ms] ease-out group-hover/hero:scale-105"
+                    className="absolute inset-0 bg-gradient-to-br from-black via-primary/30 to-[#020202] opacity-95 transition-transform duration-[2000ms] ease-out group-hover/hero:scale-105"
                     aria-hidden
                 />
 
@@ -25,19 +25,20 @@ export default function LoginPage() {
                 <div className="relative z-10 flex flex-col items-center justify-center p-16 w-full h-full text-center">
                     <div className="transform transition-all duration-700 group-hover/hero:translate-y-2 flex flex-col items-center">
                         <div className="relative mb-8">
-                            <div className="absolute -inset-8 bg-gradient-to-tr from-primary/20 via-primary/10 to-transparent rounded-full blur-2xl animate-pulse-slow" />
-                            <div className="w-48 h-48 relative">
-                                <Image src={clientConfig.logoPath} alt={`${clientConfig.nombre} Logo`} fill className="object-contain drop-shadow-[0_0_30px_rgba(var(--primary),0.8)]" />
+                            <div className="absolute -inset-8 bg-gradient-to-tr from-primary/30 via-primary/10 to-transparent rounded-full blur-2xl animate-pulse-slow" />
+                            <div className="w-56 h-56 relative group-hover/hero:scale-105 transition-transform duration-1000">
+                                <Image src={clientConfig.logoPath} alt={`${clientConfig.nombre} Logo`} fill className="object-contain drop-shadow-[0_0_40px_rgba(var(--primary),0.8)]" />
                             </div>
                         </div>
                         <span className="text-4xl font-serif font-black text-white tracking-[0.2em] uppercase drop-shadow-lg mb-8">{clientConfig.nombre}</span>
 
-                        <div className="space-y-6 max-w-xl">
-                            <h2 className="text-6xl font-serif font-bold text-white leading-tight drop-shadow-xl">
-                                {clientConfig.tagline.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/50 animate-gradient-x italic">{clientConfig.tagline.split(' ')[1]}</span> {clientConfig.tagline.split(' ').slice(2).join(' ')}
+                        <div className="space-y-6 max-w-xl flex flex-col items-center">
+                            <h2 className="text-6xl font-serif font-extrabold text-white leading-tight drop-shadow-2xl">
+                                {clientConfig.tagline.split(' ')[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-primary/80 to-primary/40 animate-gradient-x italic">{clientConfig.tagline.split(' ')[1]}</span> {clientConfig.tagline.split(' ').slice(2).join(' ')}
                             </h2>
-                            <p className="text-xl text-slate-300 font-medium leading-relaxed max-w-md backdrop-blur-sm bg-black/10 p-4 rounded-xl border border-white/5 shadow-inner">
+                            <p className="text-xl text-slate-200 font-medium leading-relaxed max-w-md backdrop-blur-md bg-white/5 p-8 rounded-3xl border border-white/10 shadow-2xl ring-1 ring-white/10 text-center mx-auto">
                                 {clientConfig.loginDescription}
+                                <span className="block mt-6 h-1.5 w-32 bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-full mx-auto" />
                             </p>
                         </div>
                     </div>
@@ -86,8 +87,8 @@ export default function LoginPage() {
                             </div>
                         </div>
 
-                        <div className="space-y-2">
-                            <h1 className="text-4xl lg:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-slate-200 dark:to-slate-400 tracking-tight">
+                        <div className="space-y-1">
+                            <h1 className="text-4xl lg:text-5xl font-serif font-black text-transparent bg-clip-text bg-gradient-to-br from-slate-900 via-primary to-slate-900 dark:from-white dark:via-primary dark:to-slate-200 tracking-tight">
                                 {clientConfig.nombreCorto}
                             </h1>
                             <div className="flex items-center justify-center gap-3 opacity-80">

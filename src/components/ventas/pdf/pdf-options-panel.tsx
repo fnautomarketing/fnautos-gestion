@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Download, Mail, Printer, Settings2 } from 'lucide-react'
 import { toast } from 'sonner'
 
-const EMPRESA_VILLEGAS_ID = '4b77324c-a10e-4714-b0a4-df4b9c5f6ca5'
+import { clientConfig } from '@/config/clients'
 
 export type PdfOptions = {
     plantilla: 'estandar' | 'premium'
@@ -20,12 +20,13 @@ export type PdfOptions = {
     incluirDatosBancarios: boolean
 }
 
-/** Plantillas disponibles según empresa: Villegas=solo Premium, otras=solo Estándar, Vision Global=ambas */
+/** Plantillas disponibles basadas en la configuración del cliente actual */
 export function getPlantillasDisponibles(empresaActivaId: string | null): Array<{ value: 'estandar' | 'premium'; label: string }> {
     const estandar = { value: 'estandar' as const, label: 'Estándar (sin logo por defecto)' }
     const premium = { value: 'premium' as const, label: 'Premium (logo y colores marca)' }
-    if (empresaActivaId === EMPRESA_VILLEGAS_ID) return [premium]
-    if (empresaActivaId) return [estandar]
+    
+    // Si el cliente tiene logo, ofrecemos ambas o solo premium según prefiera.
+    // Por simplicidad para monocompañía y genérico, ofrecemos ambas.
     return [estandar, premium]
 }
 

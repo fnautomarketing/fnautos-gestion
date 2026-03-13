@@ -8,11 +8,14 @@ export interface ClientConfig {
   copyright: string
   logoPath: string
   logoPngPath: string
+  logoDarkPath?: string // Variante para fondos oscuros (opcional)
   heroImagePath: string
   faviconPath: string
   colors: {
     primary: string
     secondary: string
+    accent: string
+    ring: string
     brandGold: string
     brandGoldLight: string
     brandDark: string

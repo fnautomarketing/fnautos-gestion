@@ -187,10 +187,10 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
     // Ensure validated variant
     const variant = options.plantilla || 'estandar'
 
-    // Brand Colors - FNAUTOS
-    const BRAND_PRIMARY = clientConfig.colors.brandGold || '#CC0108'
-    const BRAND_PRIMARY_LIGHT = clientConfig.colors.brandGoldLight || '#FF4D4D'
-    const BRAND_DARK = clientConfig.colors.brandDark || '#020202'
+    // Brand Colors dinámicos desde la configuración del cliente
+    const BRAND_PRIMARY = clientConfig.colors.brandGold
+    const BRAND_PRIMARY_LIGHT = clientConfig.colors.brandGoldLight
+    const BRAND_DARK = clientConfig.colors.brandDark
 
     const colorPrimary = options.colorAcento || (variant === 'premium' ? BRAND_PRIMARY : BRAND_DARK)
     const isPremium = variant === 'premium'
@@ -231,14 +231,14 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
         table: {
             marginTop: isPremium ? 0 : 40,
             borderWidth: safeBorder(isPremium ? 2 : 1),
-            borderColor: isPremium ? BRAND_PRIMARY : '#e2e8f0',
+            borderColor: isPremium ? BRAND_PRIMARY : BRAND_PRIMARY_LIGHT,
             borderRadius: safeRadius(6),
         },
         tableHeader: {
             flexDirection: 'row' as const,
-            backgroundColor: isPremium ? '#ffffff' : '#f8fafc',
+            backgroundColor: isPremium ? '#ffffff' : clientConfig.colors.accent,
             borderBottomWidth: isPremium ? 2 : 1,
-            borderBottomColor: isPremium ? BRAND_PRIMARY : '#e2e8f0',
+            borderBottomColor: BRAND_PRIMARY,
             padding: 10,
         },
         th: {

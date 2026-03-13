@@ -108,7 +108,7 @@ export function NotificacionesDropdown() {
             case 'error':
                 return 'text-red-600 dark:text-red-400'
             default:
-                return 'text-blue-600 dark:text-blue-400'
+                return 'text-primary'
         }
     }
 
@@ -121,7 +121,7 @@ export function NotificacionesDropdown() {
             case 'error':
                 return 'bg-red-50 dark:bg-red-950/20'
             default:
-                return 'bg-blue-50 dark:bg-blue-950/20'
+                return 'bg-primary/10 dark:bg-primary/20'
         }
     }
 
@@ -196,14 +196,14 @@ export function NotificacionesDropdown() {
                                     className={cn(
                                         'px-4 py-3 transition-all duration-200 group relative',
                                         notif.enlace && 'cursor-pointer hover:bg-slate-50 dark:hover:bg-white/5',
-                                        !notif.leida && 'bg-blue-50/50 dark:bg-blue-950/10'
+                                        !notif.leida && 'bg-primary/5 dark:bg-primary/10'
                                     )}
                                 >
                                     <div className="flex items-start gap-3">
                                         <div
                                             className={cn(
                                                 'flex-shrink-0 w-2 h-2 rounded-full mt-2',
-                                                !notif.leida ? 'bg-blue-500' : 'bg-transparent'
+                                                !notif.leida ? 'bg-primary' : 'bg-transparent'
                                             )}
                                         />
                                         <div className="flex-1 min-w-0">

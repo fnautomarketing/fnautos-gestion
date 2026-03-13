@@ -93,6 +93,8 @@ export async function crearClienteAction(formData: FormData) {
             console.error('[crearClienteAction] Error creando notificación:', notifError)
         }
 
+        revalidatePath('/ventas/clientes')
+        return { success: true, data }
     } catch (error: unknown) {
         console.error('[crearClienteAction]', error)
 

@@ -355,32 +355,34 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                     </CardHeader>
                     <CardContent className="pt-6 space-y-6">
                         {/* RFC-025: Empresa Emisora y Plantilla */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-linear-to-r from-primary/5 to-transparent rounded-lg border border-primary/10">
-                            <div className="space-y-2 min-w-0">
-                                <Label className="flex items-center gap-2">
-                                    <Building2 className="h-4 w-4 text-primary" />
-                                    Empresa Emisora
-                                </Label>
-                                <Select
-                                    value={selectedEmpresaId}
-                                    onValueChange={(id) => {
-                                        setSelectedEmpresaId(id)
-                                        setSerieId('')
-                                    }}
-                                    disabled={empresaId !== EMPRESA_VISION_GLOBAL_ID}
-                                >
-                                    <SelectTrigger data-testid="factura-empresa-select" className="w-full min-w-0">
-                                        <SelectValue placeholder="Seleccionar empresa" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        {empresas.map((emp) => (
-                                            <SelectItem key={emp.id} value={emp.id}>
-                                                {emp.nombre}
-                                            </SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                        <div className={empresaId === EMPRESA_VISION_GLOBAL_ID ? "grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-linear-to-r from-primary/5 to-transparent rounded-lg border border-primary/10" : "p-4 bg-linear-to-r from-primary/5 to-transparent rounded-lg border border-primary/10"}>
+                            {empresaId === EMPRESA_VISION_GLOBAL_ID && (
+                                <div className="space-y-2 min-w-0">
+                                    <Label className="flex items-center gap-2">
+                                        <Building2 className="h-4 w-4 text-primary" />
+                                        Empresa Emisora
+                                    </Label>
+                                    <Select
+                                        value={selectedEmpresaId}
+                                        onValueChange={(id) => {
+                                            setSelectedEmpresaId(id)
+                                            setSerieId('')
+                                        }}
+                                        disabled={empresaId !== EMPRESA_VISION_GLOBAL_ID}
+                                    >
+                                        <SelectTrigger data-testid="factura-empresa-select" className="w-full min-w-0">
+                                            <SelectValue placeholder="Seleccionar empresa" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {empresas.map((emp) => (
+                                                <SelectItem key={emp.id} value={emp.id}>
+                                                    {emp.nombre}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            )}
                             <div className="space-y-2 min-w-0">
                                 <Label className="flex items-center gap-2">
                                     <FileText className="h-4 w-4 text-primary" />

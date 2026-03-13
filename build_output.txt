@@ -1,0 +1,93 @@
+
+> fnautos-gestion@0.1.0 build
+> next build
+
+▲ Next.js 16.1.6 (Turbopack)
+- Environments: .env.local
+- Experiments (use with caution):
+  · serverActions
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 49s
+  Skipping validation of types
+  Collecting page data using 4 workers ...
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+[Config] App inicializada con cliente activo: FNAUTOS
+  Generating static pages using 4 workers (0/40) ...
+[Config] App inicializada con cliente activo: FNAUTOS
+  Generating static pages using 4 workers (10/40) 
+  Generating static pages using 4 workers (20/40) 
+  Generating static pages using 4 workers (30/40) 
+✓ Generating static pages using 4 workers (40/40) in 1257.4ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+├ ƒ /api/clientes/search
+├ ƒ /api/dev/save-pdf-factura
+├ ƒ /api/dev/seed-factura-externa
+├ ƒ /api/dev/seed-facturas-y-enviar
+├ ƒ /api/dev/send-3-facturas-email
+├ ƒ /api/empresas/datos-fiscales/pdf
+├ ƒ /api/facturas/[id]/pdf
+├ ƒ /api/qa
+├ ƒ /api/ventas/clientes/export
+├ ƒ /api/ventas/facturas/export
+├ ○ /apple-icon
+├ ƒ /asistente
+├ ƒ /configuracion/empresas
+├ ƒ /dashboard
+├ ƒ /flota
+├ ƒ /gastos
+├ ○ /icon
+├ ƒ /informes
+├ ○ /login
+├ ○ /opengraph-image
+├ ƒ /operaciones
+├ ƒ /perfil
+├ ○ /robots.txt
+├ ƒ /rrhh
+├ ƒ /tesoreria
+├ ƒ /ventas
+├ ƒ /ventas/clientes
+├ ƒ /ventas/clientes/[id]
+├ ƒ /ventas/clientes/[id]/editar
+├ ƒ /ventas/clientes/nuevo
+├ ƒ /ventas/configuracion/conceptos
+├ ƒ /ventas/configuracion/conceptos/[id]/editar
+├ ƒ /ventas/configuracion/conceptos/importar
+├ ƒ /ventas/configuracion/conceptos/nuevo
+├ ƒ /ventas/configuracion/empresa
+├ ƒ /ventas/configuracion/plantillas
+├ ƒ /ventas/configuracion/plantillas/[id]/editar
+├ ƒ /ventas/configuracion/plantillas/[id]/preview
+├ ƒ /ventas/configuracion/plantillas/nueva
+├ ƒ /ventas/configuracion/series
+├ ƒ /ventas/configuracion/series/[id]/editar
+├ ƒ /ventas/configuracion/series/nueva
+├ ƒ /ventas/configuracion/usuarios
+├ ƒ /ventas/facturas
+├ ƒ /ventas/facturas-vencidas
+├ ƒ /ventas/facturas/[id]
+├ ƒ /ventas/facturas/[id]/editar
+├ ƒ /ventas/facturas/[id]/email
+├ ƒ /ventas/facturas/[id]/pago
+├ ƒ /ventas/facturas/[id]/pdf
+├ ƒ /ventas/facturas/nueva
+├ ƒ /ventas/informes
+├ ƒ /ventas/pagos
+└ ƒ /ventas/pagos/registrar
+
+
+ƒ Proxy (Middleware)
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+

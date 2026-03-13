@@ -59,8 +59,8 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
                                 {formatCurrency(stats.totalFacturado)}
                             </p>
                         </div>
-                        <div className="rounded-full bg-blue-100 p-2 dark:bg-blue-900/40">
-                            <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                        <div className="rounded-full bg-primary/10 p-2 dark:bg-primary/20">
+                            <TrendingUp className="h-5 w-5 text-primary" />
                         </div>
                     </div>
                 </CardContent>
@@ -82,8 +82,8 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
                                 {formatCurrency(stats.pendienteCobro)}
                             </p>
                         </div>
-                        <div className="rounded-full bg-orange-100 p-2 dark:bg-orange-900/40">
-                            <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                        <div className="rounded-full bg-amber-500/10 p-2 dark:bg-amber-500/20">
+                            <Clock className="h-5 w-5 text-amber-600 dark:text-amber-500" />
                         </div>
                     </div>
                 </CardContent>
@@ -105,8 +105,8 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
                                 {formatCurrency(stats.vencidas)}
                             </p>
                         </div>
-                        <div className="rounded-full bg-red-100 p-2 dark:bg-red-900/40">
-                            <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
+                        <div className="rounded-full bg-destructive/10 p-2 dark:bg-destructive/20">
+                            <AlertTriangle className="h-5 w-5 text-destructive" />
                         </div>
                     </div>
                 </CardContent>
@@ -128,8 +128,8 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
                                 {formatCurrency(stats.esteMes)}
                             </p>
                         </div>
-                        <div className="rounded-full bg-green-100 p-2 dark:bg-green-900/40">
-                            <Calendar className="h-5 w-5 text-green-600 dark:text-green-400" />
+                        <div className="rounded-full bg-emerald-500/10 p-2 dark:bg-emerald-500/20">
+                            <Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-500" />
                         </div>
                     </div>
                 </CardContent>

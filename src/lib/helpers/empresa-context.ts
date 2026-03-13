@@ -39,7 +39,22 @@ export async function getEmpresaContext(): Promise<EmpresaContext> {
         return {
             userId: user.id,
             empresaId: ue.empresa_id,
-            rol: ue.rol || 'operador',
+            rol: ue.rol || 'administrador',
+        }
+    }
+
+    // MONOCOMPAÑÍA FALLBACK TÁCTICO: Si el admin no tiene vinculo directo activo, obtenemos la empresa única forzada.
+    const { data: adminGlobal } = await adminClient
+        .from('empresas')
+        .select('id')
+        .eq('razon_social', 'JIMMY ANDRES BENITEZ CORTES')
+        .single()
+
+    if (adminGlobal?.id) {
+         return {
+            userId: user.id,
+            empresaId: adminGlobal.id,
+            rol: 'administrador',
         }
     }
 

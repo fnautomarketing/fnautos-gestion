@@ -141,8 +141,8 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                         className="w-8 h-8 rounded-lg object-cover shadow-sm"
                     />
                 ) : (
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center">
-                        <Building2 className="w-4 h-4 text-white" />
+                    <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <Building2 className="w-4 h-4 text-primary" />
                     </div>
                 )}
                 <span className="font-bold text-slate-700 dark:text-slate-300">{emp.razon_social}</span>
@@ -177,8 +177,8 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                                     className="w-8 h-8 rounded-lg object-cover shadow-sm group-hover:scale-105 transition-transform"
                                 />
                             ) : (
-                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center shadow-md">
-                                    <Building2 className="w-4 h-4 text-white" />
+                                <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center shadow-md">
+                                    <Building2 className="w-4 h-4 text-primary" />
                                 </div>
                             )}
                             <span className="font-black text-sm tracking-tight truncate max-w-[140px] md:max-w-[200px] text-slate-800 dark:text-slate-200 uppercase">
@@ -249,7 +249,7 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                                             className="w-11 h-11 rounded-xl object-cover border-2 border-white dark:border-slate-800 shadow-lg"
                                         />
                                     ) : (
-                                        <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-amber-400 to-amber-500 flex items-center justify-center shadow-md text-white">
+                                        <div className="w-11 h-11 rounded-xl bg-primary/20 flex items-center justify-center shadow-md text-primary">
                                             <Building2 className="w-6 h-6" />
                                         </div>
                                     )}
@@ -263,7 +263,7 @@ export function EmpresaSelector({ variant = 'header', onSelect, selectedId }: Em
                                     </div>
                                 </div>
                                 {(variant === 'header' ? empresa.activa : empresa.id === selectedId) && (
-                                    <Check className="h-5 w-5 text-amber-600 dark:text-amber-400 animate-in zoom-in-50" />
+                                    <Check className="h-5 w-5 text-primary animate-in zoom-in-50" />
                                 )}
                             </DropdownMenuItem>
                         ))}

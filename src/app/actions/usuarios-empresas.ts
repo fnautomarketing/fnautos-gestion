@@ -13,6 +13,34 @@ export async function getUserContext() {
         throw new Error('No autenticado')
     }
 
+    const { clientConfig } = await import('@/config/clients')
+
+    if (!clientConfig.multiEmpresa) {
+        // MODO MONOCOMPAÑÍA ESTRICTO
+        const { data: monocompania } = await supabase
+            .from('empresas')
+            .select('id, razon_social, nombre_comercial, logo_url, tipo_empresa')
+            .eq('razon_social', 'JIMMY ANDRES BENITEZ CORTES')
+            .single()
+
+        if (monocompania) {
+            return {
+                supabase,
+                userId: user.id,
+                empresaId: monocompania.id,
+                empresas: [{
+                    id: monocompania.id,
+                    empresa_id: monocompania.id,
+                    rol: 'administrador',
+                    empresa_activa: true,
+                    empresa: monocompania
+                }],
+                rol: 'administrador',
+                isAdmin: true,
+            }
+        }
+    }
+
     // Obtener todas las empresas del usuario
     const { data: userEmpresas, error: ueError } = await supabase
         .from('usuarios_empresas')

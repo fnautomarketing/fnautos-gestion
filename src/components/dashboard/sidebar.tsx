@@ -100,9 +100,9 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
     
     // Mejorar lógica de visualización de usuario
     const isClientAdmin = baseEmail === clientConfig.email.admin.toLowerCase()
-    const footerName = isClientAdmin ? (clientConfig.nombreCorto || 'Administrador') : (userEmail?.split('@')[0] || 'Usuario')
+    const footerName = isClientAdmin ? (clientConfig.id === 'fnautos' ? 'FNAUTOS' : clientConfig.nombreCorto) : (userEmail?.split('@')[0] || 'Usuario')
     const footerInitials = isClientAdmin
-        ? (clientConfig.nombreCorto?.[0] || 'A')
+        ? (clientConfig.id === 'fnautos' ? 'FN' : (clientConfig.nombreCorto?.[0] || 'A'))
         : (baseEmail.split('@')[0] || 'us')
               .substring(0, 2)
               .toUpperCase()
@@ -121,12 +121,12 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                         className={cn(
                             'w-full group flex items-center justify-between gap-3 rounded-xl px-4 py-3 min-h-[44px] sm:min-h-0 sm:py-3 text-sm font-semibold transition-all duration-500 relative overflow-hidden touch-manipulation',
                             isActive
-                                ? 'bg-white/5 text-primary shadow-[inset_0_0_20px_rgba(var(--primary),0.05)]'
+                                ? 'bg-white/5 text-primary shadow-[inset_0_0_20px_hsla(var(--primary),0.05)]'
                                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-100 hover:translate-x-1'
                         )}
                     >
                         <div className="flex items-center gap-3">
-                            <Icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive ? "text-primary drop-shadow-[0_0_5px_rgba(var(--primary),0.5)]" : "group-hover:text-primary")} />
+                            <Icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive ? "text-primary drop-shadow-[0_0_5px_hsla(var(--primary),0.5)]" : "group-hover:text-primary")} />
                             {item.name}
                         </div>
                         {isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
@@ -170,9 +170,9 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                 )}
             >
                 {isActive && (
-                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_2px_rgba(var(--primary),0.5)]" />
+                    <div className="absolute left-0 top-0 bottom-0 w-1 bg-primary shadow-[0_0_10px_2px_hsla(var(--primary),0.5)]" />
                 )}
-                <Icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive ? "text-primary drop-shadow-[0_0_5px_rgba(var(--primary),0.5)]" : "group-hover:text-primary")} />
+                <Icon className={cn("h-5 w-5 shrink-0 transition-colors", isActive ? "text-primary drop-shadow-[0_0_5px_hsla(var(--primary),0.5)]" : "group-hover:text-primary")} />
                 {item.name}
             </Link>
         )
@@ -187,9 +187,9 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
         >
             {/* Logo Section - responsive padding y safe area */}
             <div className="flex-shrink-0 flex h-16 sm:h-20 items-center gap-2 sm:gap-3 px-4 sm:px-6 pt-[env(safe-area-inset-top)] border-b border-white/5 bg-[#050505]">
-                <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg bg-white/5 p-1 ring-1 ring-white/10">
+                <div className="relative h-9 w-9 sm:h-10 sm:w-10 shrink-0 overflow-hidden rounded-lg bg-white/5 p-1 ring-1 ring-white/10 group-hover:ring-primary/30 transition-all duration-500">
                     <Image
-                        src={clientConfig.logoPath}
+                        src={clientConfig.logoDarkPath || clientConfig.logoPath}
                         alt={clientConfig.nombre}
                         fill
                         className="object-contain"

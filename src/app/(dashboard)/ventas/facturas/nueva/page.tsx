@@ -1,4 +1,6 @@
+
 import { createServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect } from 'next/navigation'
 import { NuevaFacturaForm } from '@/components/ventas/nueva-factura-form'
 import { EmpresaInfo } from '@/components/ventas/empresa-info'
@@ -9,6 +11,7 @@ export const dynamic = 'force-dynamic'
 
 export default async function NuevaFacturaPage() {
     const supabase = await createServerClient()
+    const admin = createAdminClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
@@ -38,20 +41,21 @@ export default async function NuevaFacturaPage() {
     const empresaIdParaDatos = empresaId || empresaIds[0] || ''
     const empresaIdsParaSeries = isGlobal ? empresaIds : (empresaId ? [empresaId] : [])
 
-    // Asegurar que cada empresa tiene serie del año actual (V2026, Y2026, E2026 → V2027, Y2027, E2027 en 2027)
+    // Asegurar que cada empresa tiene serie del año actual
     for (const eid of empresaIdsParaSeries) {
         await obtenerOCrearSerieAnualAction(eid)
     }
 
-    const { data: empresa } = await supabase
+    // Usamos admin para asegurar que vemos los datos básicos de la empresa emisora
+    const { data: empresa } = await admin
         .from('empresas')
         .select('*')
         .eq('id', empresaIdParaDatos)
         .single()
 
-    // Config de todas las empresas (para retencion_predeterminada al cambiar empresa en Vision Global)
+    // Config de todas las empresas (para retencion_predeterminada)
     const { data: empresasConfigs } = isGlobal && empresaIds.length > 0
-        ? await supabase
+        ? await admin
             .from('empresas')
             .select('id, retencion_predeterminada')
             .in('id', empresaIds)
@@ -64,12 +68,13 @@ export default async function NuevaFacturaPage() {
     const empresaIdsParaClientes = isGlobal ? empresaIds : (empresaId ? [empresaId] : [])
     const clientesByEmpresa: Record<string, any[]> = {}
     for (const eid of empresaIdsParaClientes) {
-        const { data: ces } = await (supabase.from as any)('clientes_empresas')
+        const { data: ces } = await admin
+            .from('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', eid)
         const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)
         if (clienteIds.length > 0) {
-            const { data } = await supabase
+            const { data } = await admin
                 .from('clientes')
                 .select('*')
                 .in('id', clienteIds)
@@ -83,13 +88,19 @@ export default async function NuevaFacturaPage() {
     const clientes = clientesByEmpresa[empresaId || empresaIds[0] || ''] || []
 
     const { data: series } = empresaIdsParaSeries.length > 0
-        ? await supabase
+        ? await admin
             .from('series_facturacion')
             .select('id, codigo, nombre, predeterminada, empresa_id')
             .in('empresa_id', empresaIdsParaSeries)
             .eq('activa', true)
             .order('predeterminada', { ascending: false })
         : { data: [] }
+
+    console.log('--- DEBUG NUEVA FACTURA PAGE ---')
+    console.log('Empresa ID:', empresaIdParaForm)
+    console.log('Series fetched:', series?.length || 0)
+    console.log('Clientes fetched:', clientes?.length || 0)
+    console.log('---------------------------------')
 
     return (
         <div className="space-y-6 w-full px-0">
@@ -136,9 +147,9 @@ export default async function NuevaFacturaPage() {
                     ...s,
                     predeterminada: s.predeterminada === null ? undefined : s.predeterminada,
                     empresa_id: s.empresa_id === null ? undefined : s.empresa_id
-                }))}
+                })) as any}
                 empresaId={empresaIdParaForm}
-                empresaConfig={empresa}
+                empresaConfig={(empresa || {}) as any}
                 empresasConfigs={empresasConfigsMap}
                 defaultEmpresaId={empresaIds[0]}
                 empresas={empresasParaSelector}

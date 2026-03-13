@@ -12,9 +12,6 @@ import { FacturaWithRelations, FacturaPdfDocument } from '@/components/ventas/pd
 import { listarEmpresasUsuarioAction } from '@/app/actions/usuarios-empresas'
 import { clientConfig } from '@/config/clients'
 
-const EMPRESA_VILLEGAS_ID = '4b77324c-a10e-4714-b0a4-df4b9c5f6ca5'
-const EMPRESA_YENIFER_ID = 'e9a30c7d-eb2a-4c7a-91a6-a8bfe8f2278a'
-const EMPRESA_EDISON_ID = 'af15f25a-7ade-4de8-9241-a42e1b8407da'
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -77,15 +74,11 @@ export default function FacturaPdfPage({ params }: PageProps) {
 
                 const plantillas = getPlantillasDisponibles(activaId ?? null)
 
-                // Plantilla por defecto según empresa de la factura:
-                // - Villegas: Premium (logo y colores marca)
-                // - Yenifer / Edison: Estándar (sin logo por defecto)
-                // - Otras: la primera disponible según empresa activa / visión global
+                // Plantilla por defecto según disponibilidad
                 let defaultPlantilla = plantillas[0]?.value ?? 'estandar'
-                if (fac.empresa_id === EMPRESA_VILLEGAS_ID && plantillas.some(p => p.value === 'premium')) {
+                // Preferir premium si está disponible
+                if (plantillas.some(p => p.value === 'premium')) {
                     defaultPlantilla = 'premium'
-                } else if (fac.empresa_id === EMPRESA_YENIFER_ID || fac.empresa_id === EMPRESA_EDISON_ID) {
-                    defaultPlantilla = 'estandar'
                 }
 
                 setOptions(prev => ({ ...prev, plantilla: defaultPlantilla }))

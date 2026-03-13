@@ -73,8 +73,10 @@ export default function RootLayout({
   // Esto sobreescribe los base defauls de Tailwind
   const clientThemeCSS = `
     :root {
-      --primary: ${clientConfig.colors.primary};
-      --secondary: ${clientConfig.colors.secondary};
+      --client-primary: ${clientConfig.colors.primary};
+      --client-secondary: ${clientConfig.colors.secondary};
+      --client-accent: ${clientConfig.colors.accent};
+      --client-ring: ${clientConfig.colors.ring};
     }
   `;
 

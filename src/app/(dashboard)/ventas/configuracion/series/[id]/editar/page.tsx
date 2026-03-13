@@ -42,7 +42,20 @@ export default async function EditarSeriePage({ params }: EditarSeriePageProps) 
                 </div>
             </div>
 
-            <SerieForm serieId={id} defaultValues={serie} />
+            <SerieForm 
+                serieId={id} 
+                defaultValues={{
+                    ...serie,
+                    predeterminada: serie.predeterminada ?? undefined,
+                    activa: serie.activa ?? undefined,
+                    digitos: serie.digitos ?? undefined,
+                    facturas_emitidas: serie.facturas_emitidas ?? undefined,
+                    icono: serie.icono ?? undefined,
+                    prefijo: serie.prefijo ?? undefined,
+                    sufijo: serie.sufijo ?? undefined,
+                    descripcion: serie.descripcion ?? undefined,
+                } as any} 
+            />
         </div>
     )
 }
