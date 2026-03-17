@@ -97,134 +97,151 @@ export function EmailSendForm({ factura, cliente, empresaNombre = clientConfig.n
     }
 
     return (
-        <form onSubmit={handleSubmit} className="space-y-6">
-            <Card>
-                <CardHeader>
+        <form onSubmit={handleSubmit} className="space-y-6 pb-20 md:pb-0">
+            <Card className="border-white/20 dark:border-white/10 shadow-xl backdrop-blur-md bg-white/50 dark:bg-slate-900/50">
+                <CardHeader className="pb-4">
                     <CardTitle className="text-lg flex items-center gap-2">
-                        <Send className="h-5 w-5 text-slate-500" />
-                        Datos del envío
+                        <div className="p-2 bg-primary/10 rounded-lg">
+                            <Send className="h-5 w-5 text-primary" />
+                        </div>
+                        Detalles del Envío
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label>Para</Label>
-                        <div className="flex flex-wrap gap-2 mb-2">
+                <CardContent className="space-y-6">
+                    <div className="space-y-3">
+                        <Label className="text-sm font-bold tracking-tight">Destinatario</Label>
+                        <div className="flex flex-wrap gap-2">
                             {clienteEmailPrincipal && (
                                 <Badge
                                     variant="secondary"
-                                    className="px-3 py-1 bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 cursor-pointer transition-colors"
+                                    className="px-3 py-1.5 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30 cursor-pointer transition-all active:scale-95 text-xs font-bold"
                                     onClick={() => setTo(clienteEmailPrincipal)}
                                 >
                                     {clienteEmailPrincipal}
-                                    <span className="ml-2 text-[10px] font-bold opacity-60">PRINCIPAL</span>
+                                    <span className="ml-2 text-[8px] px-1 bg-primary text-white rounded">P</span>
                                 </Badge>
                             )}
                             {clienteEmailSecundario && clienteEmailSecundario !== clienteEmailPrincipal && (
                                 <Badge
                                     variant="secondary"
-                                    className="px-3 py-1 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 cursor-pointer transition-colors dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
+                                    className="px-3 py-1.5 bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200 cursor-pointer transition-all active:scale-95 text-xs dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700"
                                     onClick={() => setTo(clienteEmailSecundario)}
                                 >
                                     {clienteEmailSecundario}
-                                    <span className="ml-2 text-[10px] font-bold opacity-60">SECUNDARIO</span>
+                                    <span className="ml-2 text-[8px] px-1 bg-slate-500 text-white rounded font-bold">S</span>
                                 </Badge>
                             )}
                         </div>
                         <Input
                             value={to}
+                            type="email"
+                            multiple
+                            inputMode="email"
                             onChange={(e) => setTo(e.target.value)}
-                            placeholder="ej. cliente@empresa.com, contabilidad@empresa.com"
+                            placeholder="ej. cliente@empresa.com, otro@empresa.com"
+                            className="h-12 border-slate-200 dark:border-slate-800 focus:ring-primary focus:border-primary transition-all text-base"
                         />
-                        <p className="text-[10px] text-slate-400">Separa múltiples direcciones con comas</p>
+                        <p className="text-[10px] text-slate-400 italic">Separa múltiples correos con una coma (,)</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-slate-500">Copia (CC)</Label>
+                            <Input
+                                value={cc}
+                                type="email"
+                                inputMode="email"
+                                onChange={(e) => setCC(e.target.value)}
+                                placeholder="Copia a..."
+                                className="h-10 border-slate-200/50 dark:border-slate-800/50"
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label className="text-xs font-bold uppercase tracking-wider text-slate-500">Asunto</Label>
+                            <Input
+                                value={subject}
+                                onChange={(e) => setSubject(e.target.value)}
+                                className="h-10 border-slate-200/50 dark:border-slate-800/50"
+                            />
+                        </div>
                     </div>
 
                     <div className="space-y-2">
-                        <Label>CC</Label>
-                        <Input
-                            value={cc}
-                            onChange={(e) => setCC(e.target.value)}
-                            placeholder="Copia a..."
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Asunto</Label>
-                        <Input
-                            value={subject}
-                            onChange={(e) => setSubject(e.target.value)}
-                        />
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label>Mensaje</Label>
+                        <Label className="text-sm font-bold tracking-tight">Cuerpo del Mensaje</Label>
                         <Textarea
                             value={message}
                             onChange={(e) => setMessage(e.target.value)}
-                            className="min-h-[200px] font-sans"
+                            placeholder="Escribe un mensaje personalizado..."
+                            className="min-h-[160px] md:min-h-[220px] border-slate-200 dark:border-slate-800 resize-none leading-relaxed text-base"
                         />
                     </div>
                 </CardContent>
             </Card>
 
-            <Card key={messageTemplate}> {/* Force re-render if needed, but managing state is better */}
-                <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
-                        <FileText className="h-5 w-5 text-slate-500" />
-                        Adjuntos
+            <Card className="border-white/20 dark:border-white/10 shadow-lg bg-slate-50/50 dark:bg-slate-900/30 overflow-hidden">
+                <CardHeader className="py-3 px-4 bg-white/50 dark:bg-slate-950/20 border-b border-slate-100 dark:border-slate-800">
+                    <CardTitle className="text-sm font-extrabold flex items-center gap-2 text-slate-500">
+                        <FileText className="h-4 w-4" />
+                        ADJUNTOS (1)
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800">
-                        <div className="w-10 h-10 bg-red-100 text-red-600 rounded flex items-center justify-center font-bold text-xs uppercase">PDF</div>
-                        <div className="flex-1">
-                            <p className="text-sm font-medium">Factura {factura.serie}-{factura.numero}.pdf</p>
-                            <p className="text-xs text-slate-500">Generado automáticamente</p>
+                <CardContent className="p-4">
+                    <div className="flex items-center gap-4 p-4 bg-white dark:bg-slate-950 rounded-xl border border-slate-100 dark:border-slate-800 shadow-sm group hover:border-primary/30 transition-all cursor-default">
+                        <div className="w-12 h-12 bg-red-500/10 text-red-600 rounded-lg flex items-center justify-center font-black text-xs uppercase shadow-inner border border-red-500/20">
+                            PDF
                         </div>
-                        <Badge variant="outline" className="text-slate-500 bg-white">Incluido</Badge>
-                    </div>
-                </CardContent>
-            </Card>
-
-            <Card>
-                <CardContent className="pt-6">
-                    <div className="flex items-start gap-2 space-y-0">
-                        <Checkbox
-                            id="sendCopy"
-                            checked={sendCopy}
-                            onCheckedChange={(c) => setSendCopy(!!c)}
-                        />
-                        <div className="grid gap-1.5 leading-none">
-                            <label
-                                htmlFor="sendCopy"
-                                className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                            >
-                                Enviar copia a mi correo
-                            </label>
-                            <p className="text-sm text-muted-foreground">
-                                Recibirás una copia exacta del email enviado.
+                        <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold truncate text-slate-800 dark:text-slate-200">Factura {factura.serie}-{factura.numero}.pdf</p>
+                            <p className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                                <Badge className="h-2 w-2 p-0 bg-green-500" /> Generado con Plantilla {plantilla.toUpperCase()}
                             </p>
                         </div>
+                        <Badge variant="outline" className="hidden sm:inline-flex text-[10px] font-bold tracking-widest bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+                            AUTO
+                        </Badge>
                     </div>
                 </CardContent>
             </Card>
 
-            <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={() => router.back()}>
-                    Cancelar
-                </Button>
-                <Button type="submit" disabled={sending} className="min-w-[150px]">
-                    {sending ? (
-                        <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            Enviando...
-                        </>
-                    ) : (
-                        <>
-                            <Send className="mr-2 h-4 w-4" />
-                            Enviar Email
-                        </>
-                    )}
-                </Button>
+            <div className="flex flex-col md:flex-row items-center justify-between gap-4 pt-2">
+                <div className="flex items-center gap-3 p-3 bg-white/40 dark:bg-slate-900/40 rounded-xl border border-white/20 dark:border-white/10 w-full md:w-auto">
+                    <Checkbox
+                        id="sendCopy"
+                        checked={sendCopy}
+                        onCheckedChange={(c) => setSendCopy(!!c)}
+                        className="h-5 w-5 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <div className="grid gap-0.5">
+                        <label
+                            htmlFor="sendCopy"
+                            className="text-xs font-bold leading-none cursor-pointer"
+                        >
+                            Copia a mi correo
+                        </label>
+                        <p className="text-[10px] text-muted-foreground italic">
+                            ({clientConfig.email.admin})
+                        </p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-3 w-full md:w-auto">
+                    <Button type="button" variant="ghost" onClick={() => router.back()} className="flex-1 md:flex-none text-slate-500">
+                        Volver
+                    </Button>
+                    <Button type="submit" disabled={sending} className="flex-1 md:flex-none min-w-[180px] h-12 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg hover:shadow-primary/20">
+                        {sending ? (
+                            <>
+                                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                                ENVIANDO...
+                            </>
+                        ) : (
+                            <>
+                                <Send className="mr-2 h-5 w-5" />
+                                ENVIAR AHORA
+                            </>
+                        )}
+                    </Button>
+                </div>
             </div>
         </form>
     )

@@ -102,22 +102,9 @@ export async function sendFacturaEmailAction(formData: FormData) {
             cif: '',
         }
 
-        // PDF plantilla por empresa: Villegas=premium+logo, Yenifer/Edison=estandar sin logo
-        const EMPRESA_VILLEGAS_ID = '4b77324c-a10e-4714-b0a4-df4b9c5f6ca5'
-        const EMPRESA_YENIFER_ID = 'e9a30c7d-eb2a-4c7a-91a6-a8bfe8f2278a'
-        const EMPRESA_EDISON_ID = 'af15f25a-7ade-4de8-9241-a42e1b8407da'
-        let pdfPlantilla: 'estandar' | 'premium' = 'estandar'
-        let incluirLogoPdf = false
-        if (factura.empresa_id === EMPRESA_VILLEGAS_ID) {
-            pdfPlantilla = 'premium'
-            incluirLogoPdf = true
-        } else if (factura.empresa_id === EMPRESA_YENIFER_ID || factura.empresa_id === EMPRESA_EDISON_ID) {
-            pdfPlantilla = 'estandar'
-            incluirLogoPdf = false
-        } else {
-            pdfPlantilla = (factura.plantilla_pdf_id === '5e63ff58-2cd5-4234-805a-fd93f50ee84c') ? 'premium' : 'estandar'
-            incluirLogoPdf = incluirLogo
-        }
+        // Determinar plantilla y logo dinámicamente según configuración
+        const pdfPlantilla = (factura.plantilla_pdf_id === '5e63ff58-2cd5-4234-805a-fd93f50ee84c') ? 'premium' : 'estandar'
+        const incluirLogoPdf = incluirLogo
 
         const pdfOptions: PdfOptions = {
             plantilla: pdfPlantilla,
@@ -125,18 +112,20 @@ export async function sendFacturaEmailAction(formData: FormData) {
             incluirLogo: incluirLogoPdf,
             incluirDatosBancarios: true,
             notasPie: '',
-            colorAcento: '#0f172a'
+            colorAcento: clientConfig.colors.primary.startsWith('#') ? clientConfig.colors.primary : '#0f172a'
         }
 
         let logoUrl: string | undefined
-        try {
-            const logoPath = path.join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
-            if (fs.existsSync(logoPath)) {
-                const logoBuffer = fs.readFileSync(logoPath)
-                logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+        if (incluirLogoPdf) {
+            try {
+                const logoPath = path.join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+                if (fs.existsSync(logoPath)) {
+                    const logoBuffer = fs.readFileSync(logoPath)
+                    logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+                }
+            } catch {
+                logoUrl = undefined
             }
-        } catch {
-            logoUrl = undefined
         }
 
         const stream = await renderToStream(
@@ -158,12 +147,70 @@ export async function sendFacturaEmailAction(formData: FormData) {
         const empresaNombre = empresaRow?.razon_social || empresaRow?.nombre_comercial || clientConfig.nombre
         const subjectFinal = subject || `Factura ${fullFactura.serie || 'FAC'}-${fullFactura.numero} - ${empresaNombre}`
 
+        // Preparamos el Logo para el HTML del Email si está disponible
+        const logoParaEmail = logoUrl || '';
+
+        const htmlTemplate = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <meta charset="utf-8">
+            <style>
+                body { font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
+                .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
+                .header { padding: 40px; text-align: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
+                .logo { max-width: 150px; margin-bottom: 20px; }
+                .content { padding: 40px; }
+                .footer { padding: 30px; text-align: center; border-top: 1px solid #f1f5f9; background: #fafafa; color: #64748b; font-size: 12px; }
+                .button { display: inline-block; padding: 14px 28px; background-color: #0f172a; color: white !important; font-weight: bold; text-decoration: none; border-radius: 8px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
+                .highlight { color: #0f172a; font-weight: 700; }
+                .divider { height: 1px; background: #e2e8f0; margin: 30px 0; }
+                .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0; }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    ${logoParaEmail ? `<img src="${logoParaEmail}" class="logo" alt="${empresaNombre}" />` : `<h1 style="margin:0">${empresaNombre}</h1>`}
+                </div>
+                <div class="content">
+                    <h2 style="margin-top:0">Notificación de Factura</h2>
+                    <p>Estimado cliente,</p>
+                    <p>${message.replace(/\n/g, '<br/>') || 'Le adjuntamos la factura correspondiente a los servicios prestados.'}</p>
+                    
+                    <div class="divider"></div>
+                    
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr>
+                            <td style="padding: 10px 0; color: #64748b;">Número de Factura:</td>
+                            <td style="padding: 10px 0; text-align: right;" class="highlight">${fullFactura.serie || 'FAC'}-${fullFactura.numero}</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px 0; color: #64748b;">Total:</td>
+                            <td style="padding: 10px 0; text-align: right; font-size: 20px;" class="highlight">${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(fullFactura.total))}</td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align: center;">
+                        <p style="font-size: 13px; color: #94a3b8; margin-top: 25px;">Encontrará el detalle completo en el documento PDF adjunto.</p>
+                    </div>
+                </div>
+                <div class="footer">
+                    <p><b>${empresaNombre}</b></p>
+                    <p>${empresa.direccion} - ${empresa.ciudad}, ${empresa.codigo_postal}</p>
+                    <p>© ${new Date().getFullYear()} - Gestión Inteligente FNAUTOS</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        `;
+
         const emailResult = await resend.emails.send({
             from: fromDomain,
             to,
             cc: ccFinal.length > 0 ? ccFinal : undefined,
             subject: subjectFinal,
-            html: `<p>${message.replace(/\n/g, '<br/>')}</p>`,
+            html: htmlTemplate,
             attachments: [
                 {
                     filename: `Factura-${fullFactura.serie || 'FAC'}-${fullFactura.numero}.pdf`,
