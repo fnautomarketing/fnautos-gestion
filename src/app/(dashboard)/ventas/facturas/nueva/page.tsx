@@ -96,11 +96,6 @@ export default async function NuevaFacturaPage() {
             .order('predeterminada', { ascending: false })
         : { data: [] }
 
-    console.log('--- DEBUG NUEVA FACTURA PAGE ---')
-    console.log('Empresa ID:', empresaIdParaForm)
-    console.log('Series fetched:', series?.length || 0)
-    console.log('Clientes fetched:', clientes?.length || 0)
-    console.log('---------------------------------')
 
     return (
         <div className="space-y-6 w-full px-0">

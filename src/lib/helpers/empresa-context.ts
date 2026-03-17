@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { UsuarioEmpresa } from '@/types/ventas'
 import { Empresa } from '@/types/empresa'
+import { clientConfig } from '@/config/clients'
 
 export interface EmpresaContext {
     userId: string
@@ -47,7 +48,7 @@ export async function getEmpresaContext(): Promise<EmpresaContext> {
     const { data: adminGlobal } = await adminClient
         .from('empresas')
         .select('id')
-        .eq('razon_social', 'JIMMY ANDRES BENITEZ CORTES')
+        .eq('razon_social', clientConfig.razonSocial)
         .single()
 
     if (adminGlobal?.id) {

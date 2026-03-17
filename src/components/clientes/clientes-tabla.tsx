@@ -151,51 +151,58 @@ export function ClientesTabla({ clientes, searchParams = {} }: ClientesTablaProp
     return (
         <div className="space-y-4" data-testid="clientes-tabla">
             {/* Búsqueda + Filtros + Exportar */}
-            <div className="flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" aria-hidden />
+            <div className="flex flex-col lg:flex-row gap-4 lg:items-center lg:justify-between bg-white/40 dark:bg-slate-900/40 p-3 rounded-2xl border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-sm">
+                <div className="relative flex-1 max-w-md group">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 transition-colors group-focus-within:text-primary" aria-hidden />
                     <Input
                         data-testid="clientes-search"
                         placeholder="Buscar por nombre, CIF..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="pl-10 min-h-[44px] sm:min-h-0 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                        className="pl-11 min-h-[48px] sm:min-h-0 bg-white dark:bg-slate-950 border-slate-200/60 dark:border-slate-800/60 focus:ring-2 focus:ring-primary/20 transition-all duration-300 rounded-xl"
                         role="searchbox"
                         aria-label="Buscar clientes"
                     />
                     {search && (
-                        <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600" aria-label="Limpiar búsqueda">
+                        <button type="button" onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors" aria-label="Limpiar búsqueda">
                             <X className="h-4 w-4" />
                         </button>
                     )}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
-                    {(['todos', 'activos', 'inactivos'] as const).map((e) => (
-                        <Button
-                            key={e}
-                            variant={estado === e ? 'default' : 'outline'}
-                            size="sm"
-                            className={cn('h-9 min-h-[44px] sm:min-h-0 transition-colors duration-200', estado === e && 'ring-2 ring-primary/30')}
-                            onClick={() => updateUrl({ estado: e === 'todos' ? undefined : e })}
-                        >
-                            {e === 'todos' ? 'Todos' : e === 'activos' ? 'Activos' : 'Inactivos'}
-                        </Button>
-                    ))}
+                    <div className="flex p-1 bg-slate-100/50 dark:bg-slate-800/50 rounded-xl border border-slate-200/50 dark:border-slate-700/50">
+                        {(['todos', 'activos', 'inactivos'] as const).map((e) => (
+                            <Button
+                                key={e}
+                                variant="ghost"
+                                size="sm"
+                                className={cn(
+                                    'h-9 px-4 rounded-lg transition-all duration-300 text-xs font-semibold',
+                                    estado === e 
+                                        ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm ring-1 ring-slate-200/50 dark:ring-slate-600/50' 
+                                        : 'text-slate-500 hover:text-slate-900 dark:hover:text-slate-200'
+                                )}
+                                onClick={() => updateUrl({ estado: e === 'todos' ? undefined : e })}
+                            >
+                                {e === 'todos' ? 'Todos' : e === 'activos' ? 'Activos' : 'Inactivos'}
+                            </Button>
+                        ))}
+                    </div>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="outline" size="sm" className="min-h-[44px] sm:min-h-0">
-                                <Download className="h-4 w-4 mr-1.5" />
-                                Exportar
+                            <Button variant="outline" size="lg" className="h-[48px] sm:h-9 border-slate-200/60 dark:border-slate-800/60 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all duration-300 rounded-xl">
+                                <Download className="h-4 w-4 mr-2 text-slate-500" />
+                                <span className="text-sm font-medium">Exportar</span>
                             </Button>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={exportCsv}>Exportar CSV (página)</DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem asChild>
-                                <a href={exportUrl('csv')} download>Exportar todos (CSV)</a>
+                        <DropdownMenuContent align="end" className="w-48 p-1 rounded-xl">
+                            <DropdownMenuItem onClick={exportCsv} className="rounded-lg cursor-pointer">Exportar CSV (página)</DropdownMenuItem>
+                            <DropdownMenuSeparator className="opacity-50" />
+                            <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                                <a href={exportUrl('csv')} download className="w-full">Exportar todos (CSV)</a>
                             </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                                <a href={exportUrl('xlsx')} download>Exportar todos (Excel)</a>
+                            <DropdownMenuItem asChild className="rounded-lg cursor-pointer">
+                                <a href={exportUrl('xlsx')} download className="w-full">Exportar todos (Excel)</a>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -204,85 +211,100 @@ export function ClientesTabla({ clientes, searchParams = {} }: ClientesTablaProp
 
             {/* Tabla Desktop - solo render en desktop para evitar duplicados en DOM (tests E2E) */}
             {!isMobile && (
-            <Card className="border-white/20 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 overflow-hidden shadow-lg">
+            <Card className="border border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] rounded-2xl transition-all duration-300">
                 <CardContent className="p-0">
                     <div className="overflow-x-auto">
                         <Table>
-                            <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
-                                <TableRow>
-                                    <TableHead className="font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none" onClick={() => handleSort('nombre')} data-testid="clientes-th-nombre">Cliente{getSortIndicator('nombre')}</TableHead>
-                                    <TableHead className="font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none" onClick={() => handleSort('cif')} data-testid="clientes-th-cif">CIF{getSortIndicator('cif')}</TableHead>
-                                    <TableHead className="font-semibold text-slate-600 dark:text-slate-400 hidden lg:table-cell">Contacto</TableHead>
-                                    <TableHead className="text-right font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none" onClick={() => handleSort('facturacion')} data-testid="clientes-th-facturacion">Facturación{getSortIndicator('facturacion')}</TableHead>
-                                    <TableHead className="text-center font-semibold text-slate-600 dark:text-slate-400 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none" onClick={() => handleSort('estado')} data-testid="clientes-th-estado">Estado{getSortIndicator('estado')}</TableHead>
-                                    <TableHead className="w-[50px]"></TableHead>
+                            <TableHeader>
+                                <TableRow className="bg-slate-50/50 dark:bg-slate-900/50 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 border-b border-slate-200/50 dark:border-slate-800/50">
+                                    <TableHead className="py-4 px-6 font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 cursor-pointer hover:text-primary transition-colors select-none" onClick={() => handleSort('nombre')} data-testid="clientes-th-nombre">
+                                        <div className="flex items-center gap-1.5">
+                                            Cliente{getSortIndicator('nombre')}
+                                        </div>
+                                    </TableHead>
+                                    <TableHead className="py-4 font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 cursor-pointer hover:text-primary transition-colors select-none" onClick={() => handleSort('cif')} data-testid="clientes-th-cif">CIF{getSortIndicator('cif')}</TableHead>
+                                    <TableHead className="py-4 font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 hidden lg:table-cell">Contacto</TableHead>
+                                    <TableHead className="py-4 text-right font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 cursor-pointer hover:text-primary transition-colors select-none" onClick={() => handleSort('facturacion')} data-testid="clientes-th-facturacion">Facturación{getSortIndicator('facturacion')}</TableHead>
+                                    <TableHead className="py-4 text-center font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 cursor-pointer hover:text-primary transition-colors select-none" onClick={() => handleSort('estado')} data-testid="clientes-th-estado">Estado{getSortIndicator('estado')}</TableHead>
+                                    <TableHead className="w-[80px] px-6"></TableHead>
                                 </TableRow>
                             </TableHeader>
                             <TableBody>
-                                {clientesFiltrados.map((cliente) => {
+                                {clientesFiltrados.map((cliente, idx) => {
                                     const iniciales = cliente.nombre_fiscal.substring(0, 2).toUpperCase()
                                     return (
                                         <TableRow
                                             key={cliente.id}
                                             data-client-id={cliente.id}
-                                            className="cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors group"
+                                            className="group cursor-pointer hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-all duration-300 border-b border-slate-100/50 dark:border-slate-800/50 animate-in fade-in slide-in-from-left-2"
+                                            style={{ animationDelay: `${idx * 30}ms` } as React.CSSProperties}
                                             onClick={() => router.push(`/ventas/clientes/${cliente.id}`)}
                                         >
-                                            <TableCell className="p-4">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="h-10 w-10 rounded-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold shadow-md group-hover:scale-110 transition-transform">
+                                            <TableCell className="py-5 px-6">
+                                                <div className="flex items-center gap-4">
+                                                    <div className="h-10 w-10 rounded-xl bg-gradient-to-tr from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-700 border border-slate-200/50 dark:border-slate-700/50 flex items-center justify-center text-slate-700 dark:text-slate-200 font-bold shadow-sm group-hover:shadow-md group-hover:scale-110 group-hover:rotate-3 transition-all duration-300">
                                                         {iniciales}
                                                     </div>
-                                                    <div>
-                                                        <span className="font-medium text-slate-900 dark:text-slate-100 block">
+                                                    <div className="min-w-0">
+                                                        <span className="font-bold text-slate-900 dark:text-white block truncate leading-none mb-1.5 tracking-tight group-hover:text-primary transition-colors">
                                                             {cliente.nombre_fiscal}
                                                         </span>
-                                                        <p className="text-sm text-slate-500 dark:text-slate-400">{cliente.ciudad}</p>
+                                                        <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">{cliente.ciudad}</p>
                                                     </div>
                                                 </div>
                                             </TableCell>
-                                            <TableCell className="font-mono text-sm text-slate-700 dark:text-slate-300 font-medium">
-                                                {cliente.cif}
+                                            <TableCell className="py-5">
+                                                <div className="px-2 py-1 rounded-md bg-slate-100/50 dark:bg-slate-800/50 border border-slate-200/50 dark:border-slate-700/50 inline-block">
+                                                    <span className="font-mono text-xs text-slate-600 dark:text-slate-300 font-bold tracking-tighter uppercase whitespace-nowrap">
+                                                        {cliente.cif}
+                                                    </span>
+                                                </div>
                                             </TableCell>
-                                            <TableCell className="text-sm">
-                                                <p className="text-slate-900 dark:text-slate-100 font-medium">{cliente.email_principal}</p>
-                                                <p className="text-slate-500 dark:text-slate-400">{cliente.telefono_principal}</p>
+                                            <TableCell className="py-5 hidden lg:table-cell">
+                                                <div className="flex flex-col">
+                                                    <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[180px]">{cliente.email_principal}</span>
+                                                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{cliente.telefono_principal}</span>
+                                                </div>
                                             </TableCell>
-                                            <TableCell className="text-right font-bold text-slate-900 dark:text-slate-100">
-                                                <span suppressHydrationWarning>
+                                            <TableCell className="py-5 text-right px-4">
+                                                <span className="text-sm md:text-base font-bold text-slate-900 dark:text-white tabular-nums" suppressHydrationWarning>
                                                     {formatCurrency(cliente.total_facturado || 0)}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-center">
-                                                <Badge variant="outline" className={`border ${cliente.activo
-                                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300 border-green-200 dark:border-green-800'
-                                                    : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700'
-                                                    }`}>
+                                            <TableCell className="py-5 text-center">
+                                                <Badge variant="outline" className={cn(
+                                                    "px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border-0 shadow-sm transition-all duration-300",
+                                                    cliente.activo
+                                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 group-hover:scale-110'
+                                                        : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
+                                                )}>
                                                     {cliente.activo ? 'Activo' : 'Inactivo'}
                                                 </Badge>
                                             </TableCell>
-                                            <TableCell onClick={(e) => e.stopPropagation()}>
+                                            <TableCell className="py-5 px-6 text-right" onClick={(e) => e.stopPropagation()}>
                                                 <DropdownMenu>
                                                     <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-9 w-9 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 sm:w-8 text-slate-500 hover:text-primary" aria-label="Más opciones">
-                                                            <MoreVertical className="h-4 w-4" />
+                                                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl text-slate-400 hover:text-primary hover:bg-primary/5 transition-all duration-300" aria-label="Más opciones">
+                                                            <MoreVertical className="h-5 w-5" />
                                                         </Button>
                                                     </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="bg-white/90 backdrop-blur-xl dark:bg-slate-900/90 border-slate-200 dark:border-slate-800">
-                                                        <DropdownMenuItem onClick={() => router.push(`/ventas/clientes/${cliente.id}`)} className="cursor-pointer">
-                                                            <Eye className="h-4 w-4 mr-2" /> Ver Detalle
+                                                    <DropdownMenuContent align="end" className="w-52 p-1.5 rounded-2xl bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl border border-slate-200/50 dark:border-slate-800/50 shadow-2xl">
+                                                        <DropdownMenuItem onClick={() => router.push(`/ventas/clientes/${cliente.id}`)} className="rounded-xl cursor-pointer py-2.5 px-3">
+                                                            <Eye className="h-4 w-4 mr-3 text-slate-500" /> <span className="font-medium">Ver Detalle</span>
                                                         </DropdownMenuItem>
-                                                        <DropdownMenuItem onClick={() => router.push(`/ventas/clientes/${cliente.id}/editar`)} className="cursor-pointer">
-                                                            <Edit className="h-4 w-4 mr-2" /> Editar
+                                                        <DropdownMenuItem onClick={() => router.push(`/ventas/clientes/${cliente.id}/editar`)} className="rounded-xl cursor-pointer py-2.5 px-3">
+                                                            <Edit className="h-4 w-4 mr-3 text-slate-500" /> <span className="font-medium">Editar Perfil</span>
                                                         </DropdownMenuItem>
+                                                        <DropdownMenuSeparator className="my-1 opacity-50" />
                                                         <DropdownMenuItem
-                                                            className="text-red-600 focus:text-red-600 cursor-pointer"
-                                                            onClick={() => {
+                                                            className="text-red-500 hover:text-red-600 focus:text-red-600 cursor-pointer rounded-xl py-2.5 px-3 focus:bg-red-50 dark:focus:bg-red-950/30"
+                                                            onClick={(e) => {
+                                                                e.stopPropagation()
                                                                 setDeleteId(cliente.id)
                                                                 setDeleteName(cliente.nombre_fiscal)
                                                             }}
                                                         >
-                                                            <Trash2 className="h-4 w-4 mr-2" /> Eliminar
+                                                            <Trash2 className="h-4 w-4 mr-3" /> <span className="font-bold">Eliminar Cliente</span>
                                                         </DropdownMenuItem>
                                                     </DropdownMenuContent>
                                                 </DropdownMenu>

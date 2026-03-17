@@ -157,7 +157,7 @@ export function ClienteForm({ clienteId, defaultValues, empresas, empresasClient
                                         defaultValue={defaultValues?.cif}
                                         required
                                         onChange={handleCifChange}
-                                        className={cifValido ? 'border-green-500/50 focus:border-green-500 pr-10' : ''}
+                                        className={cifValido ? 'border-green-500/50 focus:border-green-500 pr-10 h-11 md:h-10 text-base md:text-sm' : 'h-11 md:h-10 text-base md:text-sm'}
                                         placeholder="B12345678"
                                     />
                                     {cifValido && (
@@ -198,25 +198,25 @@ export function ClienteForm({ clienteId, defaultValues, empresas, empresasClient
                     <div className="rounded-2xl bg-white/5 backdrop-blur-md border border-white/10 p-6 space-y-4">
                         <h2 className="text-lg font-bold flex items-center gap-2">📧 Información de Contacto</h2>
 
-                        <div className="grid sm:grid-cols-2 gap-4">
-                            <div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
                                 <Label htmlFor="email_principal">Email Principal *</Label>
-                                <Input type="email" id="email_principal" name="email_principal" defaultValue={defaultValues?.email_principal} required />
+                                <Input type="email" id="email_principal" name="email_principal" defaultValue={defaultValues?.email_principal} required className="h-11 md:h-10 text-base md:text-sm" />
                             </div>
 
-                            <div>
+                            <div className="space-y-1.5">
                                 <Label htmlFor="email_secundario">Email Secundario</Label>
-                                <Input type="email" id="email_secundario" name="email_secundario" defaultValue={defaultValues?.email_secundario} />
+                                <Input type="email" id="email_secundario" name="email_secundario" defaultValue={defaultValues?.email_secundario} className="h-11 md:h-10 text-base md:text-sm" />
                             </div>
 
-                            <div>
+                            <div className="space-y-1.5">
                                 <Label htmlFor="telefono_principal">Teléfono Principal</Label>
-                                <Input id="telefono_principal" name="telefono_principal" defaultValue={defaultValues?.telefono_principal} />
+                                <Input type="tel" id="telefono_principal" name="telefono_principal" defaultValue={defaultValues?.telefono_principal} className="h-11 md:h-10 text-base md:text-sm" />
                             </div>
 
-                            <div>
+                            <div className="space-y-1.5">
                                 <Label htmlFor="telefono_secundario">Teléfono Secundario</Label>
-                                <Input id="telefono_secundario" name="telefono_secundario" defaultValue={defaultValues?.telefono_secundario} />
+                                <Input type="tel" id="telefono_secundario" name="telefono_secundario" defaultValue={defaultValues?.telefono_secundario} className="h-11 md:h-10 text-base md:text-sm" />
                             </div>
 
                             <div className="sm:col-span-2">

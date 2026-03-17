@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import {
@@ -26,7 +26,7 @@ import {
     Cell,
     Legend,
 } from 'recharts'
-import { LineChart as LineIcon, BarChart3, Mountain } from 'lucide-react'
+import { LineChart as LineIcon, BarChart3, Mountain, Loader2 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 const STORAGE_KEY_CHART_TYPE = 'dashboard-chart-type'
@@ -34,8 +34,10 @@ export type ChartTypeValue = 'line' | 'bar' | 'area'
 
 function getStoredChartType(): ChartTypeValue {
     try {
-        const v = window.localStorage.getItem(STORAGE_KEY_CHART_TYPE)
-        if (v === 'bar' || v === 'area') return v
+        if (typeof window !== 'undefined') {
+            const v = window.localStorage.getItem(STORAGE_KEY_CHART_TYPE)
+            if (v === 'bar' || v === 'area') return v
+        }
     } catch {
         /* ignore */
     }
@@ -43,18 +45,39 @@ function getStoredChartType(): ChartTypeValue {
 }
 
 const COLORS = [
-    'hsl(var(--primary))',    // Color principal dinámico
-    'hsl(var(--secondary))',  // Color secundario dinámico
-    '#475569',                // Slate 600 para neutralidad
-    '#94a3b8',                // Slate 400
-    'hsla(var(--primary), 0.7)', // Variante traslúcida del principal
-    'hsla(var(--secondary), 0.7)' // Variante traslúcida del secundario
+    'hsl(var(--primary))',
+    '#0ea5e9', // Sky 500
+    '#10b981', // Emerald 500
+    '#f59e0b', // Amber 500
+    '#6366f1', // Indigo 500
+    '#ec4899', // Pink 500
 ]
 
 interface DashboardChartsProps {
     fechaDesde: string
     fechaHasta: string
     empresaId?: string | null
+}
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-white/20 dark:border-white/10 p-4 shadow-2xl rounded-2xl animate-in zoom-in-95 duration-200">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+                <div className="space-y-1.5">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center gap-3">
+                            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill }} />
+                            <p className="text-sm font-black text-slate-900 dark:text-white tabular-nums">
+                                {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(entry.value)}
+                            </p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+    return null
 }
 
 export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: DashboardChartsProps) {
@@ -81,7 +104,7 @@ export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: Dashboard
                 if (estRes.success && estRes.data) setEstados(estRes.data.filter((e) => e.estado !== 'anulada'))
             } catch (err) {
                 const msg = err instanceof Error ? err.message : String(err)
-                setFetchError(msg.includes('fetch') || msg.includes('Failed to fetch') ? 'Error de conexión. Comprueba tu conexión e intenta de nuevo.' : msg)
+                setFetchError(msg.includes('fetch') ? 'Error de conexión.' : msg)
             } finally {
                 setLoading(false)
             }
@@ -94,169 +117,228 @@ export function DashboardCharts({ fechaDesde, fechaHasta, empresaId }: Dashboard
         if (typeof window !== 'undefined') window.localStorage.setItem(STORAGE_KEY_CHART_TYPE, type)
     }, [])
 
-    if (loading) {
-        return (
-            <div className="grid gap-6 lg:grid-cols-3">
-                <Card className="lg:col-span-2 h-[320px] animate-pulse bg-slate-100 dark:bg-slate-800/50" />
-                <Card className="h-[320px] animate-pulse bg-slate-100 dark:bg-slate-800/50" />
-            </div>
-        )
-    }
-
-    if (fetchError) {
-        return (
-            <Card className="border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20">
-                <CardContent className="py-6 px-4 text-center">
-                    <p className="text-amber-800 dark:text-amber-200 font-medium">{fetchError}</p>
-                </CardContent>
-            </Card>
-        )
-    }
-
     const estadoLabels: Record<string, string> = {
         pagada: 'Pagadas',
         emitida: 'Emitidas',
         borrador: 'Borradores',
     }
 
-    const chartTooltipFormatter = (value: number) => [
-        new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(value),
-        'Facturación',
-    ]
     const commonChartProps = {
         data: evolucion,
-        margin: { top: 5, right: 10, left: 0, bottom: 0 },
+        margin: { top: 20, right: 20, left: 0, bottom: 0 },
     }
+
     const commonAxis = (
         <>
-            <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" className="stroke-slate-200 dark:stroke-slate-700" />
-            <XAxis dataKey="periodo" stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} />
-            <YAxis stroke="#64748b" fontSize={11} tickLine={false} axisLine={false} tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k€`} />
-            <Tooltip
-                formatter={(value: number | string | undefined) => [
-                    new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(value || 0)),
-                    'Facturación'
-                ]}
-                contentStyle={{ borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+            <defs>
+                <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                    <feGaussianBlur stdDeviation="3" result="blur" />
+                    <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                </filter>
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} stroke="#64748b" />
+            <XAxis 
+                dataKey="periodo" 
+                stroke="#64748b" 
+                fontSize={10} 
+                tickLine={false} 
+                axisLine={false} 
+                dy={10}
+                fontFamily="inherit"
+                fontWeight={500}
             />
+            <YAxis 
+                stroke="#64748b" 
+                fontSize={10} 
+                tickLine={false} 
+                axisLine={false} 
+                tickFormatter={(v: number) => `${(v / 1000).toFixed(0)}k`} 
+                dx={-10}
+                fontFamily="inherit"
+                fontWeight={500}
+            />
+            <Tooltip content={<CustomTooltip />} cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }} />
         </>
     )
 
+    if (loading) {
+        return (
+            <div className="grid gap-6 lg:grid-cols-3">
+                <Card className="lg:col-span-2 h-[400px] border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Analizando evolución...</p>
+                    </div>
+                </Card>
+                <Card className="h-[400px] border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl">
+                    <div className="flex flex-col items-center gap-4">
+                        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Distribuyendo estados...</p>
+                    </div>
+                </Card>
+            </div>
+        )
+    }
+
     return (
         <div className="grid gap-6 lg:grid-cols-3">
-            <Card className="lg:col-span-2 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/95 shadow-lg">
-                <CardHeader className="pb-2 flex flex-row items-start justify-between gap-4">
-                    <div>
-                        <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-100">
-                            Evolución de facturación
+            <Card className="lg:col-span-2 border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-primary/5 group">
+                <CardHeader className="pb-4 flex flex-row items-center justify-between gap-4">
+                    <div className="space-y-1">
+                        <CardTitle className="text-lg font-black text-slate-900 dark:text-white tracking-tighter">
+                            Evolución de Ingresos
                         </CardTitle>
-                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                            Ingresos por mes en el período seleccionado
+                        <p className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-[0.2em]">
+                            Performance del período
                         </p>
                     </div>
-                    <div role="group" aria-label="Tipo de gráfico" className="flex rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80 p-0.5">
-                        {([
+                    
+                    <div className="flex gap-1 p-1 bg-slate-900/5 dark:bg-white/5 rounded-2xl backdrop-blur-sm">
+                        {[
                             { value: 'line' as const, icon: LineIcon, label: 'Línea' },
                             { value: 'bar' as const, icon: BarChart3, label: 'Barras' },
                             { value: 'area' as const, icon: Mountain, label: 'Área' },
-                        ]).map(({ value, icon: Icon, label }) => (
+                        ].map(({ value, icon: Icon, label }) => (
                             <Button
                                 key={value}
                                 variant="ghost"
                                 size="sm"
-                                data-testid={`dashboard-chart-type-${value}`}
                                 className={cn(
-                                    'h-8 w-9 min-h-[44px] min-w-[44px] sm:min-h-0 sm:min-w-0 sm:h-8 sm:w-9 p-0 rounded-md transition-all duration-200 active:scale-95',
-                                    chartType === value ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm ring-2 ring-primary/20' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                    'h-8 w-8 p-0 rounded-xl transition-all duration-300',
+                                    chartType === value 
+                                        ? 'bg-white dark:bg-slate-800 text-primary shadow-lg ring-1 ring-black/5' 
+                                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200'
                                 )}
                                 onClick={() => handleChartTypeChange(value)}
                                 title={label}
-                                aria-label={`Tipo de gráfico: ${label}`}
                             >
                                 <Icon className="h-4 w-4" />
                             </Button>
                         ))}
                     </div>
                 </CardHeader>
-                <CardContent className="pl-2">
-                    <div className="h-[260px] min-h-[200px] w-full min-w-0">
+                <CardContent>
+                    <div className="h-[250px] sm:h-[300px] w-full">
                         {evolucion.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
-                                {chartType === 'line' && (
+                            <ResponsiveContainer width="100%" height="100%">
+                                {chartType === 'line' ? (
                                     <LineChart {...commonChartProps}>
                                         {commonAxis}
-                                        <Line type="monotone" dataKey="facturacion" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ fill: 'hsl(var(--primary))', r: 4 }} activeDot={{ r: 6, strokeWidth: 2 }} />
+                                        <Line 
+                                            type="monotone" 
+                                            dataKey="facturacion" 
+                                            stroke="hsl(var(--primary))" 
+                                            strokeWidth={4} 
+                                            dot={{ fill: 'hsl(var(--primary))', r: 5, strokeWidth: 2, stroke: '#fff' }} 
+                                            activeDot={{ r: 8, strokeWidth: 0, fill: 'hsl(var(--primary))' }}
+                                            animationDuration={2000}
+                                            filter="url(#glow)"
+                                        />
                                     </LineChart>
-                                )}
-                                {chartType === 'bar' && (
+                                ) : chartType === 'bar' ? (
                                     <BarChart {...commonChartProps}>
+                                        <defs>
+                                            <linearGradient id="barGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={1} />
+                                                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0.6} />
+                                            </linearGradient>
+                                        </defs>
                                         {commonAxis}
-                                        <Bar dataKey="facturacion" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                                        <Bar 
+                                            dataKey="facturacion" 
+                                            fill="url(#barGradient)" 
+                                            radius={[10, 10, 0, 0]} 
+                                            animationDuration={1500}
+                                            className="transition-all duration-300 hover:opacity-80"
+                                        />
                                     </BarChart>
-                                )}
-                                {chartType === 'area' && (
+                                ) : (
                                     <AreaChart {...commonChartProps}>
+                                        <defs>
+                                            <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                                <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                            </linearGradient>
+                                        </defs>
                                         {commonAxis}
-                                        <Area type="monotone" dataKey="facturacion" stroke="hsl(var(--primary))" fill="hsl(var(--primary))" fillOpacity={0.3} strokeWidth={2} />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="facturacion" 
+                                            stroke="hsl(var(--primary))" 
+                                            strokeWidth={3}
+                                            fill="url(#areaGradient)" 
+                                            animationDuration={2000}
+                                            filter="url(#glow)"
+                                        />
                                     </AreaChart>
                                 )}
                             </ResponsiveContainer>
                         ) : (
-                            <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-                                Sin datos de evolución en este período
+                            <div className="flex h-full flex-col items-center justify-center text-slate-400 gap-2">
+                                <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center opacity-50">
+                                    <LineIcon className="h-6 w-6" />
+                                </div>
+                                <p className="text-xs font-bold uppercase tracking-widest opacity-50">Sin datos este período</p>
                             </div>
                         )}
                     </div>
                 </CardContent>
             </Card>
 
-            <Card className="border border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/60 shadow-lg">
-                <CardHeader className="pb-2">
-                    <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-100">
-                        Facturas por estado
+            <Card className="border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden transition-all duration-500 hover:shadow-primary/5 group">
+                <CardHeader className="pb-4">
+                    <CardTitle className="text-lg font-black text-slate-900 dark:text-white tracking-tighter">
+                        Estados
                     </CardTitle>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                        Distribución en el período
+                    <p className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 tracking-[0.2em]">
+                        Mix de facturación
                     </p>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[260px] min-h-[200px] w-full min-w-0">
+                    <div className="h-[300px] w-full">
                         {estados.length > 0 ? (
-                            <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
+                            <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
                                     <Pie
                                         data={estados}
                                         cx="50%"
                                         cy="50%"
-                                        innerRadius={55}
-                                        outerRadius={85}
-                                        paddingAngle={3}
+                                        innerRadius={70}
+                                        outerRadius={100}
+                                        paddingAngle={8}
                                         dataKey="cantidad"
                                         nameKey="estado"
-                                        label={(props: { name?: string; percent?: number }) =>
-                                            `${estadoLabels[props.name || ''] || props.name || ''} ${((props.percent || 0) * 100).toFixed(0)}%`
-                                        }
+                                        animationDuration={1500}
+                                        stroke="none"
                                     >
                                         {estados.map((_, i) => (
-                                            <Cell key={i} fill={COLORS[i % COLORS.length]} />
+                                            <Cell 
+                                                key={i} 
+                                                fill={COLORS[i % COLORS.length]} 
+                                                className="transition-all duration-300 hover:opacity-80 outline-none" 
+                                            />
                                         ))}
                                     </Pie>
-                                    <Tooltip
-                                        formatter={(value: number | string | undefined, name: string | undefined) => [
-                                            Number(value || 0),
-                                            estadoLabels[name || ''] || name || '',
-                                        ]}
-                                    />
+                                    <Tooltip content={<CustomTooltip />} />
                                     <Legend
                                         verticalAlign="bottom"
                                         height={36}
-                                        formatter={(value: string) => estadoLabels[value] || value}
+                                        iconType="circle"
+                                        iconSize={8}
+                                        formatter={(value: string) => (
+                                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                                                {estadoLabels[value] || value}
+                                            </span>
+                                        )}
                                     />
                                 </PieChart>
                             </ResponsiveContainer>
                         ) : (
-                            <div className="flex h-full items-center justify-center text-slate-400 text-sm">
-                                Sin facturas en este período
+                            <div className="flex h-full flex-col items-center justify-center text-slate-400 gap-2">
+                                <div className="h-12 w-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center opacity-50">
+                                    <Loader2 className="h-6 w-6" />
+                                </div>
+                                <p className="text-xs font-bold uppercase tracking-widest opacity-50">Sin facturas</p>
                             </div>
                         )}
                     </div>

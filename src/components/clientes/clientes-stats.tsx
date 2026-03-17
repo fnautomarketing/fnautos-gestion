@@ -31,10 +31,11 @@ export function ClientesStats({ stats }: ClientesStatsProps) {
             <Card
                 key={item.key}
                 data-testid={`clientes-stat-${item.key}`}
-                className="group border-white/20 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 shadow-lg hover:shadow-xl hover:-translate-y-0.5 hover:ring-2 hover:ring-primary/20 transition-all duration-200 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:ring-0 animate-in fade-in slide-in-from-bottom-2 duration-300 fill-mode-both"
-                style={{ animationDelay: `${idx * 75}ms` } as React.CSSProperties}
+                className="group relative overflow-hidden border border-slate-200/50 dark:border-slate-800/50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] hover:-translate-y-1 hover:ring-1 hover:ring-primary/30 transition-all duration-300 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:hover:ring-0 animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both"
+                style={{ animationDelay: `${idx * 100}ms` } as React.CSSProperties}
             >
-                <CardContent className="p-4 sm:p-6">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <CardContent className="p-4 sm:p-5">
                     <div className="flex items-start justify-between">
                         <div>
                             <p className="text-sm font-medium text-slate-500 dark:text-slate-400">

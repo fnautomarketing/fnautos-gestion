@@ -33,4 +33,5 @@ export interface ClientConfig {
   }[]
   // Funcionalidades
   multiEmpresa: boolean
+  razonSocial: string
 }

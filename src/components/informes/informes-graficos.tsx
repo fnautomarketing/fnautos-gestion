@@ -7,15 +7,17 @@ import {
     getEstadoFacturasAction,
     getTopClientesAction,
     getFacturacionPorCategoriaAction,
-    EvolucionData,
-    EstadoData,
-    TopClienteData,
-    CategoriaData
+    type EvolucionData,
+    type EstadoData,
+    type TopClienteData,
+    type CategoriaData
 } from '@/app/actions/informes'
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-    PieChart, Pie, Cell, BarChart, Bar, Legend
+    PieChart, Pie, Cell, BarChart, Bar, Legend, AreaChart, Area
 } from 'recharts'
+import { Loader2, TrendingUp, Users, PieChart as PieIcon, BarChart3 } from 'lucide-react'
+import { cn } from '@/lib/utils'
 
 interface InformesGraficosProps {
     fechaDesde?: string
@@ -23,13 +25,37 @@ interface InformesGraficosProps {
 }
 
 const COLORS = [
-    'hsl(var(--primary))',    
-    'hsl(var(--secondary))',  
-    '#475569',                
-    '#94a3b8',                
-    'hsla(var(--primary), 0.6)',
-    'hsla(var(--secondary), 0.6)'
+    'hsl(var(--primary))',
+    '#0ea5e9', // Sky 500
+    '#10b981', // Emerald 500
+    '#f59e0b', // Amber 500
+    '#6366f1', // Indigo 500
+    '#ec4899', // Pink 500
 ]
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+        return (
+            <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-white/20 dark:border-white/10 p-4 shadow-2xl rounded-2xl animate-in zoom-in-95 duration-200">
+                <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
+                <div className="space-y-1.5">
+                    {payload.map((entry: any, index: number) => (
+                        <div key={index} className="flex items-center gap-3">
+                            <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill }} />
+                            <div className="flex flex-col">
+                                <span className="text-[10px] text-slate-500 font-bold uppercase">{entry.name}</span>
+                                <span className="text-sm font-black text-slate-900 dark:text-white tabular-nums">
+                                    {new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(entry.value)}
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )
+    }
+    return null
+}
 
 export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosProps) {
     const [evolucion, setEvolucion] = useState<EvolucionData[]>([])
@@ -41,132 +67,203 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
     useEffect(() => {
         const loadData = async () => {
             setLoading(true)
-            const [evolucionRes, estadosRes, topClientesRes, categoriasRes] = await Promise.all([
-                getEvolucionFacturacionAction(fechaDesde, fechaHasta),
-                getEstadoFacturasAction(fechaDesde, fechaHasta),
-                getTopClientesAction(fechaDesde, fechaHasta, 5),
-                getFacturacionPorCategoriaAction(fechaDesde, fechaHasta)
-            ])
+            try {
+                const [evolucionRes, estadosRes, topClientesRes, categoriasRes] = await Promise.all([
+                    getEvolucionFacturacionAction(fechaDesde, fechaHasta),
+                    getEstadoFacturasAction(fechaDesde, fechaHasta),
+                    getTopClientesAction(fechaDesde, fechaHasta, 5),
+                    getFacturacionPorCategoriaAction(fechaDesde, fechaHasta)
+                ])
 
-            if (evolucionRes.success && evolucionRes.data) setEvolucion(evolucionRes.data)
-            if (estadosRes.success && estadosRes.data) setEstados(estadosRes.data)
-            if (topClientesRes.success && topClientesRes.data) setTopClientes(topClientesRes.data)
-            if (categoriasRes.success && categoriasRes.data) setCategorias(categoriasRes.data)
-            setLoading(false)
+                if (evolucionRes.success && evolucionRes.data) setEvolucion(evolucionRes.data)
+                if (estadosRes.success && estadosRes.data) setEstados(estadosRes.data.filter(e => e.estado !== 'anulada'))
+                if (topClientesRes.success && topClientesRes.data) setTopClientes(topClientesRes.data)
+                if (categoriasRes.success && categoriasRes.data) setCategorias(categoriasRes.data)
+            } finally {
+                setLoading(false)
+            }
         }
         loadData()
     }, [fechaDesde, fechaHasta])
 
+    const estadoLabels: Record<string, string> = {
+        pagada: 'Pagadas',
+        emitida: 'Emitidas',
+        borrador: 'Borradores',
+    }
+
     if (loading) {
         return (
-            <div className="grid gap-4 md:grid-cols-2">
-                <Card className="col-span-2 h-[300px] animate-pulse bg-slate-100" />
-                <Card className="h-[300px] animate-pulse bg-slate-100" />
-                <Card className="h-[300px] animate-pulse bg-slate-100" />
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                <Card className="col-span-7 lg:col-span-4 h-[400px] border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl">
+                    <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                </Card>
+                <Card className="col-span-7 lg:col-span-3 h-[400px] border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-center rounded-3xl overflow-hidden shadow-2xl">
+                    <Loader2 className="h-8 w-8 text-primary animate-spin" />
+                </Card>
             </div>
         )
     }
 
     return (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            {/* Evolución Temporal - Line Chart */}
-            <Card className="col-span-7 lg:col-span-4">
-                <CardHeader>
-                    <CardTitle>Evolución de Facturación</CardTitle>
-                    <CardDescription>Comparativa mensual de ingresos</CardDescription>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+            {/* Evolución de Facturación */}
+            <Card className="col-span-7 lg:col-span-4 border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group">
+                <CardHeader className="pb-4">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-primary/10 text-primary">
+                            <TrendingUp className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Evolución de Facturación</CardTitle>
+                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Volumen de ingresos en el tiempo</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent className="pl-2">
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
-                            <LineChart data={evolucion}>
-                                <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                <XAxis
-                                    dataKey="periodo"
-                                    stroke="#888888"
-                                    fontSize={12}
-                                    tickLine={false}
-                                    axisLine={false}
+                <CardContent>
+                    <div className="h-[320px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={evolucion}>
+                                <defs>
+                                    <filter id="glowInforme" x="-20%" y="-20%" width="140%" height="140%">
+                                        <feGaussianBlur stdDeviation="4" result="blur" />
+                                        <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                                    </filter>
+                                    <linearGradient id="areaGradientInforme" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" vertical={false} strokeOpacity={0.1} stroke="#64748b" />
+                                <XAxis 
+                                    dataKey="periodo" 
+                                    stroke="#64748b" 
+                                    fontSize={10} 
+                                    tickLine={false} 
+                                    axisLine={false} 
+                                    dy={10}
                                 />
-                                <YAxis
-                                    stroke="#888888"
-                                    fontSize={12}
-                                    tickLine={false}
-                                    axisLine={false}
-                                    tickFormatter={(value) => `${value}€`}
+                                <YAxis 
+                                    stroke="#64748b" 
+                                    fontSize={10} 
+                                    tickLine={false} 
+                                    axisLine={false} 
+                                    tickFormatter={(v) => `${(v / 1000).toFixed(0)}k€`} 
                                 />
-                                <Tooltip
-                                    formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Facturación']}
-                                    labelStyle={{ color: 'black' }}
+                                <Tooltip content={<CustomTooltip />} />
+                                <Area 
+                                    type="monotone" 
+                                    dataKey="facturacion" 
+                                    name="Facturación"
+                                    stroke="hsl(var(--primary))" 
+                                    strokeWidth={4} 
+                                    fill="url(#areaGradientInforme)" 
+                                    filter="url(#glowInforme)"
+                                    animationDuration={2500}
                                 />
-                                <Line
-                                    type="monotone"
-                                    dataKey="facturacion"
-                                    stroke="hsl(var(--primary))"
-                                    strokeWidth={3}
-                                    activeDot={{ r: 8, fill: 'hsl(var(--primary))' }}
-                                />
-                            </LineChart>
+                            </AreaChart>
                         </ResponsiveContainer>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Estado Facturas - Pie/Donut Chart */}
-            <Card className="col-span-7 lg:col-span-3">
+            {/* Estado de Facturas */}
+            <Card className="col-span-7 lg:col-span-3 border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group">
                 <CardHeader>
-                    <CardTitle>Estado de Facturas</CardTitle>
-                    <CardDescription>Distribución por estado actual</CardDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-sky-500/10 text-sky-500">
+                            <PieIcon className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Estado de Facturas</CardTitle>
+                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Mix de cartera actual</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
+                    <div className="h-[320px]">
+                        <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={estados}
                                     cx="50%"
                                     cy="50%"
-                                    innerRadius={60}
-                                    outerRadius={80}
-                                    paddingAngle={5}
+                                    innerRadius={70}
+                                    outerRadius={100}
+                                    paddingAngle={8}
                                     dataKey="cantidad"
                                     nameKey="estado"
+                                    animationDuration={1500}
+                                    stroke="none"
                                 >
-                                    {estados.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    {estados.map((_, i) => (
+                                        <Cell 
+                                            key={`cell-${i}`} 
+                                            fill={COLORS[i % COLORS.length]} 
+                                            className="transition-all duration-300 hover:opacity-80 outline-none" 
+                                        />
                                     ))}
                                 </Pie>
-                                <Tooltip />
-                                <Legend verticalAlign="bottom" height={36} />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Legend
+                                    verticalAlign="bottom"
+                                    iconType="circle"
+                                    iconSize={8}
+                                    formatter={(value: string) => (
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                                            {estadoLabels[value] || value}
+                                        </span>
+                                    )}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>
                 </CardContent>
             </Card>
 
-            {/* Top Clientes - Bar Chart */}
-            <Card className="col-span-7 lg:col-span-4">
+            {/* Top Clientes */}
+            <Card className="col-span-7 lg:col-span-4 border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group">
                 <CardHeader>
-                    <CardTitle>Top Creación de Valor</CardTitle>
-                    <CardDescription>Clientes con mayor facturación</CardDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500">
+                            <Users className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Top Creación de Valor</CardTitle>
+                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Clientes más relevantes por volumen</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
-                            <BarChart data={topClientes} layout="vertical" margin={{ left: 40 }}>
-                                <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                    <div className="h-[320px]">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart data={topClientes} layout="vertical" margin={{ left: 20, right: 40 }}>
+                                <defs>
+                                    <linearGradient id="barGradientTop" x1="0" y1="0" x2="1" y2="0">
+                                        <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity={0.8} />
+                                        <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity={1} />
+                                    </linearGradient>
+                                </defs>
+                                <CartesianGrid strokeDasharray="3 3" horizontal={false} strokeOpacity={0.1} />
                                 <XAxis type="number" hide />
                                 <YAxis
                                     dataKey="cliente_nombre"
                                     type="category"
-                                    width={100}
-                                    tick={{ fontSize: 12 }}
+                                    width={120}
+                                    fontSize={10}
+                                    fontWeight={700}
+                                    tick={{ fill: '#64748b' }}
+                                    axisLine={false}
+                                    tickLine={false}
                                 />
-                                <Tooltip formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Facturado']} />
+                                <Tooltip content={<CustomTooltip />} />
                                 <Bar 
                                     dataKey="facturacion" 
-                                    fill="hsl(var(--primary))" 
-                                    radius={[0, 4, 4, 0]} 
-                                    fillOpacity={0.9}
+                                    name="Facturado"
+                                    fill="url(#barGradientTop)" 
+                                    radius={[0, 12, 12, 0]} 
+                                    barSize={20}
+                                    animationDuration={2000}
                                 />
                             </BarChart>
                         </ResponsiveContainer>
@@ -174,30 +271,52 @@ export function InformesGraficos({ fechaDesde, fechaHasta }: InformesGraficosPro
                 </CardContent>
             </Card>
 
-            {/* Categorías - Simple List or Pie */}
-            <Card className="col-span-7 lg:col-span-3">
+            {/* Ventas por Categoría */}
+            <Card className="col-span-7 lg:col-span-3 border-white/20 bg-white/40 dark:bg-slate-900/40 backdrop-blur-md shadow-2xl rounded-3xl overflow-hidden group">
                 <CardHeader>
-                    <CardTitle>Ventas por Categoría</CardTitle>
-                    <CardDescription>Distribución de ingresos por tipo</CardDescription>
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 rounded-xl bg-amber-500/10 text-amber-500">
+                            <BarChart3 className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-xl font-black text-slate-900 dark:text-white tracking-tighter">Ventas por Categoría</CardTitle>
+                            <CardDescription className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Segmentación de cartera</CardDescription>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
-                    <div className="h-[300px]">
-                        <ResponsiveContainer width="100%" height="100%" minWidth={200} minHeight={200}>
+                    <div className="h-[320px]">
+                        <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
                                 <Pie
                                     data={categorias}
                                     cx="50%"
                                     cy="50%"
-                                    outerRadius={80}
+                                    outerRadius={95}
                                     dataKey="facturacion"
                                     nameKey="categoria"
-                                    label={(props: any) => `${props.payload.categoria} ${(props.percent * 100).toFixed(0)}%`}
+                                    animationDuration={1500}
+                                    stroke="none"
                                 >
-                                    {categorias.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                    {categorias.map((_, i) => (
+                                        <Cell 
+                                            key={`cell-${i}`} 
+                                            fill={COLORS[i % COLORS.length]} 
+                                            className="transition-all duration-300 hover:opacity-80 outline-none shadow-lg" 
+                                        />
                                     ))}
                                 </Pie>
-                                <Tooltip formatter={(value: any) => [`${Number(value || 0).toFixed(2)}€`, 'Ingresos']} />
+                                <Tooltip content={<CustomTooltip />} />
+                                <Legend
+                                    verticalAlign="bottom"
+                                    iconType="circle"
+                                    iconSize={8}
+                                    formatter={(value: string) => (
+                                        <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest ml-1">
+                                            {value}
+                                        </span>
+                                    )}
+                                />
                             </PieChart>
                         </ResponsiveContainer>
                     </div>

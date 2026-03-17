@@ -11,9 +11,24 @@ export async function registrarPagoAction(formData: FormData) {
         const { supabase, empresaId: contextEmpresaId, userId, rol } = await getUserContext()
 
         const rawData = Object.fromEntries(formData.entries())
+        
+        // Mapeo de etiquetas de UI a valores del esquema
+        const metodoPagoMap: Record<string, string> = {
+            'Transferencia Bancaria': 'transferencia',
+            'Tarjeta de Crédito/Débito': 'tarjeta',
+            'Efectivo': 'efectivo',
+            'Domiciliación Bancaria': 'domiciliacion',
+            'Cheque': 'cheque',
+            'Otro': 'otro'
+        }
+
+        const metodoOriginal = rawData.metodo_pago as string
+        const metodoNormalizado = metodoPagoMap[metodoOriginal] || metodoOriginal.toLowerCase()
+
         const dataToValidate = {
             ...rawData,
             importe: Number(rawData.importe),
+            metodo_pago: metodoNormalizado,
             marcar_como_pagada: rawData.marcar_como_pagada === 'true',
             conciliado: rawData.conciliado === 'true',
         }
@@ -50,22 +65,7 @@ export async function registrarPagoAction(formData: FormData) {
             }
         }
 
-        // Registrar pago en pagos_factura (historial en detalle de factura)
-        const { error: errorPago } = await supabase
-            .from('pagos_factura')
-            .insert({
-                factura_id: validated.factura_id,
-                importe: validated.importe,
-                fecha_pago: validated.fecha_pago,
-                metodo_pago: validated.metodo_pago,
-                referencia: validated.referencia || null,
-                cuenta_bancaria: validated.cuenta_bancaria || null,
-                notas: validated.notas || null,
-                empresa_id: empresaId,
-            })
-
-        if (errorPago) throw errorPago
-
+        // Registrar pago en la tabla pagos
         const { error: errorPagos } = await supabase
             .from('pagos')
             .insert({
@@ -84,6 +84,7 @@ export async function registrarPagoAction(formData: FormData) {
 
         if (errorPagos) {
             console.error('[registrarPagoAction] Error inserting into pagos:', errorPagos)
+            throw errorPagos
         }
 
         // Actualizar total pagado en la factura

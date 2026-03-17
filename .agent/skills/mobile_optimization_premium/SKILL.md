@@ -9,31 +9,27 @@ Esta skill garantiza que la aplicación no solo sea "responsive", sino que se si
 
 ## Reglas de Optimización Móvil
 
-1.  **Touch Targets (Objetivos Táctiles)**:
-    *   Todo elemento interactivo (botones, iconos) debe tener un área de clic mínima de **44x44px**.
-    *   Usa `p-3` o `h-10 w-10` como mínimo para botones de iconos.
+6.  **Optimización de Formularios (Input Mobility)**:
+    - **Single Column Layout**: En pantallas pequeñas, los formularios DEBEN ser de una sola columna.
+    - **Sticky Actions**: Botones "Guardar/Emitir" pegajosos en la parte inferior (`sticky bottom-0`) con fondo de cristal (`backdrop-blur`).
+    - **Native Keyboards**: Usar `type="email"`, `type="tel"`, `type="number"` para activar el teclado adecuado.
+    - **iOS Zoom Avoidance**: Asegurar `text-base` (16px) en inputs para evitar que iOS haga zoom automático al enfocar.
 
-2.  **Navegación Móvil**:
-    *   **NO** uses la Sidebar de escritorio en móvil.
-    *   Usa el componente `Sheet` (Drawer lateral) de shadcn/ui para menús.
-    *   El botón de menú (Hamburger) debe estar siempre accesible en el Navbar (`sticky top-0`).
+7.  **Listados Adaptativos (Card-based)**:
+    - En móvil, transforma filas de tablas complejas en **Cards** apilables.
+    - Agrupa acciones en un `DropdownMenu` con un objetivo táctil mínimo de 44px (`h-11 w-11`).
 
-3.  **Inputs y Formularios**:
-    *   Tamaño de fuente mínimo de **16px** en inputs para evitar que iOS haga zoom automático.
-    *   Teclados correctos: Usa `type="email"`, `type="tel"`, `inputMode="numeric"` según corresponda.
+8.  **Filtros y Modales**:
+    - Usa **Bottom Sheet** (side="bottom") para filtros en móvil.
 
-4.  **Layout y Espaciado**:
-    *   Evita el scroll horizontal no intencionado. `w-full` y `overflow-x-hidden` en el contenedor principal.
-    *   Padding lateral seguro: `px-4` o `px-6` en contenedores principales.
-    *   Cards en móvil: Stack vertical (`flex-col`), ocupando el ancho completo.
+9.  **Gráficos Responsivos**:
+    - Ajusta el contenedor de gráficos a un `aspect` que evite la compresión vertical en pantallas < 640px.
+    - Oculta leyendas complejas o simplifícalas para ahorro de espacio.
 
-5.  **Gestos y Animaciones**:
-    *   Las transiciones de apertura de menús deben ser suaves (`duration-300 ease-out`).
-    *   Feedback visual inmediato al tocar (`active:scale-95`).
+## Checklist de Verificación Premium (PWA-Ready)
 
-## Checklist de Verificación Móvil
-
-- [ ] ¿Es fácil tocar los botones con el dedo gordo sin tocar otros por error?
-- [ ] ¿El menú se abre suavemente con un Sheet?
-- [ ] ¿Los inputs tienen tamaño de texto 16px+?
-- [ ] ¿Se ve bien en una pantalla de 375px de ancho (iPhone SE/Mini)?
+- [ ] ¿Se puede crear una factura completa solo con el pulgar?
+- [ ] ¿Los botones de acción principal están en la zona de fácil alcance?
+- [ ] ¿Los gráficos son legibles en un iPhone SE?
+- [ ] ¿Se evitan los tooltips que dependen de "hover" (usar clic para mostrar en móvil)?
+- [ ] ¿La navegación entre pestañas es fluida y táctil?

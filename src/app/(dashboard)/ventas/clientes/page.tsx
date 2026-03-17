@@ -104,24 +104,24 @@ export default async function ClientesPage({
     }
 
     return (
-        <div className="space-y-6 p-2 md:p-4 animate-in fade-in slide-in-from-bottom-4 duration-500" data-testid="page-clientes">
+        <div className="space-y-8 p-4 md:p-6 animate-in fade-in slide-in-from-bottom-4 duration-700 fill-mode-both" data-testid="page-clientes">
             {/* Breadcrumbs */}
-            <nav className="flex items-center gap-2 text-sm text-slate-500" data-testid="clientes-breadcrumb" aria-label="Breadcrumb">
-                <Link href="/ventas" className="hover:text-slate-700 dark:hover:text-slate-300 transition-colors">Ventas</Link>
-                <span aria-hidden>›</span>
-                <span className="text-slate-900 dark:text-slate-100 font-medium">Clientes</span>
+            <nav className="flex items-center gap-2 text-sm text-slate-500/80" data-testid="clientes-breadcrumb" aria-label="Breadcrumb">
+                <Link href="/ventas" className="hover:text-primary transition-colors duration-200">Ventas</Link>
+                <span className="opacity-50" aria-hidden>›</span>
+                <span className="text-slate-900 dark:text-slate-200 font-medium tracking-tight">Clientes</span>
             </nav>
 
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                    <h1 className="text-3xl font-serif font-bold text-slate-900 dark:text-slate-100 tracking-tight">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="space-y-1">
+                    <h1 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
                         Clientes
                     </h1>
-                    <p className="text-slate-600 dark:text-slate-400 mt-1 text-lg">
-                        Gestiona la base de datos de tus clientes
+                    <p className="text-slate-500 dark:text-slate-400 max-w-2xl text-lg font-medium">
+                        Gestiona la base de datos de tus clientes y visualiza su salud financiera.
                     </p>
                 </div>
-                <Button asChild size="lg" className="sm:w-auto w-full min-h-[44px] bg-primary hover:bg-primary/90 hover:shadow-lg text-white shadow-lg shadow-primary/20 transition-all duration-300">
+                <Button asChild size="lg" variant="premium" className="sm:w-auto w-full min-h-[48px] shadow-[0_10px_15px_-3px_rgba(220,38,38,0.2)]">
                     <Link href="/ventas/clientes/nuevo">
                         <Plus className="h-5 w-5 mr-2" aria-hidden />
                         Nuevo Cliente

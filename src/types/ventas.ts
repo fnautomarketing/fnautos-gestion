@@ -30,7 +30,7 @@ export type Cliente = Tables<'clientes'> & {
     activo: boolean
 }
 export type LineaFactura = Tables<'lineas_factura'>
-export type PagoFactura = Tables<'pagos_factura'>
+export type PagoFactura = Tables<'pagos'>
 export type EventoFactura = Tables<'eventos_factura'>
 export type ConceptoCatalogo = Tables<'conceptos_catalogo'>
 export type UsuarioEmpresa = Tables<'usuarios_empresas'>

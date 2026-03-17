@@ -95,9 +95,10 @@ export default async function DetalleFacturaPage({
 
     // Obtener pagos
     const { data: p } = await supabase
-        .from('pagos_factura')
+        .from('pagos')
         .select('*')
         .eq('factura_id', id)
+        .eq('anulado', false)
         .order('fecha_pago', { ascending: false })
 
     // Cast to PagoFactura[] to handle potential type inference issues if schema is missing

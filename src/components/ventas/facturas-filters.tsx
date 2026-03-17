@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useTransition, useEffect, useCallback, useRef } from 'react'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 import { Search, X, Calendar, ArrowUpDown, SlidersHorizontal, User, ChevronDown, Check } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -406,39 +408,39 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                 <div className="flex flex-col gap-5">
                     {/* Búsqueda */}
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
-                        <div className="relative flex-1 min-w-0" role="search">
-                            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                        <div className="relative flex-1 min-w-0 group" role="search">
+                            <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400 group-focus-within:text-primary transition-colors" />
                             <Input
                                 id="facturas-search"
                                 data-testid="facturas-filter-search"
                                 placeholder="Buscar por cliente, CIF, número o importe…"
                                 value={busqueda}
                                 onChange={e => setBusqueda(e.target.value)}
-                                className="pl-10 h-10 rounded-lg bg-slate-50/80 dark:bg-slate-800/50 border-slate-200 dark:border-slate-600"
+                                className="pl-10 h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50 focus:ring-primary/20 focus:border-primary transition-all shadow-sm"
                                 disabled={isPending}
                             />
                             {busqueda && (
                                 <button type="button" onClick={() => setBusqueda('')}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors">
                                     <X className="h-4 w-4" />
                                 </button>
                             )}
                         </div>
                         {tieneFiltrosActivos && (
                             <Button variant="ghost" size="sm" onClick={handleLimpiar} disabled={isPending}
-                                className="text-slate-600 hover:text-slate-900 dark:text-slate-400"
+                                className="text-slate-500 hover:text-destructive dark:text-slate-400 hover:bg-destructive/10 transition-all rounded-lg h-11 px-4"
                                 data-testid="facturas-filter-limpiar">
-                                <X className="h-4 w-4 mr-1.5" />
-                                Limpiar
+                                <X className="h-4 w-4 mr-2" />
+                                Limpiar filtros
                             </Button>
                         )}
                     </div>
 
                     {/* Período: pills + rango */}
-                    <div className="space-y-3">
-                        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
+                    <div className="space-y-4">
+                        <div className="flex items-center gap-2 text-slate-400">
                             <Calendar className="h-3.5 w-3.5" />
-                            <span className="text-xs font-semibold uppercase tracking-wide">Período</span>
+                            <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Intervalo de Tiempo</span>
                         </div>
                         <div className="flex flex-wrap items-center gap-2">
                             {PERIODO_OPTIONS.map(p => {
@@ -452,12 +454,13 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                                         onClick={() => handlePeriodoPill(p.value)}
                                         disabled={isPending}
                                         className={cn(
-                                            'h-8 rounded-lg text-xs font-medium transition-all',
-                                            isActive && 'ring-2 ring-primary/30 shadow-sm'
+                                            'h-9 rounded-xl text-xs font-semibold px-4 transition-all duration-300',
+                                            isActive 
+                                                ? 'bg-primary text-white shadow-lg shadow-primary/20 border-transparent translate-y-[-1px]' 
+                                                : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-primary/50 hover:bg-primary/5'
                                         )}
                                         data-testid={`facturas-filter-periodo-${p.value}`}
                                     >
-                                        {isActive && <Check className="h-3 w-3 mr-1" />}
                                         {p.label}
                                     </Button>
                                 )
@@ -465,25 +468,32 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                             {periodo === 'rango' && (
                                 <Popover open={periodoOpen} onOpenChange={setPeriodoOpen}>
                                     <PopoverTrigger asChild>
-                                        <Button variant="outline" size="sm" className="h-8 rounded-lg text-xs"
+                                        <Button variant="outline" size="sm" className="h-9 rounded-xl text-xs px-4 border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
                                             data-testid="facturas-filter-rango-trigger">
-                                            {customDesde && customHasta ? `${customDesde} – ${customHasta}` : 'Elegir fechas'}
+                                            {customDesde && customHasta ? `${format(new Date(customDesde), 'dd MMM', { locale: es })} – ${format(new Date(customHasta), 'dd MMM', { locale: es })}` : 'Seleccionar rango'}
+                                            <ChevronDown className="ml-2 h-3 w-3" />
                                         </Button>
                                     </PopoverTrigger>
-                                    <PopoverContent className="w-80 p-4" align="start">
-                                        <div className="grid grid-cols-2 gap-3">
-                                            <div>
-                                                <Label className="text-xs">Desde</Label>
-                                                <Input type="date" value={customDesde} onChange={e => setCustomDesde(e.target.value)} className="mt-1" />
+                                    <PopoverContent className="w-80 p-5 rounded-2xl shadow-2xl border-slate-200 dark:border-slate-700 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl" align="start">
+                                        <div className="space-y-4">
+                                            <div className="space-y-2">
+                                                <h4 className="font-semibold text-sm">Personalizar intervalo</h4>
+                                                <p className="text-xs text-slate-500">Elige las fechas de inicio y fin para filtrar.</p>
                                             </div>
-                                            <div>
-                                                <Label className="text-xs">Hasta</Label>
-                                                <Input type="date" value={customHasta} onChange={e => setCustomHasta(e.target.value)} className="mt-1" />
+                                            <div className="grid grid-cols-2 gap-3">
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-[10px] uppercase tracking-wider text-slate-500">Desde</Label>
+                                                    <Input type="date" value={customDesde} onChange={e => setCustomDesde(e.target.value)} className="h-9 rounded-lg" />
+                                                </div>
+                                                <div className="space-y-1.5">
+                                                    <Label className="text-[10px] uppercase tracking-wider text-slate-500">Hasta</Label>
+                                                    <Input type="date" value={customHasta} onChange={e => setCustomHasta(e.target.value)} className="h-9 rounded-lg" />
+                                                </div>
                                             </div>
-                                            <Button className="col-span-2" onClick={handleApplyRango}
+                                            <Button className="w-full rounded-xl shadow-lg shadow-primary/20" onClick={handleApplyRango}
                                                 disabled={!customDesde || !customHasta || customDesde > customHasta}
                                                 data-testid="facturas-filter-rango-aplicar">
-                                                Aplicar rango
+                                                Confirmar rango
                                             </Button>
                                         </div>
                                     </PopoverContent>
@@ -496,45 +506,50 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                     </div>
 
                     {/* Estado + Cliente + Orden */}
-                    <div className="flex flex-col gap-4 border-t border-slate-200 dark:border-slate-700 pt-4">
-                        <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
-                            <SlidersHorizontal className="h-3.5 w-3.5" />
-                            <span className="text-xs font-semibold uppercase tracking-wide">Estado, cliente y orden</span>
+                    <div className="flex flex-col gap-5 border-t border-slate-100 dark:border-slate-800 pt-5">
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2 text-slate-400">
+                                <SlidersHorizontal className="h-3.5 w-3.5" />
+                                <span className="text-[10px] font-bold uppercase tracking-[0.15em]">Filtrado por Estado</span>
+                            </div>
+                            <div className="flex flex-wrap gap-2" role="group">
+                                {ESTADOS.map(e => {
+                                    const isActive = estado === e.value
+                                    return (
+                                        <button
+                                            key={e.value}
+                                            type="button"
+                                            disabled={isPending}
+                                            onClick={() => handleEstado(e.value)}
+                                            className={cn(
+                                                'px-4 py-2 rounded-xl text-xs font-semibold border transition-all duration-300',
+                                                isActive 
+                                                    ? cn(e.color || 'bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-md', 'border-transparent scale-[1.02]') 
+                                                    : 'bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-primary/40 hover:bg-primary/5'
+                                            )}
+                                            data-testid={`facturas-filter-estado-${e.value}`}
+                                        >
+                                            {e.label}
+                                        </button>
+                                    )
+                                })}
+                            </div>
                         </div>
-                        <div className="flex flex-wrap gap-2" role="group">
-                            {ESTADOS.map(e => {
-                                const isActive = estado === e.value
-                                return (
-                                    <button
-                                        key={e.value}
-                                        type="button"
-                                        disabled={isPending}
-                                        onClick={() => handleEstado(e.value)}
-                                        className={cn(
-                                            'px-3 py-1.5 rounded-lg text-xs font-medium border transition-all',
-                                            isActive ? cn(e.color || 'bg-slate-800 text-white dark:bg-slate-200 dark:text-slate-900', 'border-transparent shadow-sm') : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-slate-300'
-                                        )}
-                                        data-testid={`facturas-filter-estado-${e.value}`}
-                                    >
-                                        {e.label}
-                                    </button>
-                                )
-                            })}
-                        </div>
-                        <div className="flex flex-wrap items-end gap-4">
-                            <div className="space-y-1.5">
-                                <Label className="text-xs text-slate-500">Cliente</Label>
+
+                        <div className="flex flex-wrap items-end gap-5">
+                            <div className="space-y-2 min-w-[240px] flex-1 sm:flex-none">
+                                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pl-1">Cliente</Label>
                                 <ClienteCombobox value={clienteId} label={clienteLabel} onChange={handleClienteChange} disabled={isPending} />
                             </div>
                             {series.length > 0 && (
-                                <div className="space-y-1.5">
-                                    <Label className="text-xs text-slate-500">Serie</Label>
+                                <div className="space-y-2">
+                                    <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pl-1">Serie</Label>
                                     <Select value={serieId || '__todas__'} onValueChange={handleSerieChange} disabled={isPending}>
-                                        <SelectTrigger data-testid="facturas-filter-serie" className="w-[140px] h-9 rounded-lg">
+                                        <SelectTrigger data-testid="facturas-filter-serie" className="w-[140px] h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
                                             <SelectValue placeholder="Todas" />
                                         </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="__todas__">Todas</SelectItem>
+                                        <SelectContent className="rounded-xl border-slate-200 dark:border-slate-700 shadow-xl">
+                                            <SelectItem value="__todas__">Todas las series</SelectItem>
                                             {series.map(s => (
                                                 <SelectItem key={s.id} value={s.id}>{s.codigo}</SelectItem>
                                             ))}
@@ -542,27 +557,27 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                                     </Select>
                                 </div>
                             )}
-                            <div className="space-y-1.5">
-                                <Label className="text-xs text-slate-500">Ordenar</Label>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pl-1">Ordenar por</Label>
                                 <Select value={orden} onValueChange={handleOrden} disabled={isPending}>
-                                    <SelectTrigger data-testid="facturas-filter-orden" className="w-[180px] h-9 rounded-lg">
-                                        <ArrowUpDown className="h-3.5 w-3.5 mr-2 text-slate-400" />
+                                    <SelectTrigger data-testid="facturas-filter-orden" className="w-[200px] h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
+                                        <ArrowUpDown className="h-3.5 w-3.5 mr-2 text-primary" />
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-xl border-slate-200 dark:border-slate-700 shadow-xl">
                                         {ORDEN_OPTIONS.map(o => (
                                             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                                         ))}
                                     </SelectContent>
                                 </Select>
                             </div>
-                            <div className="space-y-1.5">
-                                <Label className="text-xs text-slate-500">Por página</Label>
+                            <div className="space-y-2">
+                                <Label className="text-[10px] font-bold uppercase tracking-wider text-slate-500 pl-1">Registros</Label>
                                 <Select value={pageSize} onValueChange={handlePageSizeChange} disabled={isPending}>
-                                    <SelectTrigger data-testid="facturas-filter-page-size" className="w-[80px] h-9 rounded-lg">
+                                    <SelectTrigger data-testid="facturas-filter-page-size" className="w-[85px] h-11 rounded-xl bg-slate-50/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700/50">
                                         <SelectValue />
                                     </SelectTrigger>
-                                    <SelectContent>
+                                    <SelectContent className="rounded-xl border-slate-200 dark:border-slate-700 shadow-xl min-w-[70px]">
                                         {PAGE_SIZE_OPTIONS.map(o => (
                                             <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                                         ))}
@@ -570,17 +585,17 @@ export function FacturasFilters({ series = [], pageSize: initialPageSize = 10 }:
                                 </Select>
                             </div>
                             {tieneFiltrosActivos && (
-                                <div className="ml-auto flex items-center gap-2 flex-wrap">
+                                <div className="ml-auto flex items-center gap-2 pb-1">
                                     {clienteId && clienteLabel && (
-                                        <Badge variant="outline" className="text-xs bg-violet-50 text-violet-700 dark:bg-violet-900/30 border-violet-200">
-                                            <User className="h-3 w-3 mr-1" />
+                                        <Badge variant="outline" className="text-[10px] font-bold h-7 bg-primary/5 text-primary border-primary/20 rounded-lg px-2 flex items-center gap-1.5 animate-in zoom-in-95">
+                                            <User className="h-3 w-3" />
                                             {clienteLabel}
-                                            <button type="button" onClick={() => handleClienteChange('', '')} className="ml-1 hover:text-violet-900">
+                                            <button type="button" onClick={() => handleClienteChange('', '')} className="hover:text-destructive transition-colors ml-0.5">
                                                 <X className="h-3 w-3" />
                                             </button>
                                         </Badge>
                                     )}
-                                    <Badge variant="secondary" className="text-xs bg-primary/10 text-primary" data-testid="facturas-filters-active-badge">
+                                    <Badge variant="secondary" className="text-[10px] font-bold h-7 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-none rounded-lg px-2 animate-in zoom-in-95" data-testid="facturas-filters-active-badge">
                                         Filtros activos
                                     </Badge>
                                 </div>

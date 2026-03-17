@@ -36,23 +36,33 @@ export default async function DashboardPage({
     let isGlobal = false
     const adminClient = createAdminClient()
 
-    if (userContext) {
-        const ctx = userContext
-        empresaId = ctx.empresaId
-        isGlobal = !ctx.empresaId && !!ctx.isAdmin
-        if (isGlobal) {
-            companyName = 'Visión Global'
-            welcomeText = 'Resumen consolidado de todas las empresas'
-        } else if (ctx.empresaId) {
-            const active = ctx.empresas.find((e: { empresa_id: string }) => e.empresa_id === ctx.empresaId) as any
-            companyName = active?.empresa?.nombre_comercial || active?.empresa?.razon_social || 'Tu Empresa'
-            welcomeText = `Bienvenido al panel de control de ${companyName}`
-        }
-    }
+    const now = new Date()
+    const hours = now.getHours()
+    let greeting = 'Buenos días'
+    if (hours >= 12 && hours < 20) greeting = 'Buenas tardes'
+    if (hours >= 20 || hours < 6) greeting = 'Buenas noches'
 
     const { periodo, vista, desde, hasta } = parseDashboardPeriod(params)
-    const fechaDesde = `${desde}T00:00:00.000Z`
-    const fechaHasta = `${hasta}T23:59:59.999Z`
+    // Garantizar que son string para evitar lints
+    const fechaDesde = `${desde as string}T00:00:00.000Z`
+    const fechaHasta = `${hasta as string}T23:59:59.999Z`
+
+    const { data: { user } } = await supabase.auth.getUser()
+    const userName = (user?.user_metadata?.nombre as string) || (user?.user_metadata?.full_name as string)?.split(' ')[0] || 'Usuario'
+
+    if (userContext) {
+        empresaId = userContext.empresaId
+        isGlobal = !userContext.empresaId && !!userContext.isAdmin
+        
+        if (isGlobal) {
+            companyName = 'Visión Global'
+            welcomeText = `${greeting}, ${userName}. Resumen consolidado de todas las empresas.`
+        } else if (userContext.empresaId) {
+            const active = userContext.empresas.find((e: { empresa_id: string }) => e.empresa_id === userContext.empresaId) as any
+            companyName = active?.empresa?.nombre_comercial || active?.empresa?.razon_social || 'Tu Empresa'
+            welcomeText = `${greeting}, ${userName}. Bienvenido al panel de control de ${companyName}.`
+        }
+    }
 
     // ── KPIs principales ──────────────────────────────────────────────────────
     const kpisResult = await getKPIsAction(fechaDesde, fechaHasta)

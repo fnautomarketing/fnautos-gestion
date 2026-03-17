@@ -31,5 +31,6 @@ export const fnautosConfig: ClientConfig = {
     { icon: 'FileText', label: 'Facturación y Contratos', desc: 'Emisión legal instantánea' },
     { icon: 'BarChart3', label: 'Control de Negocio', desc: 'Ingresos y rentabilidad' },
   ],
-  multiEmpresa: false, // FLAG CRÍTICA: Desactiva selectores multi-empresa para modelo monocompañía (Jimmy Andres Benitez Cortes)
+  multiEmpresa: false, // FLAG CRÍTICA: Desactiva selectores multi-empresa para modelo monocompañía
+  razonSocial: 'JIMMY ANDRES BENITEZ CORTES',
 }

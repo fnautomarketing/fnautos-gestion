@@ -109,8 +109,8 @@ export function Navbar({ user }: NavbarProps) {
                     <EmpresaSelector variant="header" />
                 ) : (
                     <div className="hidden sm:flex items-center h-11 px-4 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-slate-200/60 dark:border-white/5 shadow-sm">
-                        <span className="font-extrabold text-[13px] tracking-wide text-slate-800 dark:text-slate-200">
-                            JIMMY ANDRES BENITEZ CORTES
+                        <span className="font-extrabold text-[13px] tracking-wide text-slate-800 dark:text-slate-200 uppercase">
+                            {clientConfig.razonSocial}
                         </span>
                     </div>
                 )}

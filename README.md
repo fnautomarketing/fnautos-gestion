@@ -32,7 +32,6 @@ Sistema integral de gestión de facturación, clientes y pagos con arquitectura 
    ```env
    NEXT_PUBLIC_SUPABASE_URL=tu_url
    NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_clave_anon
-   NEXT_PUBLIC_CLIENT_ID=fnautos (o el ID del cliente deseado)
    ```
 
 3. **Ejecutar en desarrollo**:

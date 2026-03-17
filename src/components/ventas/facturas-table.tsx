@@ -1,30 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { format } from 'date-fns'
-import { es } from 'date-fns/locale'
-import { MoreVertical, Eye, Edit, Trash, FileWarning, Download, Mail, ChevronDown, FileSpreadsheet } from 'lucide-react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import {
     Table,
     TableBody,
@@ -33,10 +10,35 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { formatFacturaDisplayNumero, cn } from '@/lib/utils'
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { 
+    MoreVertical, 
+    Eye, 
+    Edit, 
+    Trash, 
+    Download, 
+    Mail, 
+    ChevronLeft, 
+    ChevronRight,
+    ChevronDown,
+    Check,
+    FileSpreadsheet,
+    FileWarning
+} from 'lucide-react'
+import { cn, formatFacturaDisplayNumero, formatCurrency, formatDate, isVencida } from '@/lib/utils'
 import { FacturaWithCliente } from '@/types/ventas'
 import { eliminarFacturaAction } from '@/app/actions/ventas'
 import { toast } from 'sonner'
+import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import Link from 'next/link'
+import ExcelJS from 'exceljs'
 
 interface FacturasTableProps {
     facturas: FacturaWithCliente[]
@@ -47,141 +49,26 @@ interface FacturasTableProps {
     enviadaIds?: string[]
 }
 
-/** Resalta las coincidencias del término de búsqueda en el texto (case-insensitive).
- * Solo aplica resaltado tras montar en cliente para evitar errores de hidratación. */
-function HighlightedText({ text, query }: { text: string; query?: string }) {
-    const [mounted, setMounted] = useState(false)
-    useEffect(() => setMounted(true), [])
-
-    if (!mounted || !query?.trim() || !text) return <>{text}</>
-
-    const q = query.trim()
-    const regex = new RegExp(`(${q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi')
-    const parts = text.split(regex)
-    return (
-        <>
-            {parts.map((part, i) =>
-                i % 2 === 1 ? (
-                    <mark key={i} className="bg-amber-200 dark:bg-amber-600/50 text-amber-900 dark:text-amber-100 rounded px-0.5 font-medium">
-                        {part}
-                    </mark>
-                ) : (
-                    part
-                )
-            )}
-        </>
-    )
-}
-
-type SortColumn = 'numero' | 'cliente' | 'fecha_emision' | 'fecha_vencimiento' | 'total' | 'estado'
-const SORT_MAP: Record<SortColumn, { asc: string; desc: string }> = {
-    numero: { asc: 'numero_asc', desc: 'numero_desc' },
-    cliente: { asc: 'cliente_asc', desc: 'cliente_desc' },
-    fecha_emision: { asc: 'fecha_asc', desc: 'fecha_desc' },
-    fecha_vencimiento: { asc: 'fecha_vencimiento_asc', desc: 'fecha_vencimiento_desc' },
-    total: { asc: 'total_asc', desc: 'total_desc' },
-    estado: { asc: 'estado_asc', desc: 'estado_desc' },
-}
-
 export function FacturasTable({
     facturas,
     totalCount,
     currentPage,
     pageSize,
     searchQuery,
-    enviadaIds = [],
+    enviadaIds = []
 }: FacturasTableProps) {
     const router = useRouter()
     const searchParams = useSearchParams()
-    const currentOrden = searchParams.get('orden') || 'fecha_desc'
-    const [deleteTarget, setDeleteTarget] = useState<{ id: string; label: string } | null>(null)
     const [isDeleting, setIsDeleting] = useState(false)
-    const [exportingAll, setExportingAll] = useState(false)
-
-    const formatCurrency = (amount: number, currency: string = 'EUR') => {
-        return new Intl.NumberFormat('es-ES', {
-            style: 'currency',
-            currency: currency,
-        }).format(amount)
-    }
-
-    const formatDate = (dateStr: string) => {
-        if (!dateStr) return '-'
-        return format(new Date(dateStr), 'dd MMM, yyyy', { locale: es })
-    }
-
-    const getEstadoBadge = (factura: FacturaWithCliente) => {
-        const estado = factura.estado
-        const esExterna = !!factura.es_externa
-        const esEnviada = enviadaIds.includes(factura.id)
-
-        const variants: Record<string, { label: string; className: string }> = {
-            pagada: {
-                label: 'Pagada',
-                className: 'bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300 border-green-200 dark:border-green-800',
-            },
-            parcial: {
-                label: 'Parcial',
-                className: 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 border-orange-200 dark:border-orange-800',
-            },
-            emitida: {
-                label: 'Emitida',
-                className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300 border-blue-200 dark:border-blue-800',
-            },
-            vencida: {
-                label: 'Vencida',
-                className: 'bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 border-red-200 dark:border-red-800',
-            },
-            borrador: {
-                label: 'Borrador',
-                className: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700',
-            },
-            anulada: {
-                label: 'Anulada',
-                className: 'bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300 border-orange-200 dark:border-orange-800',
-            },
-        }
-
-        // Externa: siempre mostrar "Externa" (coincide con filtro)
-        if (esExterna) {
-            if (estado === 'borrador' && !factura.archivo_url) {
-                return (
-                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/50 dark:text-amber-300 border-amber-200 dark:border-amber-800 px-2.5 py-1 font-medium text-xs whitespace-nowrap max-w-full truncate" variant="outline" title="Externa (Pendiente PDF)">
-                        Externa (Pend. PDF)
-                    </Badge>
-                )
-            }
-            const sub = estado === 'pagada' ? ' - Pagada' : estado === 'emitida' ? ' - Emitida' : ''
-            return (
-                <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800 px-2.5 py-1 font-medium text-xs whitespace-nowrap max-w-full truncate" variant="outline" title={`Externa${sub}`}>
-                    Externa{sub}
-                </Badge>
-            )
-        }
-
-        // Enviada: factura enviada por email (coincide con filtro)
-        if (esEnviada) {
-            return (
-                <Badge className="bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300 border-violet-200 dark:border-violet-800 px-3 py-1 font-medium" variant="outline">
-                    Enviada
-                </Badge>
-            )
-        }
-
-        const variant = variants[estado] || variants.borrador
-        return (
-            <Badge className={`border ${variant.className} px-3 py-1 font-medium capitalize`} variant="outline">
-                {variant.label}
-            </Badge>
-        )
-    }
+    const [deleteTarget, setDeleteTarget] = useState<{ id: string; numero: string } | null>(null)
+    const [isExporting, setIsExporting] = useState(false)
 
     const totalPages = Math.ceil(totalCount / pageSize)
 
-    const handlePageChange = (page: number) => {
-        const params = new URLSearchParams(window.location.search)
-        params.set('page', page.toString())
-        router.push(`/ventas/facturas?${params.toString()}`)
+    const handlePageChange = (newPage: number) => {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('page', newPage.toString())
+        router.push(`?${params.toString()}`)
     }
 
     const handleDelete = async () => {
@@ -190,357 +77,368 @@ export function FacturasTable({
         try {
             const result = await eliminarFacturaAction(deleteTarget.id)
             if (result.success) {
-                toast.success('Factura eliminada con éxito')
+                toast.success('Factura eliminada correctamente')
+                setDeleteTarget(null)
                 router.refresh()
             } else {
                 toast.error(result.error || 'Error al eliminar la factura')
             }
-        } catch {
-            toast.error('Error inesperado al eliminar la factura')
+        } catch (error) {
+            toast.error('Ocurrió un error inesperado al eliminar la factura')
         } finally {
             setIsDeleting(false)
-            setDeleteTarget(null)
         }
     }
 
-    const exportCsvPage = () => {
-        const headers = ['Número', 'Serie', 'Cliente', 'CIF', 'Fecha Emisión', 'Fecha Vencimiento', 'Base Imponible', 'IVA', 'Descuento', 'Retención', 'Total', 'Estado', 'Externa', 'Empresa']
-        const rows = facturas.map((f) => [
-            formatFacturaDisplayNumero(f.serie, f.numero),
-            f.serie || '',
-            f.cliente?.nombre_comercial || f.cliente?.nombre_fiscal || '',
-            f.cliente?.cif || '',
-            f.fecha_emision || '',
-            f.fecha_vencimiento || '',
-            String(f.base_imponible ?? ''),
-            String(f.cuota_iva ?? ''),
-            String(f.descuento ?? ''),
-            String(f.retencion_irpf ?? ''),
-            String(f.total),
-            f.estado,
-            f.es_externa ? 'Sí' : 'No',
-            f.empresa?.nombre_comercial ?? '',
-        ])
-        const csv = [headers.join(';'), ...rows.map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(';'))].join('\n')
-        const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8' })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `facturas-pagina-${new Date().toISOString().slice(0, 10)}.csv`
-        a.style.display = 'none'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        URL.revokeObjectURL(url)
+    const handleExportExcel = async () => {
+        if (isExporting) return
+        setIsExporting(true)
+        try {
+            const workbook = new ExcelJS.Workbook()
+            const worksheet = workbook.addWorksheet('Facturas')
+
+            worksheet.columns = [
+                { header: 'Número', key: 'numero', width: 20 },
+                { header: 'Cliente', key: 'cliente', width: 35 },
+                { header: 'Emisión', key: 'fecha_emision', width: 15 },
+                { header: 'Vencimiento', key: 'fecha_vencimiento', width: 15 },
+                { header: 'Estado', key: 'estado', width: 15 },
+                { header: 'Total', key: 'total', width: 15 },
+            ]
+
+            facturas.forEach(f => {
+                worksheet.addRow({
+                    numero: formatFacturaDisplayNumero(f.serie, f.numero),
+                    cliente: f.cliente?.nombre_fiscal || f.cliente?.nombre_comercial || '-',
+                    fecha_emision: formatDate(f.fecha_emision),
+                    fecha_vencimiento: formatDate(f.fecha_vencimiento),
+                    estado: f.estado,
+                    total: f.total
+                })
+            })
+
+            const buffer = await workbook.xlsx.writeBuffer()
+            const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+            const url = window.URL.createObjectURL(blob)
+            const anchor = document.createElement('a')
+            anchor.href = url
+            anchor.download = `facturas_${new Date().toISOString().split('T')[0]}.xlsx`
+            anchor.click()
+            window.URL.revokeObjectURL(url)
+            
+            toast.success('Archivo Excel generado con éxito')
+        } catch (error) {
+            console.error('Error exportando a Excel:', error)
+            toast.error('Error al generar el archivo Excel')
+        } finally {
+            setIsExporting(false)
+        }
     }
 
-    const buildExportUrl = (format: 'xlsx' | 'csv') => {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('format', format)
-        params.delete('page')
-        params.delete('pageSize')
-        return `/api/ventas/facturas/export?${params.toString()}`
+    const getEstadoBadge = (factura: FacturaWithCliente) => {
+        const estado = factura.estado
+        const vencida = isVencida(factura.fecha_vencimiento) && estado !== 'pagada' && estado !== 'anulada'
+
+        if (vencida) {
+            return (
+                <Badge variant="destructive" className="bg-rose-500/10 text-rose-600 border-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-900/50 font-medium px-2.5 py-0.5 rounded-full animate-pulse-slow">
+                    Vencida
+                </Badge>
+            )
+        }
+
+        switch (estado) {
+            case 'pagada':
+                return (
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-900/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Pagada
+                    </Badge>
+                )
+            case 'cobro_parcial':
+                return (
+                    <Badge variant="outline" className="bg-sky-500/10 text-sky-600 border-sky-200 dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-900/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Cobro Parcial
+                    </Badge>
+                )
+            case 'emitida':
+                return (
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-900/50 font-medium px-2.5 py-0.5 rounded-full text-center">
+                        Emitida
+                    </Badge>
+                )
+            case 'borrador':
+                return (
+                    <Badge variant="secondary" className="bg-slate-500/10 text-slate-600 border-slate-200 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-800/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Borrador
+                    </Badge>
+                )
+            case 'anulada':
+                return (
+                    <Badge variant="destructive" className="bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700 font-medium px-2.5 py-0.5 rounded-full opacity-60">
+                        Anulada
+                    </Badge>
+                )
+            default:
+                return (
+                    <Badge variant="outline" className="font-medium px-2.5 py-0.5 rounded-full capitalize">
+                        {estado}
+                    </Badge>
+                )
+        }
     }
 
-    const handleExportAll = (format: 'xlsx' | 'csv') => {
-        setExportingAll(true)
-        const url = buildExportUrl(format)
-        const a = document.createElement('a')
-        a.href = url
-        a.download = `facturas-${new Date().toISOString().slice(0, 10)}.${format}`
-        a.style.display = 'none'
-        document.body.appendChild(a)
-        a.click()
-        document.body.removeChild(a)
-        setExportingAll(false)
-    }
-
-    const handleSort = (col: SortColumn) => {
-        const { asc, desc } = SORT_MAP[col]
-        const nextOrden = currentOrden === asc ? desc : asc
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('orden', nextOrden)
-        params.delete('page')
-        router.push(`/ventas/facturas?${params.toString()}`)
-    }
-
-    const getSortIndicator = (col: SortColumn) => {
-        const { asc, desc } = SORT_MAP[col]
-        if (currentOrden === asc) return ' ↑'
-        if (currentOrden === desc) return ' ↓'
-        return ''
-    }
-
-    const isVencida = (fechaVenc: string | null) => {
-        if (!fechaVenc) return false
-        return new Date(fechaVenc) < new Date(new Date().setHours(0, 0, 0, 0))
-    }
-
-    if (facturas.length === 0) {
+    const HighlightText = ({ text, query }: { text: string, query?: string }) => {
+        if (!query || !text) return <>{text}</>
+        const parts = text.split(new RegExp(`(${query})`, 'gi'))
         return (
-            <Card className="border-white/20 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60">
-                <CardContent className="p-12 text-center">
-                    <p className="text-slate-600 dark:text-slate-400 font-medium">No se encontraron facturas</p>
-                    <p className="text-sm text-slate-500 mt-2">Prueba a cambiar los filtros o crea tu primera factura</p>
-                    <Button asChild className="mt-4" variant="outline">
-                        <a href="/ventas/facturas/nueva">Nueva factura</a>
-                    </Button>
-                </CardContent>
-            </Card>
+            <>
+                {parts.map((part, i) => 
+                    part.toLowerCase() === query.toLowerCase() 
+                        ? <mark key={i} className="bg-yellow-100 text-yellow-900 px-0.5 rounded-sm dark:bg-yellow-500/30 dark:text-yellow-200">{part}</mark> 
+                        : part
+                )}
+            </>
         )
     }
 
     return (
-        <>
-            <Card className="border-white/20 bg-white/70 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/60 overflow-hidden">
-                <CardContent className="p-0">
-                    <div className="flex items-center justify-end gap-2 px-4 py-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <Button variant="outline" size="sm" disabled={exportingAll} className="text-xs" data-testid="facturas-export-trigger">
-                                    <Download className="h-3.5 w-3.5 mr-1.5" />
-                                    Exportar
-                                    <ChevronDown className="h-3.5 w-3.5 ml-1" />
-                                </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                                <DropdownMenuItem onClick={exportCsvPage} data-testid="facturas-export-pagina">
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Exportar página actual (CSV)
-                                </DropdownMenuItem>
-                                <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => handleExportAll('xlsx')} data-testid="facturas-export-todas-xlsx">
-                                    <FileSpreadsheet className="h-4 w-4 mr-2" />
-                                    Exportar todas filtradas (Excel)
-                                </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => handleExportAll('csv')} data-testid="facturas-export-todas-csv">
-                                    <Download className="h-4 w-4 mr-2" />
-                                    Exportar todas filtradas (CSV)
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+        <div className="space-y-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 px-1">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-primary/10 flex items-center justify-center">
+                        <FileSpreadsheet className="h-5 w-5 text-primary" />
                     </div>
-                    <div className="overflow-x-auto">
-                        <Table className="table-fixed w-full">
-                            <TableHeader className="bg-slate-50/50 dark:bg-slate-800/50">
+                    <div>
+                        <h3 className="font-serif font-bold text-slate-900 dark:text-slate-100 tracking-tight">Listado de Facturas</h3>
+                        <p className="text-xs text-slate-500 dark:text-slate-400">{totalCount} registros encontrados</p>
+                    </div>
+                </div>
+                
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                    <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleExportExcel}
+                        disabled={isExporting || facturas.length === 0}
+                        className="flex-1 sm:flex-none border-white/20 bg-white/50 backdrop-blur-sm hover:bg-white/80 dark:bg-slate-800/50 hover:dark:bg-slate-800/80 transition-all duration-300 rounded-xl"
+                    >
+                        {isExporting ? (
+                            <span className="flex items-center gap-2">
+                                <div className="h-3 w-3 border-2 border-primary border-t-transparent animate-spin rounded-full" />
+                                Exportando...
+                            </span>
+                        ) : (
+                            <>
+                                <Download className="h-4 w-4 mr-2" />
+                                Exportar
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </div>
+
+            <div className="rounded-2xl border border-white/20 bg-white/60 backdrop-blur-md dark:border-white/10 dark:bg-slate-900/60 shadow-xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 duration-700">
+                <div className="overflow-x-auto">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="hover:bg-transparent border-slate-200/50 dark:border-slate-800/50">
+                                <TableHead className="w-[140px] font-serif font-bold text-slate-900 dark:text-slate-100 py-5 pl-6">Número</TableHead>
+                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5">Cliente</TableHead>
+                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center hidden md:table-cell">Emisión</TableHead>
+                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center hidden lg:table-cell">Vencimiento</TableHead>
+                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center">Estado</TableHead>
+                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-right">Total</TableHead>
+                                <TableHead className="w-[80px] py-5 pr-6"></TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {facturas.length === 0 ? (
                                 <TableRow>
-                                    <TableHead
-                                        className="font-semibold text-slate-600 dark:text-slate-400 w-[120px] min-w-[100px] cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('numero') }}
-                                        aria-sort={currentOrden.startsWith('numero') ? (currentOrden === 'numero_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-numero"
-                                    >
-                                        Número{getSortIndicator('numero')}
-                                    </TableHead>
-                                    <TableHead
-                                        className="font-semibold text-slate-600 dark:text-slate-400 min-w-0 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('cliente') }}
-                                        aria-sort={currentOrden.startsWith('cliente') ? (currentOrden === 'cliente_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-cliente"
-                                    >
-                                        Cliente{getSortIndicator('cliente')}
-                                    </TableHead>
-                                    <TableHead
-                                        className="font-semibold text-slate-600 dark:text-slate-400 w-[115px] hidden md:table-cell cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('fecha_emision') }}
-                                        aria-sort={currentOrden.startsWith('fecha') && !currentOrden.includes('vencimiento') ? (currentOrden === 'fecha_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-fecha-emision"
-                                    >
-                                        Fecha Emisión{getSortIndicator('fecha_emision')}
-                                    </TableHead>
-                                    <TableHead
-                                        className="font-semibold text-slate-600 dark:text-slate-400 w-[125px] hidden lg:table-cell cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('fecha_vencimiento') }}
-                                        aria-sort={currentOrden.startsWith('fecha_vencimiento') ? (currentOrden === 'fecha_vencimiento_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-fecha-vencimiento"
-                                    >
-                                        Fecha Venc.{getSortIndicator('fecha_vencimiento')}
-                                    </TableHead>
-                                    <TableHead
-                                        className="text-right font-semibold text-slate-600 dark:text-slate-400 w-[100px] pr-2 md:pr-5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('total') }}
-                                        aria-sort={currentOrden.startsWith('total') ? (currentOrden === 'total_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-total"
-                                    >
-                                        Total{getSortIndicator('total')}
-                                    </TableHead>
-                                    <TableHead
-                                        className="font-semibold text-slate-600 dark:text-slate-400 w-[140px] min-w-[120px] pl-2 md:pl-5 cursor-pointer hover:bg-slate-100 dark:hover:bg-slate-800/80 select-none"
-                                        onClick={(e) => { e.stopPropagation(); handleSort('estado') }}
-                                        aria-sort={currentOrden.startsWith('estado') ? (currentOrden === 'estado_asc' ? 'ascending' : 'descending') : undefined}
-                                        data-testid="facturas-th-estado"
-                                    >
-                                        Estado{getSortIndicator('estado')}
-                                    </TableHead>
-                                    <TableHead className="w-[48px] md:w-[56px]"></TableHead>
+                                    <TableCell colSpan={7} className="h-64 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-3 animate-in zoom-in duration-500">
+                                            <div className="h-16 w-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center">
+                                                <FileWarning className="h-8 w-8 text-slate-300" />
+                                            </div>
+                                            <p className="text-slate-500 font-medium">No se encontraron facturas</p>
+                                            <Button variant="link" onClick={() => router.push(window.location.pathname)} className="text-primary hover:text-primary/80">
+                                                Limpiar todos los filtros
+                                            </Button>
+                                        </div>
+                                    </TableCell>
                                 </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {facturas.map((factura) => (
-                                    <TableRow
-                                        key={factura.id}
-                                        data-testid="factura-row"
-                                        className="cursor-pointer hover:bg-slate-50/80 dark:hover:bg-slate-800/50 transition-colors"
-                                        onClick={() => router.push(`/ventas/facturas/${factura.id}`)}
+                            ) : (
+                                facturas.map((factura, index) => (
+                                    <TableRow 
+                                        key={factura.id} 
+                                        className="group hover:bg-primary/5 border-slate-200/50 dark:border-slate-800/50 transition-colors duration-300 animate-in fade-in slide-in-from-left-4"
+                                        style={{ animationDelay: `${index * 50}ms` }}
                                     >
-                                        <TableCell className="font-mono font-medium text-slate-700 dark:text-slate-300">
-                                            <div className="flex items-center gap-2">
-                                                <HighlightedText
-                                                    text={formatFacturaDisplayNumero(factura.serie, factura.numero)}
-                                                    query={searchQuery}
-                                                />
+                                        <TableCell className="py-4 pl-6">
+                                            <div className="flex flex-col">
+                                                <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">
+                                                    <HighlightText 
+                                                        text={formatFacturaDisplayNumero(factura.serie, factura.numero)}
+                                                        query={searchQuery}
+                                                    />
+                                                </span>
                                                 {factura.es_externa && (
-                                                    <div className="flex gap-1" title="Factura Externa">
-                                                        <Badge variant="secondary" className="h-5 px-1 text-[10px] bg-blue-50 text-blue-700 border-blue-100">EXT</Badge>
-                                                        {!factura.archivo_url && (
-                                                            <span title="Pendiente de PDF" className="flex items-center text-amber-600">
-                                                                <FileWarning className="h-4 w-4" />
-                                                            </span>
-                                                        )}
-                                                    </div>
+                                                    <span className="text-[10px] font-bold text-purple-600 uppercase tracking-widest mt-0.5">EXTERNA</span>
                                                 )}
                                             </div>
                                         </TableCell>
-                                        <TableCell className="w-[200px] max-w-[200px] min-w-0 overflow-hidden !whitespace-normal">
-                                            <div className="flex flex-col min-w-0 overflow-hidden w-full">
-                                                <span className="font-medium text-slate-900 dark:text-slate-100 truncate" title={factura.cliente?.nombre_comercial || factura.cliente?.nombre_fiscal || 'Cliente Desconocido'}>
-                                                    <HighlightedText
-                                                        text={factura.cliente?.nombre_comercial || factura.cliente?.nombre_fiscal || 'Cliente Desconocido'}
+                                        <TableCell className="py-4">
+                                            <div className="flex flex-col max-w-[200px] sm:max-w-xs md:max-w-md">
+                                                <span className="font-medium text-slate-900 dark:text-slate-200 truncate group-hover:underline underline-offset-4 decoration-primary/30">
+                                                    <HighlightText 
+                                                        text={factura.cliente?.nombre_fiscal || factura.cliente?.nombre_comercial || '-'}
                                                         query={searchQuery}
                                                     />
                                                 </span>
-                                                <span className="text-xs text-slate-500 dark:text-slate-400 truncate" title={factura.cliente?.cif || '-'}>
-                                                    <HighlightedText
-                                                        text={factura.cliente?.cif || '-'}
-                                                        query={searchQuery}
-                                                    />
+                                                <span className="text-xs text-slate-400 dark:text-slate-500 font-mono">
+                                                    {factura.cliente?.cif || '-'}
                                                 </span>
                                             </div>
                                         </TableCell>
-                                        <TableCell className="text-slate-600 dark:text-slate-400 hidden md:table-cell">
-                                            <span suppressHydrationWarning>{formatDate(factura.fecha_emision)}</span>
-                                        </TableCell>
-                                        <TableCell className={cn('w-[125px] hidden lg:table-cell', isVencida(factura.fecha_vencimiento) && factura.estado !== 'pagada' && factura.estado !== 'anulada' && 'text-red-600 dark:text-red-400 font-medium')}>
-                                            <span suppressHydrationWarning>{formatDate(factura.fecha_vencimiento)}</span>
-                                            {isVencida(factura.fecha_vencimiento) && factura.estado !== 'pagada' && factura.estado !== 'anulada' && (
-                                                <span className="ml-1 text-[10px] text-red-600 dark:text-red-400" title="Vencida">⚠</span>
-                                            )}
-                                        </TableCell>
-                                        <TableCell className="text-right font-bold text-slate-900 dark:text-slate-100 pr-2 md:pr-5">
-                                            <span suppressHydrationWarning>
-                                                <HighlightedText
-                                                    text={formatCurrency(factura.total, factura.divisa || undefined)}
-                                                    query={searchQuery}
-                                                />
+                                        <TableCell className="text-center py-4 hidden md:table-cell">
+                                            <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                                                {formatDate(factura.fecha_emision)}
                                             </span>
                                         </TableCell>
-                                        <TableCell className="pl-2 md:pl-5 min-w-0 overflow-hidden pr-2">
-                                            <div className="max-w-full min-w-0 overflow-hidden">
-                                                {getEstadoBadge(factura)}
+                                        <TableCell className={cn('text-center py-4 hidden lg:table-cell', isVencida(factura.fecha_vencimiento) && factura.estado !== 'pagada' && factura.estado !== 'anulada' && 'text-red-500 font-bold')}>
+                                            <div className="flex items-center justify-center gap-1.5">
+                                                {formatDate(factura.fecha_vencimiento)}
                                             </div>
                                         </TableCell>
-                                        <TableCell onClick={(e) => e.stopPropagation()} className="w-[48px] md:w-[120px]">
-                                            <div className="flex items-center gap-0.5">
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-primary" onClick={(e) => { e.stopPropagation(); router.push(`/ventas/facturas/${factura.id}`) }} title="Ver">
-                                                    <Eye className="h-3.5 w-3.5" />
-                                                </Button>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-primary" onClick={(e) => { e.stopPropagation(); router.push(`/ventas/facturas/${factura.id}/pdf`) }} title="Descargar PDF">
-                                                    <Download className="h-3.5 w-3.5" />
-                                                </Button>
-                                                <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-primary" onClick={(e) => { e.stopPropagation(); router.push(`/ventas/facturas/${factura.id}/email`) }} title="Enviar email">
-                                                    <Mail className="h-3.5 w-3.5" />
-                                                </Button>
-                                                <DropdownMenu>
-                                                    <DropdownMenuTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-primary">
-                                                            <MoreVertical className="h-3.5 w-3.5" />
-                                                        </Button>
-                                                    </DropdownMenuTrigger>
-                                                    <DropdownMenuContent align="end" className="bg-white/90 backdrop-blur-xl dark:bg-slate-900/90 border-slate-200 dark:border-slate-800">
-                                                        <DropdownMenuItem onClick={() => router.push(`/ventas/facturas/${factura.id}/editar`)} className="cursor-pointer">
-                                                            <Edit className="h-4 w-4 mr-2" />
-                                                            Editar
-                                                        </DropdownMenuItem>
-                                                        <DropdownMenuItem className="text-red-600 focus:text-red-600 cursor-pointer" onClick={() => setDeleteTarget({ id: factura.id, label: formatFacturaDisplayNumero(factura.serie, factura.numero) || factura.id })}>
-                                                            <Trash className="h-4 w-4 mr-2" />
-                                                            Eliminar
-                                                        </DropdownMenuItem>
-                                                    </DropdownMenuContent>
-                                                </DropdownMenu>
+                                        <TableCell className="text-center py-4">
+                                            <div className="flex flex-col items-center gap-1">
+                                                {getEstadoBadge(factura)}
+                                                {enviadaIds.includes(factura.id) && (
+                                                    <span className="flex items-center gap-1 text-[9px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-1.5 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-900/30 uppercase">
+                                                        <Check className="h-2.5 w-2.5" />
+                                                        Enviada
+                                                    </span>
+                                                )}
                                             </div>
+                                        </TableCell>
+                                        <TableCell className="text-right py-4 font-mono font-bold tracking-tight text-slate-900 dark:text-white">
+                                            {formatCurrency(factura.total, factura.divisa || undefined)}
+                                        </TableCell>
+                                        <TableCell className="py-4 pr-6">
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        className="h-11 w-11 p-0 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-all active:scale-90"
+                                                        aria-label="Más opciones"
+                                                    >
+                                                        <MoreVertical className="h-5 w-5" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-48 p-1 border-white/20 bg-white/90 backdrop-blur-lg dark:border-white/10 dark:bg-slate-900/90 shadow-2xl rounded-xl">
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/ventas/facturas/${factura.id}`} className="flex items-center cursor-pointer rounded-lg">
+                                                            <Eye className="mr-2 h-4 w-4 text-blue-500" /> Ver Detalles
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/ventas/facturas/${factura.id}/pdf`} target="_blank" className="flex items-center cursor-pointer rounded-lg">
+                                                            <Download className="mr-2 h-4 w-4 text-emerald-500" /> Descargar PDF
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem asChild>
+                                                        <Link href={`/ventas/facturas/${factura.id}/enviar`} className="flex items-center cursor-pointer rounded-lg">
+                                                            <Mail className="mr-2 h-4 w-4 text-primary" /> Enviar por Email
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <div className="h-px bg-slate-200 dark:bg-slate-800 my-1 mx-1" />
+                                                    <DropdownMenuItem asChild disabled={factura.estado !== 'borrador'}>
+                                                        <Link href={`/ventas/facturas/${factura.id}/editar`} className="flex items-center cursor-pointer rounded-lg">
+                                                            <Edit className="mr-2 h-4 w-4 text-amber-500" /> Editar Borrador
+                                                        </Link>
+                                                    </DropdownMenuItem>
+                                                    <DropdownMenuItem 
+                                                        disabled={factura.estado === 'pagada'}
+                                                        className="text-red-600 focus:text-red-700 focus:bg-red-50 dark:focus:bg-red-900/20 cursor-pointer rounded-lg"
+                                                        onClick={() => setDeleteTarget({ id: factura.id, numero: formatFacturaDisplayNumero(factura.serie, factura.numero) })}
+                                                    >
+                                                        <Trash className="mr-2 h-4 w-4" /> Eliminar
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         </TableCell>
                                     </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                ))
+                            )}
+                        </TableBody>
+                    </Table>
+                </div>
+            </div>
 
-                    {/* Paginación */}
-                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-800 px-4 sm:px-6 py-4 bg-slate-50/50 dark:bg-slate-900/30">
-                        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 order-2 sm:order-1">
-                            Mostrando <span className="font-medium text-slate-900 dark:text-slate-100">{(currentPage - 1) * pageSize + 1}</span>-
-                            <span className="font-medium text-slate-900 dark:text-slate-100">{Math.min(currentPage * pageSize, totalCount)}</span> de <span className="font-medium text-slate-900 dark:text-slate-100">{totalCount}</span> facturas
-                        </p>
-                        <div className="flex flex-wrap items-center justify-center sm:justify-end gap-2 order-1 sm:order-2">
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handlePageChange(currentPage - 1)}
-                                disabled={currentPage === 1}
-                                className="bg-white/50 hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-800"
-                            >
-                                Anterior
-                            </Button>
+            {/* Paginación */}
+            {totalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2 px-1">
+                    <p className="text-xs text-slate-500 font-medium order-2 sm:order-1">
+                        Mostrando página {currentPage} de {totalPages} ({totalCount} unidades)
+                    </p>
+                    <div className="flex items-center gap-1 order-1 sm:order-2">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage - 1)}
+                            disabled={currentPage === 1}
+                            className="h-9 w-9 p-0 border-white/20 bg-white/50 dark:bg-slate-800/50 hover:bg-primary/10 hover:text-primary transition-all duration-300 rounded-lg shadow-sm"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                        
+                        <div className="flex items-center gap-1 px-2">
                             {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                const page = i + 1
+                                let pageNum = i + 1
+                                if (totalPages > 5 && currentPage > 3) {
+                                    pageNum = currentPage - 2 + i
+                                    if (pageNum > totalPages) pageNum = totalPages - (4 - i)
+                                }
+                                
                                 return (
                                     <Button
-                                        key={page}
-                                        variant={page === currentPage ? 'default' : 'outline'}
+                                        key={pageNum}
+                                        variant={currentPage === pageNum ? 'default' : 'ghost'}
                                         size="sm"
-                                        onClick={() => handlePageChange(page)}
-                                        className={page === currentPage ? 'bg-primary text-primary-foreground' : 'bg-white/50 hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-800'}
+                                        onClick={() => handlePageChange(pageNum)}
+                                        className={cn(
+                                            "h-9 w-9 p-0 rounded-lg transition-all duration-300",
+                                            currentPage === pageNum ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110" : "hover:bg-primary/5 text-slate-600 dark:text-slate-400"
+                                        )}
                                     >
-                                        {page}
+                                        {pageNum}
                                     </Button>
-                                )}
-                            )}
-                            {totalPages > 5 && <span className="text-slate-400">...</span>}
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handlePageChange(currentPage + 1)}
-                                disabled={currentPage === totalPages}
-                                className="bg-white/50 hover:bg-white dark:bg-slate-800/50 dark:hover:bg-slate-800"
-                            >
-                                Siguiente
-                            </Button>
+                                )
+                            })}
                         </div>
-                    </div>
-                </CardContent>
-            </Card>
 
-            {/* Delete Confirmation Dialog */}
-            <AlertDialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            Esta acción eliminará permanentemente la factura <strong>{deleteTarget?.label}</strong> y todas sus líneas asociadas. Esta acción no se puede deshacer.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={handleDelete}
-                            disabled={isDeleting}
-                            className="bg-red-600 text-white hover:bg-red-700 focus:ring-red-600"
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handlePageChange(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                            className="h-9 w-9 p-0 border-white/20 bg-white/50 dark:bg-slate-800/50 hover:bg-primary/10 hover:text-primary transition-all duration-300 rounded-lg shadow-sm"
                         >
-                            {isDeleting ? 'Eliminando...' : 'Eliminar Factura'}
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
-        </>
+                            <ChevronRight className="h-4 w-4" />
+                        </Button>
+                    </div>
+                </div>
+            )}
+
+            <ConfirmDialog
+                open={!!deleteTarget}
+                onOpenChange={(open) => !open && setDeleteTarget(null)}
+                onConfirm={handleDelete}
+                title="¿Eliminar factura?"
+                description={`Esta acción eliminará permanentemente la factura ${deleteTarget?.numero} y todos sus registros asociados.`}
+                confirmText="Sí, eliminar"
+                cancelText="Cancelar"
+                variant="destructive"
+            />
+        </div>
     )
 }

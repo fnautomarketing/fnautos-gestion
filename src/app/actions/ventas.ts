@@ -121,7 +121,7 @@ export async function guardarBorradorAction(formData: FormData) {
                 serie_id: (validatedData.serie || null) as any,
                 cliente_id: validatedData.cliente_id,
                 fecha_emision: validatedData.fecha_emision,
-                fecha_vencimiento: (validatedData.fecha_vencimiento || null) as any,
+                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
                 subtotal: validatedData.subtotal,
                 plantilla_pdf_id: (validatedData.plantilla_pdf_id || null) as any,
                 descuento_tipo: validatedData.descuento_tipo as any,
@@ -259,7 +259,7 @@ export async function crearFacturaAction(formData: FormData) {
                 serie_id: (validatedData.serie || null) as any,
                 cliente_id: validatedData.cliente_id,
                 fecha_emision: validatedData.fecha_emision,
-                fecha_vencimiento: (validatedData.fecha_vencimiento || null) as any,
+                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
                 subtotal: validatedData.subtotal,
                 // Nuevos campos
                 plantilla_pdf_id: (validatedData.plantilla_pdf_id || null) as any,

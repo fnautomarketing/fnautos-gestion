@@ -95,8 +95,9 @@ export default async function DetalleClientePage({ params }: { params: Promise<{
     )
     if (idsConPendiente.length > 0) {
         const { data: pagos } = await supabase
-            .from('pagos_factura')
+            .from('pagos')
             .select('factura_id, importe')
+            .eq('anulado', false)
             .in('factura_id', idsConPendiente)
         const pagadoPorFactura: Record<string, number> = {}
         for (const p of pagos ?? []) {

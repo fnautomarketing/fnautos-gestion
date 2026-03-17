@@ -74,9 +74,10 @@ export default function RegistrarPagoPage({ params }: PageProps) {
 
                     // Fetch Payments History
                     const { data: p } = await supabase
-                        .from('pagos_factura')
+                        .from('pagos')
                         .select('*')
                         .eq('factura_id', id)
+                        .eq('anulado', false)
                         .order('fecha_pago', { ascending: false })
 
                     setPagos(p || [])

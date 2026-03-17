@@ -16,6 +16,8 @@ export const nikeConfig: ClientConfig = {
   colors: {
     primary: '0 0% 0%',           // Negro puro — identidad Nike
     secondary: '0 0% 15%',        // Gris oscuro
+    accent: '0 0% 98%',
+    ring: '0 0% 0%',
     brandGold: '#111111',          // Negro principal
     brandGoldLight: '#555555',     // Gris medio
     brandDark: '#000000',
@@ -24,11 +26,12 @@ export const nikeConfig: ClientConfig = {
     admin: 'erp@nike-sport.com',
     from: 'Facturación Nike Sport <facturacion@nike-sport.com>',
   },
+  multiEmpresa: true,
+  razonSocial: 'Nike Sport S.L.',
   loginDescription: 'Gestión de alto rendimiento para equipos de élite. Lleva tu administración deportiva al siguiente nivel.',
   features: [
     { icon: 'Activity', label: 'Rendimiento', desc: 'Métricas de atletas en vivo' },
     { icon: 'Package', label: 'Inventario Pro', desc: 'Stock global en tiempo real' },
     { icon: 'Trophy', label: 'Gestión de Éxito', desc: 'KPIS de victoria corporativa' },
   ],
-  multiEmpresa: false,
 }

@@ -20,7 +20,7 @@ export async function getUserContext() {
         const { data: monocompania } = await supabase
             .from('empresas')
             .select('id, razon_social, nombre_comercial, logo_url, tipo_empresa')
-            .eq('razon_social', 'JIMMY ANDRES BENITEZ CORTES')
+            .eq('razon_social', clientConfig.razonSocial)
             .single()
 
         if (monocompania) {
@@ -335,7 +335,7 @@ export async function crearNuevaEmpresaAction(formData: FormData) {
 }
 
 const EMPRESA_VILLEGAS_ID = '4b77324c-a10e-4714-b0a4-df4b9c5f6ca5'
-const PLANTILLA_ESTANDAR_ID = '42c849e4-e1e2-4eaa-b719-9bb64ab1fabd'
+const PLANTILLA_ESTANDAR_ID = '793e6768-83a6-4143-a125-a2c29dea82f6'
 const PLANTILLA_CORPORATIVA_ID = '5e63ff58-2cd5-4234-805a-fd93f50ee84c'
 
 /**

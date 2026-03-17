@@ -533,53 +533,70 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                                 </Button>
                             </div>
 
-                            <div className="space-y-3">
+                            <div className="space-y-4">
                                 {lineas.map((linea, index) => (
-                                    <div key={index} className="flex gap-3 items-start animate-in fade-in slide-in-from-top-2 duration-300">
-                                        <div className="flex-1">
-                                            <Input
-                                                placeholder="Concepto / Servicio"
-                                                value={linea.concepto}
-                                                onChange={(e) => updateLinea(index, 'concepto', e.target.value)}
-                                                className="bg-white"
-                                            />
-                                        </div>
-                                        <div className="w-20">
-                                            <Input
-                                                type="number"
-                                                placeholder="Cant"
-                                                value={Number.isNaN(linea.cantidad) ? '' : linea.cantidad}
-                                                onChange={(e) => updateLinea(index, 'cantidad', parseFloat(e.target.value) || 0)}
-                                                className="bg-white text-center"
-                                            />
-                                        </div>
-                                        <div className="w-32">
-                                            <div className="relative">
+                                    <div key={index} className="relative p-4 md:p-0 bg-white dark:bg-slate-900 md:bg-transparent rounded-2xl border border-slate-200 md:border-none shadow-sm md:shadow-none animate-in fade-in slide-in-from-top-2 duration-300">
+                                        <div className="flex flex-col md:flex-row gap-4 md:gap-3 items-start">
+                                            {/* Concepto - Ancho completo en móvil */}
+                                            <div className="w-full md:flex-1 space-y-1.5 md:space-y-0">
+                                                <Label className="md:hidden text-[10px] font-bold uppercase text-slate-400">Concepto / Servicio</Label>
                                                 <Input
-                                                    type="number"
-                                                    placeholder="Precio"
-                                                    value={Number.isNaN(linea.precio_unitario) ? '' : linea.precio_unitario}
-                                                    onChange={(e) => updateLinea(index, 'precio_unitario', parseFloat(e.target.value) || 0)}
-                                                    className="bg-white pl-7"
+                                                    placeholder="Descripción del servicio..."
+                                                    value={linea.concepto}
+                                                    onChange={(e) => updateLinea(index, 'concepto', e.target.value)}
+                                                    className="bg-white dark:bg-slate-950 h-11 md:h-10 text-base md:text-sm" // h-11 y text-base para evitar zoom en iOS
                                                 />
-                                                <span className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400 font-medium">{getSimboloDivisa(divisa)}</span>
+                                            </div>
+
+                                            {/* Contenedor de valores numéricos en móvil: 2 columnas */}
+                                            <div className="grid grid-cols-2 md:flex gap-4 md:gap-3 w-full md:w-auto">
+                                                <div className="space-y-1.5 md:space-y-0">
+                                                    <Label className="md:hidden text-[10px] font-bold uppercase text-slate-400">Cantidad</Label>
+                                                    <Input
+                                                        type="number"
+                                                        placeholder="0"
+                                                        value={Number.isNaN(linea.cantidad) ? '' : linea.cantidad}
+                                                        onChange={(e) => updateLinea(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                                                        className="bg-white dark:bg-slate-950 h-11 md:h-10 text-center w-full md:w-20 text-base md:text-sm"
+                                                    />
+                                                </div>
+                                                <div className="space-y-1.5 md:space-y-0">
+                                                    <Label className="md:hidden text-[10px] font-bold uppercase text-slate-400">Precio Unit.</Label>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            placeholder="0.00"
+                                                            value={Number.isNaN(linea.precio_unitario) ? '' : linea.precio_unitario}
+                                                            onChange={(e) => updateLinea(index, 'precio_unitario', parseFloat(e.target.value) || 0)}
+                                                            className="bg-white dark:bg-slate-950 h-11 md:h-10 pl-7 w-full md:w-32 text-base md:text-sm"
+                                                        />
+                                                        <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">{getSimboloDivisa(divisa)}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Subtotal y Borrar */}
+                                            <div className="flex items-center justify-between md:justify-start gap-4 w-full md:w-auto pt-2 md:pt-0 border-t md:border-none border-slate-100">
+                                                <div className="md:w-32">
+                                                    <Label className="md:hidden text-[10px] font-bold uppercase text-slate-400 mb-1 block">Subtotal</Label>
+                                                    <div className="h-11 md:h-10 flex items-center px-4 md:px-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl md:rounded-md border border-slate-200 dark:border-slate-800 font-bold text-slate-800 dark:text-slate-200">
+                                                        {((Number(linea.cantidad) || 0) * (Number(linea.precio_unitario) || 0)).toFixed(2)}{getSimboloDivisa(divisa)}
+                                                    </div>
+                                                </div>
+                                                
+                                                {lineas.length > 1 && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        onClick={() => removeLinea(index)}
+                                                        className="h-11 w-11 md:h-10 md:w-10 text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
+                                                        aria-label="Eliminar línea"
+                                                    >
+                                                        <Trash2 className="h-5 w-5 md:h-4 md:w-4" />
+                                                    </Button>
+                                                )}
                                             </div>
                                         </div>
-                                        <div className="w-32">
-                                            <div className="h-10 flex items-center px-3 bg-slate-50 rounded-md border border-slate-200 font-medium text-slate-700">
-                                                {((Number(linea.cantidad) || 0) * (Number(linea.precio_unitario) || 0)).toFixed(2)}{getSimboloDivisa(divisa)}
-                                            </div>
-                                        </div>
-                                        {lineas.length > 1 && (
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                onClick={() => removeLinea(index)}
-                                                className="h-10 w-10 text-slate-400 hover:text-red-500 hover:bg-red-50"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        )}
                                     </div>
                                 ))}
                             </div>
@@ -701,36 +718,64 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                             </div>
                         </div>
 
-                        <Button
-                            className="w-full bg-linear-to-r from-primary to-primary/80 hover:scale-[1.02] transition-all text-white font-bold h-12 text-lg shadow-md shadow-primary/20"
-                            onClick={validateAndShowConfirm}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? (
-                                <>
-                                    <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Procesando...
-                                </>
-                            ) : (
-                                'Emitir Factura'
-                            )}
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="w-full h-10 border-slate-200"
-                            onClick={handleGuardarBorrador}
-                            disabled={isSubmitting}
-                        >
-                            {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-                            Guardar Borrador
-                        </Button>
-                        <Button
-                            variant="outline"
-                            className="w-full h-10 text-slate-500 border-slate-200"
-                            onClick={() => router.back()}
-                            disabled={isSubmitting}
-                        >
-                            Cancelar
-                        </Button>
+                        <div className="space-y-3">
+                            <Button
+                                className="w-full bg-linear-to-r from-primary to-primary/80 hover:scale-[1.02] transition-all text-white font-bold h-12 text-lg shadow-md shadow-primary/20 rounded-xl"
+                                onClick={validateAndShowConfirm}
+                                disabled={isSubmitting}
+                            >
+                                {isSubmitting ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-5 w-5 animate-spin" /> Procesando...
+                                    </>
+                                ) : (
+                                    'Emitir Factura'
+                                )}
+                            </Button>
+                            
+                            <div className="grid grid-cols-2 gap-3">
+                                <Button
+                                    variant="outline"
+                                    className="h-11 border-slate-200 dark:border-slate-800 rounded-xl"
+                                    onClick={handleGuardarBorrador}
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+                                    Borrador
+                                </Button>
+                                <Button
+                                    variant="outline"
+                                    className="h-11 text-slate-500 border-slate-200 dark:border-slate-800 rounded-xl"
+                                    onClick={() => router.back()}
+                                    disabled={isSubmitting}
+                                >
+                                    Cancelar
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Sticky Action Bar (Mobile Only) */}
+                        <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 p-4 bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-t border-slate-200 dark:border-slate-800 shadow-[0_-8px_30px_rgb(0,0,0,0.12)] animate-in slide-in-from-bottom duration-500">
+                            <div className="flex items-center justify-between gap-4 max-w-md mx-auto">
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">Total a emitir</span>
+                                    <span className="text-xl font-black text-primary">
+                                        {totales.total.toFixed(2)}{getSimboloDivisa(divisa)}
+                                    </span>
+                                </div>
+                                <Button
+                                    size="lg"
+                                    className="bg-primary hover:bg-primary/90 text-white font-bold px-8 h-12 rounded-2xl shadow-lg shadow-primary/25"
+                                    onClick={validateAndShowConfirm}
+                                    disabled={isSubmitting}
+                                >
+                                    {isSubmitting ? <Loader2 className="h-5 w-5 animate-spin" /> : 'Emitir'}
+                                </Button>
+                            </div>
+                        </div>
+
+                        {/* Spacer para el sticky bar en móvil */}
+                        <div className="h-20 lg:hidden" />
                     </CardContent>
                 </Card>
 
