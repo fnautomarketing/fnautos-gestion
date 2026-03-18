@@ -102,12 +102,11 @@ export async function sendFacturaEmailAction(formData: FormData) {
             cif: '',
         }
 
-        // Determinar plantilla y logo dinámicamente según configuración
-        const pdfPlantilla = (factura.plantilla_pdf_id === '5e63ff58-2cd5-4234-805a-fd93f50ee84c') ? 'premium' : 'estandar'
-        const incluirLogoPdf = incluirLogo
+        // Siempre plantilla Premium – única plantilla activa en esta instalación
+        const incluirLogoPdf = true
 
         const pdfOptions: PdfOptions = {
-            plantilla: pdfPlantilla,
+            plantilla: 'premium',
             idioma: 'es',
             incluirLogo: incluirLogoPdf,
             incluirDatosBancarios: true,
@@ -116,15 +115,21 @@ export async function sendFacturaEmailAction(formData: FormData) {
         }
 
         let logoUrl: string | undefined
+        let logoBuffer: Buffer | undefined
+        let logoMime: string = 'image/png'
         if (incluirLogoPdf) {
             try {
-                const logoPath = path.join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+                const logoToUse = clientConfig.logoPngPath || clientConfig.logoPath.replace('.svg', '.png')
+                const logoPath = path.join(process.cwd(), 'public', logoToUse.replace(/^\//, ''))
                 if (fs.existsSync(logoPath)) {
-                    const logoBuffer = fs.readFileSync(logoPath)
-                    logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+                    const isSvg = logoPath.endsWith('.svg')
+                    logoMime = isSvg ? 'image/svg+xml' : 'image/png'
+                    logoBuffer = fs.readFileSync(logoPath)
+                    logoUrl = `data:${logoMime};base64,${logoBuffer.toString('base64')}`
                 }
             } catch {
                 logoUrl = undefined
+                logoBuffer = undefined
             }
         }
 
@@ -143,13 +148,11 @@ export async function sendFacturaEmailAction(formData: FormData) {
             ccFinal.push(user.email)
         }
 
-        const fromDomain = process.env.RESEND_FROM || `Facturación <onboarding@resend.dev>`
+        const fromDomain = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
         const empresaNombre = empresaRow?.razon_social || empresaRow?.nombre_comercial || clientConfig.nombre
         const subjectFinal = subject || `Factura ${fullFactura.serie || 'FAC'}-${fullFactura.numero} - ${empresaNombre}`
 
-        // Preparamos el Logo para el HTML del Email si está disponible
-        const logoParaEmail = logoUrl || '';
-
+        // El logo usa Content-ID (cid) en línea para evadir filtros de SPAM
         const htmlTemplate = `
         <!DOCTYPE html>
         <html>
@@ -158,8 +161,8 @@ export async function sendFacturaEmailAction(formData: FormData) {
             <style>
                 body { font-family: 'Inter', system-ui, -apple-system, sans-serif; line-height: 1.6; color: #1e293b; margin: 0; padding: 0; background-color: #f8fafc; }
                 .container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 16px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); }
-                .header { padding: 40px; text-align: center; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; }
-                .logo { max-width: 150px; margin-bottom: 20px; }
+                .header { padding: 25px 20px; text-align: center; background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%); color: #0f172a; border-bottom: 1px solid #e2e8f0; }
+                .logo { max-width: 150px; margin-bottom: 0px; display: block; margin-left: auto; margin-right: auto; }
                 .content { padding: 40px; }
                 .footer { padding: 30px; text-align: center; border-top: 1px solid #f1f5f9; background: #fafafa; color: #64748b; font-size: 12px; }
                 .button { display: inline-block; padding: 14px 28px; background-color: #0f172a; color: white !important; font-weight: bold; text-decoration: none; border-radius: 8px; margin-top: 20px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -171,7 +174,7 @@ export async function sendFacturaEmailAction(formData: FormData) {
         <body>
             <div class="container">
                 <div class="header">
-                    ${logoParaEmail ? `<img src="${logoParaEmail}" class="logo" alt="${empresaNombre}" />` : `<h1 style="margin:0">${empresaNombre}</h1>`}
+                    ${logoBuffer ? `<img src="cid:logo" class="logo" alt="FN AUTOS" />` : `<h1 style="margin:0; font-family: 'Inter', sans-serif;">FN AUTOS</h1>`}
                 </div>
                 <div class="content">
                     <h2 style="margin-top:0">Notificación de Factura</h2>
@@ -196,7 +199,7 @@ export async function sendFacturaEmailAction(formData: FormData) {
                     </div>
                 </div>
                 <div class="footer">
-                    <p><b>${empresaNombre}</b></p>
+                    <p><b>FN AUTOS</b></p>
                     <p>${empresa.direccion} - ${empresa.ciudad}, ${empresa.codigo_postal}</p>
                     <p>© ${new Date().getFullYear()} - Gestión Inteligente FNAUTOS</p>
                 </div>
@@ -216,7 +219,13 @@ export async function sendFacturaEmailAction(formData: FormData) {
                     filename: `Factura-${fullFactura.serie || 'FAC'}-${fullFactura.numero}.pdf`,
                     content: pdfBuffer,
                     contentType: 'application/pdf',
-                }
+                },
+                ...(logoBuffer ? [{
+                    filename: logoMime === 'image/svg+xml' ? 'logo.svg' : 'logo.png',
+                    content: logoBuffer,
+                    contentType: logoMime,
+                    contentId: 'logo'
+                }] : [])
             ]
         })
 

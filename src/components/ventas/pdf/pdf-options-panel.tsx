@@ -13,21 +13,17 @@ import { toast } from 'sonner'
 import { clientConfig } from '@/config/clients'
 
 export type PdfOptions = {
-    plantilla: 'estandar' | 'premium'
+    /** Siempre 'premium' – única plantilla activa */
+    plantilla: 'premium'
     idioma: 'es' | 'en' | 'fr'
     incluirLogo: boolean
     notasPie: string
     incluirDatosBancarios: boolean
 }
 
-/** Plantillas disponibles basadas en la configuración del cliente actual */
-export function getPlantillasDisponibles(empresaActivaId: string | null): Array<{ value: 'estandar' | 'premium'; label: string }> {
-    const estandar = { value: 'estandar' as const, label: 'Estándar (sin logo por defecto)' }
-    const premium = { value: 'premium' as const, label: 'Premium (logo y colores marca)' }
-    
-    // Si el cliente tiene logo, ofrecemos ambas o solo premium según prefiera.
-    // Por simplicidad para monocompañía y genérico, ofrecemos ambas.
-    return [estandar, premium]
+/** Única plantilla disponible: Premium */
+export function getPlantillasDisponibles(): Array<{ value: 'premium'; label: string }> {
+    return [{ value: 'premium', label: 'Premium (logotipo y colores corporativos)' }]
 }
 
 interface PdfOptionsPanelProps {
@@ -36,13 +32,10 @@ interface PdfOptionsPanelProps {
     onDownload: () => void
     esExterna?: boolean
     tieneArchivoOriginal?: boolean
-    /** ID de empresa activa en header. null = Vision Global (ambas plantillas) */
-    empresaActivaId?: string | null
-    /** ID de factura para enlace a enviar email */
     facturaId?: string | null
 }
 
-export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tieneArchivoOriginal, empresaActivaId = null, facturaId = null }: PdfOptionsPanelProps) {
+export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tieneArchivoOriginal, facturaId = null }: PdfOptionsPanelProps) {
     const handleChange = <K extends keyof PdfOptions>(key: K, value: PdfOptions[K]) => {
         onChange({ ...options, [key]: value })
     }
@@ -58,20 +51,6 @@ export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tien
                 </CardHeader>
                 <CardContent className="space-y-6">
                     <div className="space-y-2">
-                        <Label>Plantilla</Label>
-                        <Select value={options.plantilla} onValueChange={(val) => handleChange('plantilla', val as 'estandar' | 'premium')}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selecciona plantilla" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {getPlantillasDisponibles(empresaActivaId ?? null).map((p) => (
-                                    <SelectItem key={p.value} value={p.value}>{p.label}</SelectItem>
-                                ))}
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                    <div className="space-y-2">
                         <Label>Idioma</Label>
                         <Select value={options.idioma} onValueChange={(val) => handleChange('idioma', val as 'es' | 'en' | 'fr')}>
                             <SelectTrigger>
@@ -86,20 +65,6 @@ export function PdfOptionsPanel({ options, onChange, onDownload, esExterna, tien
                     </div>
 
                     <div className="space-y-4 pt-2">
-                        <div className="flex items-center justify-between">
-                            <Label className="flex flex-col gap-1">
-                                <span>Incluir Logo</span>
-                                <span className="font-normal text-xs text-slate-500">
-                                    {options.plantilla === 'premium' ? 'La plantilla Premium incluye el logo siempre' : 'Solo para plantilla Estándar'}
-                                </span>
-                            </Label>
-                            <Switch
-                                checked={options.plantilla === 'premium' ? true : options.incluirLogo}
-                                onCheckedChange={(checked) => handleChange('incluirLogo', checked)}
-                                disabled={options.plantilla === 'premium'}
-                            />
-                        </div>
-
                         <div className="flex items-center justify-between">
                             <Label className="flex flex-col gap-1">
                                 <span>Datos Bancarios</span>
