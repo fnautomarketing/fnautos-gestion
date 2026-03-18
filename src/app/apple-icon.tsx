@@ -25,16 +25,15 @@ export default async function AppleIcon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'transparent',
+          background: '#ffffff',
+          overflow: 'hidden',
         }}
       >
         {logoSrc ? (
           <img
             src={logoSrc}
             alt=""
-            width={180}
-            height={180}
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            style={{ objectFit: 'contain', width: '150%', height: '150%' }}
           />
         ) : (
           <span style={{ fontSize: 56, fontWeight: 800, color: clientConfig.colors.brandGold }}>{clientConfig.nombreCorto}</span>

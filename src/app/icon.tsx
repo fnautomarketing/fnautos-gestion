@@ -34,9 +34,7 @@ export default async function Icon() {
           <img
             src={logoSrc}
             alt=""
-            width={48}
-            height={48}
-            style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+            style={{ objectFit: 'contain', width: '160%', height: '160%' }}
           />
         ) : (
           <span style={{ fontSize: 20, fontWeight: 800, color: clientConfig.colors.brandGold }}>{clientConfig.nombreCorto.slice(0, 3).toUpperCase()}</span>
