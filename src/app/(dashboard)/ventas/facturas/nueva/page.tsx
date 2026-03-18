@@ -68,11 +68,11 @@ export default async function NuevaFacturaPage() {
     const empresaIdsParaClientes = isGlobal ? empresaIds : (empresaId ? [empresaId] : [])
     const clientesByEmpresa: Record<string, any[]> = {}
     for (const eid of empresaIdsParaClientes) {
-        const { data: ces } = await admin
+        const { data: ces } = await (admin as any)
             .from('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', eid)
-        const clienteIds = (ces || []).map((c: { cliente_id: string }) => c.cliente_id)
+        const clienteIds = ((ces as any[]) || []).map((c: any) => c.cliente_id)
         if (clienteIds.length > 0) {
             const { data } = await admin
                 .from('clientes')

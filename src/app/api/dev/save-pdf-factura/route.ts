@@ -80,16 +80,16 @@ export async function GET(request: Request) {
     const EMPRESA_VILLEGAS_ID = '4b77324c-a10e-4714-b0a4-df4b9c5f6ca5'
     const EMPRESA_YENIFER_ID = 'e9a30c7d-eb2a-4c7a-91a6-a8bfe8f2278a'
     const EMPRESA_EDISON_ID = 'af15f25a-7ade-4de8-9241-a42e1b8407da'
-    let pdfPlantilla: 'estandar' | 'premium' = 'estandar'
-    let incluirLogoPdf = false
+    let pdfPlantilla: 'premium' = 'premium'
+    let incluirLogoPdf = true
     if (factura.empresa_id === EMPRESA_VILLEGAS_ID) {
       pdfPlantilla = 'premium'
       incluirLogoPdf = true
     } else if (factura.empresa_id === EMPRESA_YENIFER_ID || factura.empresa_id === EMPRESA_EDISON_ID) {
-      pdfPlantilla = 'estandar'
+      pdfPlantilla = 'premium'
       incluirLogoPdf = false
     } else {
-      pdfPlantilla = 'estandar'
+      pdfPlantilla = 'premium'
       incluirLogoPdf = true
     }
     const pdfOptions: PdfOptions = {

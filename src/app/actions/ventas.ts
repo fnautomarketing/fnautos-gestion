@@ -32,7 +32,7 @@ async function obtenerSiguienteNumero(empresaId: string, serieId: string): Promi
 // Liberar número reservado cuando se elimina borrador externa
 async function liberarNumeroSerie(serieId: string) {
     const admin = createAdminClient()
-    const { error } = await admin.rpc('liberar_numero_serie', { p_serie_id: serieId })
+    const { error } = await (admin as any).rpc('liberar_numero_serie', { p_serie_id: serieId })
     if (error) {
         console.error('[liberarNumeroSerie] Error:', error)
     }
@@ -43,7 +43,7 @@ export async function obtenerProximoNumeroPreviewAction(serieId: string | null):
     if (!serieId) return null
     try {
         const admin = createAdminClient()
-        const { data, error } = await admin.rpc('obtener_proximo_numero_preview', { p_serie_id: serieId })
+        const { data, error } = await (admin as any).rpc('obtener_proximo_numero_preview', { p_serie_id: serieId })
         if (error) {
             console.error('[obtenerProximoNumeroPreview] Error:', error)
             return null
@@ -394,7 +394,7 @@ export async function editarFacturaAction(formData: FormData) {
         if (factura.estado === 'anulada') throw new Error('No se puede editar una factura anulada')
 
         // Validar retención si cambia
-        if (validatedData.retencion_porcentaje !== undefined && validatedData.retencion_porcentaje > 0) {
+        if (validatedData.retencion_porcentaje !== undefined && validatedData.retencion_porcentaje !== null && validatedData.retencion_porcentaje > 0) {
             const { data: cliente } = await supabase
                 .from('clientes')
                 .select('tipo_cliente')
@@ -408,20 +408,20 @@ export async function editarFacturaAction(formData: FormData) {
 
         // Construir objeto de actualización
         interface FacturaUpdate {
-            cliente_id?: string
-            fecha_emision?: string
-            notas?: string
-            serie_id?: string
-            subtotal?: number
-            descuento_tipo?: string
-            descuento_valor?: number
-            recargo_equivalencia?: boolean
-            recargo_porcentaje?: number
-            retencion_porcentaje?: number
+            cliente_id?: string | null
+            fecha_emision?: string | null
+            notas?: string | null
+            serie_id?: string | null
+            subtotal?: number | null
+            descuento_tipo?: string | null
+            descuento_valor?: number | null
+            recargo_equivalencia?: boolean | null
+            recargo_porcentaje?: number | null
+            retencion_porcentaje?: number | null
             plantilla_pdf_id?: string | null
-            divisa?: string
-            tipo_cambio?: number
-            updated_at?: string
+            divisa?: string | null
+            tipo_cambio?: number | null
+            updated_at?: string | null
         }
 
         const updates: FacturaUpdate = {}
@@ -438,7 +438,7 @@ export async function editarFacturaAction(formData: FormData) {
         }
 
         if (archivo_url !== undefined && archivo_url !== (factura.archivo_url || null)) {
-            (updates as FacturaUpdate & { archivo_url?: string }).archivo_url = archivo_url
+            (updates as FacturaUpdate & { archivo_url?: string | null }).archivo_url = archivo_url
             cambios.push(`PDF actualizado`)
         }
 
