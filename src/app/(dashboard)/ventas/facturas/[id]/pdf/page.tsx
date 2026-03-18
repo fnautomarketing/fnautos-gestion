@@ -25,7 +25,7 @@ export default function FacturaPdfPage({ params }: PageProps) {
     const [loading, setLoading] = useState(true)
     const [downloading, setDownloading] = useState(false)
     const [options, setOptions] = useState<PdfOptions>({
-        plantilla: 'estandar',
+        plantilla: 'premium',
         idioma: 'es',
         incluirLogo: false,
         notasPie: 'Gracias por su confianza.',
@@ -72,10 +72,10 @@ export default function FacturaPdfPage({ params }: PageProps) {
 
                 setFactura(fac)
 
-                const plantillas = getPlantillasDisponibles(activaId ?? null)
+                const plantillas = getPlantillasDisponibles()
 
                 // Plantilla por defecto según disponibilidad
-                let defaultPlantilla = plantillas[0]?.value ?? 'estandar'
+                let defaultPlantilla = plantillas[0]?.value ?? 'premium'
                 // Preferir premium si está disponible
                 if (plantillas.some(p => p.value === 'premium')) {
                     defaultPlantilla = 'premium'
@@ -237,7 +237,6 @@ export default function FacturaPdfPage({ params }: PageProps) {
                         onDownload={handleDownloadTemplate}
                         esExterna={esExterna}
                         tieneArchivoOriginal={tieneArchivoOriginal}
-                        empresaActivaId={empresaActivaId}
                         facturaId={id}
                     />
                 </div>
