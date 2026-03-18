@@ -121,7 +121,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                         className={cn(
                             'w-full group flex items-center justify-between gap-3 rounded-xl px-4 py-3 min-h-[44px] sm:min-h-0 sm:py-3 text-sm font-semibold transition-all duration-500 relative overflow-hidden touch-manipulation',
                             isActive
-                                ? 'bg-white/5 text-primary shadow-[inset_0_0_20px_hsla(var(--primary),0.05)]'
+                                ? 'bg-white/5 text-white shadow-[inset_0_0_20px_hsla(var(--primary),0.05)]'
                                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-100 hover:translate-x-1'
                         )}
                     >
@@ -143,7 +143,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                                         className={cn(
                                             'group flex items-center gap-3 rounded-lg px-3 py-2.5 min-h-[44px] sm:min-h-0 sm:py-2 text-sm font-medium transition-all duration-300 relative touch-manipulation',
                                             pathname === sub.href
-                                                ? 'bg-white/5 text-primary'
+                                                ? 'bg-primary/10 text-white font-semibold'
                                                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
                                         )}
                                     >
@@ -165,7 +165,7 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                 className={cn(
                     'group flex items-center gap-3 rounded-lg px-3 py-3 min-h-[44px] sm:min-h-0 sm:py-3 text-sm font-medium transition-all duration-300 relative overflow-hidden touch-manipulation',
                     isActive
-                        ? 'bg-gradient-to-r from-primary/20 to-transparent text-primary'
+                        ? 'bg-gradient-to-r from-primary/20 to-transparent text-white font-semibold'
                         : 'text-slate-400 hover:bg-white/5 hover:text-slate-100 hover:translate-x-1'
                 )}
             >
