@@ -147,7 +147,8 @@ export async function actualizarEmpresaAction(formData: FormData) {
             }
         }
 
-        const { data, error } = await supabase
+        const adminSupabase = createAdminClient()
+        const { data, error } = await adminSupabase
             .from('empresas')
             .update(datosEmpresa)
             .eq('id', empresaId)
@@ -185,9 +186,9 @@ export async function subirLogoEmpresaAction(formData: FormData) {
             return { success: false, error: 'Solo se permiten imágenes PNG, JPG o WEBP' }
         }
 
-        // Validar tamaño (max 2MB)
-        if (file.size > 2 * 1024 * 1024) {
-            return { success: false, error: 'El archivo no puede superar 2MB' }
+        // Validar tamaño (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            return { success: false, error: 'El archivo no puede superar 5MB' }
         }
 
         const fileExt = file.name.split('.').pop()
@@ -196,6 +197,19 @@ export async function subirLogoEmpresaAction(formData: FormData) {
 
         // Storage y DB con Admin Client (bypass RLS, evita "new row violates row-level security policy")
         const adminSupabase = createAdminClient()
+
+        // Obtener logo actual para borrarlo primero
+        const { data: empresa } = await adminSupabase
+            .from('empresas')
+            .select('logo_filename')
+            .eq('id', empresaId)
+            .single()
+
+        if (empresa?.logo_filename) {
+            await adminSupabase.storage
+                .from('company-logos')
+                .remove([`empresas/${empresaId}/${empresa.logo_filename}`])
+        }
 
         // Subir a storage (bucket company-logos)
         const { error: uploadError } = await adminSupabase.storage

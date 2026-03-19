@@ -5,6 +5,9 @@ import { NextResponse } from 'next/server'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 import type { Empresa } from '@/types/empresa'
 import * as React from 'react'
+import { clientConfig } from '@/config/clients'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 
 /**
  * GET /api/empresas/datos-fiscales/pdf
@@ -88,6 +91,17 @@ export async function GET(request: Request) {
             }
         } catch {
             // Si no se puede cargar el logo, continuar sin él
+        }
+    }
+
+    // Fallback al logo principal del sistema si la empresa no subió ninguno
+    if (!logoUrl) {
+        try {
+            const logoPath = join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+            const buf = await readFile(logoPath)
+            logoUrl = `data:image/png;base64,${buf.toString('base64')}`
+        } catch (error) {
+            console.error('Error cargando el logo por defecto (clientConfig):', error)
         }
     }
 

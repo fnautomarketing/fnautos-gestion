@@ -1,18 +1,24 @@
 /* eslint-disable jsx-a11y/alt-text */
 import { Document, Page, Text, View, Image } from '@react-pdf/renderer'
 import type { Empresa } from '@/types/empresa'
+import { clientConfig } from '@/config/clients'
 
 export interface DatosFiscalesPdfProps {
     empresa: Empresa
     logoUrl?: string // base64 data URI o URL pública
 }
 
-const BRAND_GOLD = '#E0A904'
-const BRAND_DARK = '#1F2937'
-const SLATE_600 = '#475569'
-const SLATE_400 = '#94a3b8'
-const SLATE_100 = '#f1f5f9'
-const WHITE = '#ffffff'
+const C = {
+    red:     clientConfig.colors.brandGold || '#E60007', // rojo corporativo
+    dark:    clientConfig.colors.brandDark || '#0A0A0A',
+    slate:   '#334155',
+    light:   '#64748b',
+    border:  '#e2e8f0',
+    bg:      '#f8fafc',
+    redBg:   '#fff5f5',   // fondo rojo muy suave (uniforme para paneles)
+    redBdr:  '#fecaca',   // borde suave rojo
+    white:   '#ffffff',
+}
 
 const TIPO_EMPRESA_LABELS: Record<string, string> = {
     autonomo: 'Autónomo',
@@ -44,10 +50,10 @@ interface RowProps {
 function InfoRow({ label, value }: RowProps) {
     return (
         <View style={{ flexDirection: 'row', marginBottom: 6 }}>
-            <Text style={{ fontSize: 9, color: SLATE_400, width: 130, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+            <Text style={{ fontSize: 9, color: C.light, width: 130, textTransform: 'uppercase', letterSpacing: 0.5 }}>
                 {label}
             </Text>
-            <Text style={{ fontSize: 10, color: BRAND_DARK, flex: 1, fontWeight: 'bold' }}>
+            <Text style={{ fontSize: 10, color: C.dark, flex: 1, fontWeight: 'bold' }}>
                 {value}
             </Text>
         </View>
@@ -55,10 +61,6 @@ function InfoRow({ label, value }: RowProps) {
 }
 
 export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfProps) {
-    const hasLogo = !!logoUrl
-
-    const colorAccent = BRAND_GOLD
-
     const direccionCompleta = [empresa.direccion, empresa.codigo_postal, empresa.ciudad, empresa.provincia, empresa.pais]
         .filter(Boolean)
         .join(', ')
@@ -75,91 +77,63 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                 size="A4"
                 style={{
                     paddingTop: 0,
-                    paddingBottom: 50,
+                    paddingBottom: 60,
                     paddingHorizontal: 0,
                     fontSize: 10,
                     fontFamily: 'Helvetica',
-                    color: BRAND_DARK,
-                    backgroundColor: WHITE,
+                    color: C.slate,
+                    backgroundColor: C.white,
                 }}
             >
-                {/* CABECERA con banda de color */}
-                <View
-                    style={{
-                        backgroundColor: BRAND_DARK,
-                        paddingHorizontal: 44,
-                        paddingTop: 36,
-                        paddingBottom: 32,
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-end',
-                    }}
-                >
-                    {/* Nombre e identificación */}
-                    <View style={{ flex: 1 }}>
-                        <Text style={{ fontSize: 7, color: colorAccent, textTransform: 'uppercase', letterSpacing: 1.5, marginBottom: 8 }}>
-                            Datos Fiscales
-                        </Text>
-                        <Text style={{ fontSize: 22, color: WHITE, fontWeight: 'bold', marginBottom: 4 }}>
-                            {empresa.razon_social}
-                        </Text>
-                        {empresa.nombre_comercial && empresa.nombre_comercial !== empresa.razon_social && (
-                            <Text style={{ fontSize: 11, color: SLATE_400, marginBottom: 4 }}>
-                                {empresa.nombre_comercial}
-                            </Text>
+                {/* ══════════════════════════════════════════════
+                    CABECERA — fondo blanco, texto oscuro (estilo Factura v2)
+                ══════════════════════════════════════════════*/}
+                <View style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    paddingHorizontal: 44,
+                    paddingTop: 36,
+                    paddingBottom: 22,
+                    backgroundColor: C.white,
+                }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 20 }}>
+                        {logoUrl && (
+                            <Image src={logoUrl} style={{ width: 70, height: 70, objectFit: 'contain', marginRight: 16 }} />
                         )}
-                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 6 }}>
-                            <View style={{ backgroundColor: colorAccent, paddingHorizontal: 8, paddingVertical: 3, borderRadius: 3 }}>
-                                <Text style={{ fontSize: 9, color: BRAND_DARK, fontWeight: 'bold', letterSpacing: 0.5 }}>
-                                    {empresa.cif}
-                                </Text>
-                            </View>
-                            <Text style={{ fontSize: 9, color: SLATE_400, marginLeft: 10 }}>
-                                {tipoEmpresaLabel}
+                        <View style={{ flex: 1 }}>
+                            <Text style={{ fontSize: 15, fontWeight: 'bold', color: C.dark, letterSpacing: 0.3 }}>
+                                {empresa.razon_social}
+                            </Text>
+                            <Text style={{ fontSize: 8, color: C.light, marginTop: 3 }}>
+                                NIF/CIF: {empresa.cif}
+                            </Text>
+                            <Text style={{ fontSize: 8, color: C.light, marginTop: 1 }}>
+                                {[empresa.direccion, empresa.ciudad, empresa.codigo_postal].filter(Boolean).join('  ·  ')}
                             </Text>
                         </View>
                     </View>
 
-                    {/* Logo */}
-                    {hasLogo && (
-                        <View
-                            style={{
-                                width: 80,
-                                height: 80,
-                                backgroundColor: WHITE,
-                                borderRadius: 8,
-                                padding: 6,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                marginLeft: 20,
-                            }}
-                        >
-                            <Image
-                                src={logoUrl}
-                                style={{ width: 68, height: 68, objectFit: 'contain' }}
-                            />
-                        </View>
-                    )}
+                    <View style={{ alignItems: 'flex-end', minWidth: 150 }}>
+                        <Text style={{ fontSize: 8, color: C.light, letterSpacing: 1.5, textTransform: 'uppercase' }}>
+                            Datos Fiscales
+                        </Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: C.dark, marginTop: 3, letterSpacing: 0.5 }}>
+                            IDENTIDAD
+                        </Text>
+                    </View>
                 </View>
 
-                {/* Línea de acento */}
-                <View style={{ height: 4, backgroundColor: colorAccent }} />
+                {/* LÍNEA ROJA SEPARADORA */}
+                <View style={{ height: 3, backgroundColor: C.red }} />
 
                 {/* CUERPO */}
                 <View style={{ paddingHorizontal: 44, paddingTop: 32 }}>
 
                     {/* SECCIÓN: Identificación fiscal */}
-                    <View style={{ marginBottom: 24 }}>
-                        <View style={{
-                            borderBottomWidth: 1,
-                            borderBottomColor: colorAccent,
-                            marginBottom: 14,
-                            paddingBottom: 6,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                        }}>
-                            <View style={{ width: 4, height: 12, backgroundColor: colorAccent, marginRight: 8, borderRadius: 2 }} />
-                            <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_DARK, textTransform: 'uppercase', letterSpacing: 1 }}>
+                    <View style={{ marginBottom: 24, backgroundColor: C.redBg, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr, borderTopWidth: 3, borderTopColor: C.red }}>
+                        <View style={{ marginBottom: 14 }}>
+                            <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.red, textTransform: 'uppercase', letterSpacing: 1 }}>
                                 Identificación Fiscal
                             </Text>
                         </View>
@@ -178,17 +152,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Domicilio fiscal */}
                     {direccionCompleta && (
-                        <View style={{ marginBottom: 24 }}>
-                            <View style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: colorAccent,
-                                marginBottom: 14,
-                                paddingBottom: 6,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}>
-                                <View style={{ width: 4, height: 12, backgroundColor: colorAccent, marginRight: 8, borderRadius: 2 }} />
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_DARK, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Domicilio Fiscal
                                 </Text>
                             </View>
@@ -203,17 +169,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Contacto */}
                     {hasContacto && (
-                        <View style={{ marginBottom: 24 }}>
-                            <View style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: colorAccent,
-                                marginBottom: 14,
-                                paddingBottom: 6,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}>
-                                <View style={{ width: 4, height: 12, backgroundColor: colorAccent, marginRight: 8, borderRadius: 2 }} />
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_DARK, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Datos de Contacto
                                 </Text>
                             </View>
@@ -226,17 +184,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Datos bancarios */}
                     {hasBancarios && (
-                        <View style={{ marginBottom: 24 }}>
-                            <View style={{
-                                borderBottomWidth: 1,
-                                borderBottomColor: colorAccent,
-                                marginBottom: 14,
-                                paddingBottom: 6,
-                                flexDirection: 'row',
-                                alignItems: 'center',
-                            }}>
-                                <View style={{ width: 4, height: 12, backgroundColor: colorAccent, marginRight: 8, borderRadius: 2 }} />
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: BRAND_DARK, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Datos Bancarios
                                 </Text>
                             </View>
@@ -253,13 +203,13 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                         style={{
                             marginTop: 8,
                             padding: 14,
-                            backgroundColor: SLATE_100,
+                            backgroundColor: C.redBg,
                             borderRadius: 4,
                             borderLeftWidth: 3,
-                            borderLeftColor: colorAccent,
+                            borderLeftColor: C.red,
                         }}
                     >
-                        <Text style={{ fontSize: 8, color: SLATE_600, lineHeight: 1.5 }}>
+                        <Text style={{ fontSize: 8, color: C.slate, lineHeight: 1.5 }}>
                             Este documento contiene los datos fiscales y bancarios de{' '}{empresa.razon_social} a efectos de facturación y pagos.
                             Válido para darse de alta como proveedor o cliente. Cualquier modificación de estos datos será comunicada oportunamente.
                         </Text>
@@ -273,19 +223,16 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        height: 40,
-                        backgroundColor: BRAND_DARK,
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        borderTopWidth: 2,
+                        borderTopColor: C.red,
+                        paddingTop: 14,
+                        paddingBottom: 20,
                         paddingHorizontal: 44,
-                        justifyContent: 'space-between',
+                        alignItems: 'center',
                     }}
                 >
-                    <Text style={{ fontSize: 8, color: SLATE_400 }}>
-                        {empresa.razon_social} · {empresa.cif}
-                    </Text>
-                    <Text style={{ fontSize: 8, color: SLATE_400 }}>
-                        Datos Fiscales
+                    <Text style={{ fontSize: 8, color: C.light }}>
+                        {empresa.razon_social} · CIF: {empresa.cif} · {[empresa.ciudad, empresa.codigo_postal].filter(Boolean).join(' ')}
                     </Text>
                 </View>
             </Page>
