@@ -1,41 +1,45 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { createServerClient } from '@/lib/supabase/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import { serieSchema } from '@/lib/validations/serie-schema'
-import { getUserContext } from '@/app/actions/usuarios-empresas'
 
 const ANO_ACTUAL = new Date().getFullYear()
 
 /**
  * Obtiene o crea la serie del año actual para una empresa.
- * Al cambiar de año (2027), crea V2027, Y2027, E2027 automáticamente.
+ * NO crea nuevas series si ya existe al menos una activa general del año actual.
  */
 export async function obtenerOCrearSerieAnualAction(empresaId: string) {
     try {
         const adminClient = createAdminClient()
-        const { data: empresa } = await adminClient.from('empresas')
-            .select('id, razon_social, nombre_comercial')
-            .eq('id', empresaId)
-            .single()
 
-        if (!empresa) return { success: false, error: 'Empresa no encontrada' }
-
-        const prefijo = 'prefijo_serie' in empresa ? String(empresa.prefijo_serie) : (empresa.razon_social ? empresa.razon_social[0].toUpperCase() : 'F')
-        const codigoAnual = `${prefijo}${ANO_ACTUAL}`
-
-        const { data: existente } = await adminClient
+        // Comprobar si ya existe al menos una serie general activa para este año
+        const { data: seriesExistentes } = await adminClient
             .from('series_facturacion')
-            .select('id, codigo, nombre, predeterminada, empresa_id')
+            .select('id, codigo, predeterminada')
             .eq('empresa_id', empresaId)
-            .eq('codigo', codigoAnual)
             .eq('activa', true)
-            .single()
+            .neq('tipo', 'rectificativa')
 
-        if (existente) return { success: true, data: existente }
+        // Si ya hay series activas de tipo general para este año, no crear más
+        const seriesAnuales = (seriesExistentes || []).filter((s) =>
+            s.codigo.includes(String(ANO_ACTUAL))
+        )
+        if (seriesAnuales.length > 0) {
+            // Asegurar que al menos una es predeterminada
+            const hayPredeterminada = seriesAnuales.some((s) => s.predeterminada)
+            if (!hayPredeterminada) {
+                await adminClient.from('series_facturacion')
+                    .update({ predeterminada: true })
+                    .eq('id', seriesAnuales[0].id)
+            }
+            return { success: true, data: seriesAnuales[0] }
+        }
 
-        // Crear serie del año actual (admin bypassa RLS)
+        // Si no hay ninguna serie del año actual, crear F{AÑO}
+        const codigoAnual = `F${ANO_ACTUAL}`
+
         await adminClient.from('series_facturacion').update({ predeterminada: false }).eq('empresa_id', empresaId)
 
         const { data: nueva, error } = await adminClient
@@ -43,7 +47,7 @@ export async function obtenerOCrearSerieAnualAction(empresaId: string) {
             .insert({
                 empresa_id: empresaId,
                 codigo: codigoAnual,
-                nombre: `Facturación ${empresa.nombre_comercial || empresa.razon_social} ${ANO_ACTUAL}`,
+                nombre: `Facturación ${ANO_ACTUAL}`,
                 prefijo: '',
                 sufijo: '',
                 digitos: 4,
@@ -68,8 +72,12 @@ export async function obtenerOCrearSerieAnualAction(empresaId: string) {
     }
 }
 
-async function getSerieEmpresaId(supabase: Awaited<ReturnType<typeof createServerClient>>, serieId: string): Promise<string> {
-    const { data: serie, error } = await supabase
+/**
+ * Helper interno: obtiene el empresa_id de una serie usando adminClient (bypass RLS).
+ */
+async function getSerieEmpresaId(serieId: string): Promise<string> {
+    const adminClient = createAdminClient()
+    const { data: serie, error } = await adminClient
         .from('series_facturacion')
         .select('empresa_id')
         .eq('id', serieId)
@@ -80,7 +88,10 @@ async function getSerieEmpresaId(supabase: Awaited<ReturnType<typeof createServe
 
 export async function crearSerieAction(formData: FormData) {
     try {
-        const { supabase, empresaId, empresas } = await getUserContext()
+        const { getUserContext } = await import('@/app/actions/usuarios-empresas')
+        const { empresaId, empresas } = await getUserContext()
+        const adminClient = createAdminClient()
+
         const empresaIdFinal = empresaId || empresas?.[0]?.empresa_id
         if (!empresaIdFinal) throw new Error('Usuario sin empresa asignada')
 
@@ -97,13 +108,13 @@ export async function crearSerieAction(formData: FormData) {
 
         // Si se marca como predeterminada, desactivar otras
         if (validated.predeterminada) {
-            await supabase
+            await adminClient
                 .from('series_facturacion')
                 .update({ predeterminada: false })
                 .eq('empresa_id', empresaIdFinal)
         }
 
-        const { data, error } = await supabase
+        const { data, error } = await adminClient
             .from('series_facturacion')
             .insert({
                 ...validated,
@@ -126,8 +137,8 @@ export async function crearSerieAction(formData: FormData) {
 
 export async function actualizarSerieAction(serieId: string, formData: FormData) {
     try {
-        const { supabase } = await getUserContext()
-        const empresaIdFinal = await getSerieEmpresaId(supabase, serieId)
+        const adminClient = createAdminClient()
+        const empresaIdFinal = await getSerieEmpresaId(serieId)
 
         const rawData = Object.fromEntries(formData.entries())
         const dataToValidate = {
@@ -144,12 +155,12 @@ export async function actualizarSerieAction(serieId: string, formData: FormData)
         const numeroActual = numeroActualRaw ? Number(numeroActualRaw) : undefined
 
         if (numeroActual !== undefined && numeroActual >= 1) {
-            const { data: facturas } = await supabase
+            const { data: facturas } = await adminClient
                 .from('facturas')
                 .select('numero')
                 .eq('serie_id', serieId)
                 .eq('estado', 'emitida')
-            const maxNum = (facturas ?? []).reduce((max, f) => {
+            const maxNum = (facturas ?? []).reduce((max: number, f: { numero: string | null }) => {
                 const n = parseInt(String(f.numero).replace(/\D/g, '') || '0', 10)
                 return n > max ? n : max
             }, 0)
@@ -159,7 +170,7 @@ export async function actualizarSerieAction(serieId: string, formData: FormData)
         }
 
         if (validated.predeterminada) {
-            await supabase
+            await adminClient
                 .from('series_facturacion')
                 .update({ predeterminada: false })
                 .eq('empresa_id', empresaIdFinal)
@@ -169,7 +180,7 @@ export async function actualizarSerieAction(serieId: string, formData: FormData)
         const updateData: Record<string, unknown> = { ...validated }
         if (numeroActual !== undefined) updateData.numero_actual = numeroActual
 
-        const { data, error } = await supabase
+        const { data, error } = await adminClient
             .from('series_facturacion')
             .update(updateData)
             .eq('id', serieId)
@@ -190,10 +201,10 @@ export async function actualizarSerieAction(serieId: string, formData: FormData)
 
 export async function eliminarSerieAction(serieId: string) {
     try {
-        const { supabase } = await getUserContext()
-        const empresaIdFinal = await getSerieEmpresaId(supabase, serieId)
+        const adminClient = createAdminClient()
+        const empresaIdFinal = await getSerieEmpresaId(serieId)
 
-        const { count } = await supabase
+        const { count } = await adminClient
             .from('facturas')
             .select('id', { count: 'exact', head: true })
             .eq('serie_id', serieId)
@@ -202,7 +213,7 @@ export async function eliminarSerieAction(serieId: string) {
             return { success: false, error: `Serie tiene ${count} factura(s) asociada(s)` }
         }
 
-        const { error } = await supabase
+        const { error } = await adminClient
             .from('series_facturacion')
             .delete()
             .eq('id', serieId)
@@ -221,10 +232,10 @@ export async function eliminarSerieAction(serieId: string) {
 
 export async function toggleActivaSerieAction(serieId: string, activa: boolean) {
     try {
-        const { supabase } = await getUserContext()
-        const empresaIdFinal = await getSerieEmpresaId(supabase, serieId)
+        const adminClient = createAdminClient()
+        const empresaIdFinal = await getSerieEmpresaId(serieId)
 
-        const { error } = await supabase
+        const { error } = await adminClient
             .from('series_facturacion')
             .update({ activa })
             .eq('id', serieId)
@@ -243,15 +254,15 @@ export async function toggleActivaSerieAction(serieId: string, activa: boolean) 
 
 export async function establecerPredeterminadaAction(serieId: string) {
     try {
-        const { supabase } = await getUserContext()
-        const empresaIdFinal = await getSerieEmpresaId(supabase, serieId)
+        const adminClient = createAdminClient()
+        const empresaIdFinal = await getSerieEmpresaId(serieId)
 
-        await supabase
+        await adminClient
             .from('series_facturacion')
             .update({ predeterminada: false })
             .eq('empresa_id', empresaIdFinal)
 
-        const { error } = await supabase
+        const { error } = await adminClient
             .from('series_facturacion')
             .update({ predeterminada: true })
             .eq('id', serieId)
@@ -270,10 +281,10 @@ export async function establecerPredeterminadaAction(serieId: string) {
 
 export async function resetearNumeracionAction(serieId: string) {
     try {
-        const { supabase } = await getUserContext()
-        const empresaIdFinal = await getSerieEmpresaId(supabase, serieId)
+        const adminClient = createAdminClient()
+        const empresaIdFinal = await getSerieEmpresaId(serieId)
 
-        const { data: serie } = await supabase
+        const { data: serie } = await adminClient
             .from('series_facturacion')
             .select('numero_inicial')
             .eq('id', serieId)
@@ -282,7 +293,7 @@ export async function resetearNumeracionAction(serieId: string) {
 
         if (!serie) throw new Error('Serie no encontrada')
 
-        const { error } = await supabase
+        const { error } = await adminClient
             .from('series_facturacion')
             .update({ numero_actual: serie.numero_inicial })
             .eq('id', serieId)

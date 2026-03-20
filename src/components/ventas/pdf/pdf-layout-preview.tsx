@@ -31,8 +31,9 @@ export function PdfLayoutPreview({ factura, empresa, options }: PdfLayoutPreview
                 // Dynamically load the renderer to ensure it runs only on client
                 const { pdf } = await import('@react-pdf/renderer')
 
-                // Logo PNG - usar el logo configurado
-                const logoUrl = typeof window !== 'undefined' ? `${window.location.origin}${clientConfig.logoPath}` : undefined
+                // Logo PNG - intentar el de la empresa o fallback al configurado (PNG siempre)
+                const fallbackLogo = typeof window !== 'undefined' ? `${window.location.origin}${clientConfig.logoPngPath || clientConfig.logoPath}` : undefined
+                const logoUrl = empresa.logo_url || fallbackLogo
 
                 // Prepare the document instance
                 const doc = (

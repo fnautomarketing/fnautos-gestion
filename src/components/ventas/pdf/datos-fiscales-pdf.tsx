@@ -77,29 +77,29 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                 size="A4"
                 style={{
                     paddingTop: 0,
-                    paddingBottom: 60,
+                    paddingBottom: 40, 
                     paddingHorizontal: 0,
-                    fontSize: 10,
+                    fontSize: 10, 
                     fontFamily: 'Helvetica',
                     color: C.slate,
                     backgroundColor: C.white,
                 }}
             >
                 {/* ══════════════════════════════════════════════
-                    CABECERA — fondo blanco, texto oscuro (estilo Factura v2)
+                    CABECERA — fondo blanco, texto oscuro
                 ══════════════════════════════════════════════*/}
                 <View style={{
                     flexDirection: 'row',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     paddingHorizontal: 44,
-                    paddingTop: 36,
-                    paddingBottom: 22,
+                    paddingTop: 36, 
+                    paddingBottom: 20,
                     backgroundColor: C.white,
                 }}>
                     <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, marginRight: 20 }}>
                         {logoUrl && (
-                            <Image src={logoUrl} style={{ width: 70, height: 70, objectFit: 'contain', marginRight: 16 }} />
+                            <Image src={logoUrl} style={{ width: 65, height: 65, objectFit: 'contain', marginRight: 16 }} />
                         )}
                         <View style={{ flex: 1 }}>
                             <Text style={{ fontSize: 15, fontWeight: 'bold', color: C.dark, letterSpacing: 0.3 }}>
@@ -114,11 +114,11 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                         </View>
                     </View>
 
-                    <View style={{ alignItems: 'flex-end', minWidth: 150 }}>
+                    <View style={{ alignItems: 'flex-end', minWidth: 120 }}>
                         <Text style={{ fontSize: 8, color: C.light, letterSpacing: 1.5, textTransform: 'uppercase' }}>
                             Datos Fiscales
                         </Text>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: C.dark, marginTop: 3, letterSpacing: 0.5 }}>
+                        <Text style={{ fontSize: 15, fontWeight: 'bold', color: C.dark, marginTop: 3, letterSpacing: 0.5 }}>
                             IDENTIDAD
                         </Text>
                     </View>
@@ -128,11 +128,11 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
                 <View style={{ height: 3, backgroundColor: C.red }} />
 
                 {/* CUERPO */}
-                <View style={{ paddingHorizontal: 44, paddingTop: 32 }}>
+                <View style={{ paddingHorizontal: 44, paddingTop: 30 }}>
 
                     {/* SECCIÓN: Identificación fiscal */}
-                    <View style={{ marginBottom: 24, backgroundColor: C.redBg, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr, borderTopWidth: 3, borderTopColor: C.red }}>
-                        <View style={{ marginBottom: 14 }}>
+                    <View wrap={false} style={{ marginBottom: 20, backgroundColor: C.redBg, padding: 15, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr, borderTopWidth: 3, borderTopColor: C.red }}>
+                        <View style={{ marginBottom: 12 }}>
                             <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.red, textTransform: 'uppercase', letterSpacing: 1 }}>
                                 Identificación Fiscal
                             </Text>
@@ -152,9 +152,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Domicilio fiscal */}
                     {direccionCompleta && (
-                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
-                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View wrap={false} style={{ marginBottom: 20, backgroundColor: C.white, padding: 15, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.redBdr, marginBottom: 12, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.red, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Domicilio Fiscal
                                 </Text>
                             </View>
@@ -169,9 +169,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Contacto */}
                     {hasContacto && (
-                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
-                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View wrap={false} style={{ marginBottom: 20, backgroundColor: C.white, padding: 15, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.redBdr, marginBottom: 12, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.red, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Datos de Contacto
                                 </Text>
                             </View>
@@ -184,9 +184,9 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* SECCIÓN: Datos bancarios */}
                     {hasBancarios && (
-                        <View style={{ marginBottom: 24, backgroundColor: C.white, padding: 14, borderRadius: 5, borderWidth: 1, borderColor: C.border }}>
-                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.border, marginBottom: 14, paddingBottom: 6 }}>
-                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark, textTransform: 'uppercase', letterSpacing: 1 }}>
+                        <View wrap={false} style={{ marginBottom: 20, backgroundColor: C.white, padding: 15, borderRadius: 5, borderWidth: 1, borderColor: C.redBdr }}>
+                            <View style={{ borderBottomWidth: 1, borderBottomColor: C.redBdr, marginBottom: 12, paddingBottom: 6 }}>
+                                <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.red, textTransform: 'uppercase', letterSpacing: 1 }}>
                                     Datos Bancarios
                                 </Text>
                             </View>
@@ -200,9 +200,10 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                     {/* Nota legal */}
                     <View
+                        wrap={false}
                         style={{
-                            marginTop: 8,
-                            padding: 14,
+                            marginTop: 10,
+                            padding: 12,
                             backgroundColor: C.redBg,
                             borderRadius: 4,
                             borderLeftWidth: 3,
@@ -218,20 +219,21 @@ export function DatosFiscalesPdfDocument({ empresa, logoUrl }: DatosFiscalesPdfP
 
                 {/* PIE DE PÁGINA */}
                 <View
+                    fixed
                     style={{
                         position: 'absolute',
                         bottom: 0,
                         left: 0,
                         right: 0,
-                        borderTopWidth: 2,
+                        borderTopWidth: 1,
                         borderTopColor: C.red,
-                        paddingTop: 14,
-                        paddingBottom: 20,
-                        paddingHorizontal: 44,
+                        paddingTop: 10,
+                        paddingBottom: 15,
+                        paddingHorizontal: 40,
                         alignItems: 'center',
                     }}
                 >
-                    <Text style={{ fontSize: 8, color: C.light }}>
+                    <Text style={{ fontSize: 7, color: C.light }}>
                         {empresa.razon_social} · CIF: {empresa.cif} · {[empresa.ciudad, empresa.codigo_postal].filter(Boolean).join(' ')}
                     </Text>
                 </View>

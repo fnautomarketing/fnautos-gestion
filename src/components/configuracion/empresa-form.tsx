@@ -61,27 +61,38 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
     const [plantillaPredeterminadaId, setPlantillaPredeterminadaId] = useState(NONE_VALUE)
     const [cifValido, setCifValido] = useState<boolean | null>(null)
 
-    useEffect(() => {
-        setSeriePredeterminadaId(empresaInicial.serie_predeterminada_id || NONE_VALUE)
-        setPlantillaPredeterminadaId(empresaInicial.plantilla_pdf_predeterminada_id || NONE_VALUE)
-    }, [empresaInicial.serie_predeterminada_id, empresaInicial.plantilla_pdf_predeterminada_id])
     const [ibanValido, setIbanValido] = useState<boolean | null>(null)
     const [subiendoLogo, setSubiendoLogo] = useState(false)
 
+    useEffect(() => {
+        setSeriePredeterminadaId(empresaInicial.serie_predeterminada_id || NONE_VALUE)
+        setPlantillaPredeterminadaId(empresaInicial.plantilla_pdf_predeterminada_id || NONE_VALUE)
+        
+        // Validar datos iniciales
+        if (empresaInicial.cif) validarCIF(empresaInicial.cif)
+        if (empresaInicial.iban) validarIBAN(empresaInicial.iban)
+    }, [empresaInicial])
+
     // Validar CIF en tiempo real
-    const validarCIF = (cif: string) => {
+    function validarCIF(cif: string) {
         const regex = /^[A-Z][0-9]{7}[A-Z0-9]$/
         setCifValido(regex.test(cif))
     }
 
-    // Validar IBAN en tiempo real
-    const validarIBAN = (iban: string) => {
+    // Validar IBAN en tiempo real (formato básico)
+    function validarIBAN(iban: string) {
         if (!iban) {
             setIbanValido(null)
             return
         }
-        const regex = /^ES[0-9]{22}$/
-        setIbanValido(regex.test(iban.replace(/\s/g, '')))
+        // Normalización para validación (quitar símbolos y espacios, a mayúsculas)
+        const normalized = iban.replace(/[^A-Z0-9]/gi, '').toUpperCase()
+        // Permitir formato español (ES + 22 dígitos) o internacionales (15-34 caracteres)
+        const regexES = /^ES[0-9]{22}$/
+        const regexGral = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/
+
+        const esValido = regexES.test(normalized) || regexGral.test(normalized)
+        setIbanValido(esValido)
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -161,10 +172,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* DATOS FISCALES */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Building2 className="h-5 w-5 text-primary" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <Building2 className="h-5 w-5" />
                             Datos Fiscales
                         </CardTitle>
                     </CardHeader>
@@ -200,7 +211,7 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                                         <div className="text-center">
                                             <Upload className="h-12 w-12 mx-auto text-slate-400 mb-2" />
                                             <p className="text-sm text-slate-500">Subir Logo</p>
-                                            <p className="text-xs text-slate-400">PNG, JPG o WEBP (máx. 2MB)</p>
+                                            <p className="text-xs text-slate-400">PNG, JPG o WEBP (máx. 5MB)</p>
                                         </div>
                                     )}
                                 </div>
@@ -304,10 +315,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* DIRECCIÓN */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <MapPin className="h-5 w-5 text-orange-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <MapPin className="h-5 w-5" />
                             Dirección
                         </CardTitle>
                     </CardHeader>
@@ -385,10 +396,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* CONTACTO */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Phone className="h-5 w-5 text-blue-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <Phone className="h-5 w-5" />
                             Contacto
                         </CardTitle>
                     </CardHeader>
@@ -425,10 +436,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* DATOS BANCARIOS */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <CreditCard className="h-5 w-5 text-purple-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <CreditCard className="h-5 w-5" />
                             Datos Bancarios
                         </CardTitle>
                     </CardHeader>
@@ -493,10 +504,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* CONFIGURACIÓN DE FACTURACIÓN */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-amber-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <FileText className="h-5 w-5" />
                             Configuración de Facturación
                         </CardTitle>
                         <p className="text-sm text-slate-500 font-normal">
@@ -568,10 +579,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* CONFIGURACIÓN FISCAL */}
-                <Card>
+                <Card className="border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <Euro className="h-5 w-5 text-green-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <Euro className="h-5 w-5" />
                             Configuración Fiscal
                         </CardTitle>
                     </CardHeader>
@@ -650,10 +661,10 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                 </Card>
 
                 {/* TEXTOS LEGALES */}
-                <Card className="lg:col-span-2">
+                <Card className="lg:col-span-2 border-primary/20">
                     <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <FileText className="h-5 w-5 text-slate-600" />
+                        <CardTitle className="flex items-center gap-2 text-primary">
+                            <FileText className="h-5 w-5" />
                             Textos Legales
                         </CardTitle>
                     </CardHeader>

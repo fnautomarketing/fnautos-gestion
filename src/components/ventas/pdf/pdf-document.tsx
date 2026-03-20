@@ -23,6 +23,7 @@ export interface Empresa {
     iban?: string
     banco?: string
     pie_factura?: string
+    logo_url?: string
 }
 
 export interface PdfOptions {

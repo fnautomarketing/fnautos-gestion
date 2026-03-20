@@ -85,7 +85,7 @@ export default function FacturaPdfPage({ params }: PageProps) {
 
                 const { data: emp } = await supabase
                     .from('empresas')
-                    .select('razon_social, nombre_comercial, direccion, ciudad, codigo_postal, provincia, pais, cif, email, iban, banco, pie_factura')
+                    .select('razon_social, nombre_comercial, direccion, ciudad, codigo_postal, provincia, pais, cif, email, iban, banco, pie_factura, logo_url')
                     .eq('id', fac.empresa_id)
                     .single()
 
@@ -100,6 +100,7 @@ export default function FacturaPdfPage({ params }: PageProps) {
                         iban: emp.iban || undefined,
                         banco: emp.banco || undefined,
                         pie_factura: emp.pie_factura || undefined,
+                        logo_url: emp.logo_url || undefined,
                     })
                 } else {
                     setEmpresa({
@@ -125,7 +126,10 @@ export default function FacturaPdfPage({ params }: PageProps) {
         try {
             // Generar el mismo PDF que la vista previa (mismo componente y datos) para que el archivo guardado sea idéntico
             const { pdf } = await import('@react-pdf/renderer')
-            const logoUrl = typeof window !== 'undefined' ? `${window.location.origin}${clientConfig.logoPath}` : undefined
+            // 1. Usar logo de la empresa si existe (URL absoluta de Supabase Storage)
+            // 2. Fallback al logo del sistema (FNAUTOS-PNG)
+            const fallbackLogo = typeof window !== 'undefined' ? `${window.location.origin}${clientConfig.logoPngPath || clientConfig.logoPath}` : undefined
+            const logoUrl = empresa.logo_url || fallbackLogo
             const doc = (
                 <FacturaPdfDocument
                     factura={factura}

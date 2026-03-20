@@ -473,8 +473,8 @@ export async function subirLogoEmpresaAction(empresaId: string, formData: FormDa
             return { success: false, error: 'Formato no permitido. Use JPG, PNG o WEBP' }
         }
 
-        if (file.size > 2 * 1024 * 1024) {
-            return { success: false, error: 'Tamaño excedido. El límite es 2MB' }
+        if (file.size > 5 * 1024 * 1024) {
+            return { success: false, error: 'Tamaño excedido. El límite es 5MB' }
         }
 
         // 3–5. Storage y DB con Admin Client (bypass RLS, evita "new row violates row-level security policy")
@@ -532,7 +532,7 @@ export async function subirLogoEmpresaAction(empresaId: string, formData: FormDa
         const err = error as Record<string, unknown> | null
         console.error('[subirLogoEmpresaAction] Error:', error)
         if ((err?.message as string) === 'Payload too large') {
-            return { success: false, error: 'La imagen excede el límite de 4MB permitido.' }
+            return { success: false, error: 'La imagen excede el límite de 5MB permitido.' }
         }
         return { success: false, error: (err?.message as string) || 'Error al procesar la subida del logo' }
     }

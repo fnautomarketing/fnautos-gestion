@@ -76,8 +76,8 @@ export async function actualizarEmpresaAction(formData: FormData) {
             email: formData.get('email') as string || null,
             web: formData.get('web') as string || null,
 
-            iban: formData.get('iban') as string || null,
-            swift: formData.get('swift') as string || null,
+            iban: (formData.get('iban') as string)?.replace(/\s+/g, '')?.toUpperCase() || null,
+            swift: (formData.get('swift') as string)?.replace(/\s+/g, '')?.toUpperCase() || null,
             banco: formData.get('banco') as string || null,
             titular_cuenta: formData.get('titular_cuenta') as string || null,
 
@@ -136,18 +136,25 @@ export async function actualizarEmpresaAction(formData: FormData) {
             }
         }
 
+        const adminSupabase = createAdminClient()
+
         // Validar IBAN si existe
         if (datosEmpresa.iban) {
-            const { data: ibanValido } = await supabase.rpc('validar_iban', {
+            const { data: ibanValido, error: ibanError } = await adminSupabase.rpc('validar_iban', {
                 p_iban: datosEmpresa.iban
             })
+
+            if (ibanError) {
+                console.error('[actualizarEmpresaAction] Error en RPC validar_iban:', ibanError)
+                // Si el RPC falla por alguna razón técnica (no por validez), permitimos continuar o fallamos?
+                // Mejor vamos a ser informativos
+            }
 
             if (!ibanValido) {
                 return { success: false, error: 'El IBAN no es válido' }
             }
         }
 
-        const adminSupabase = createAdminClient()
         const { data, error } = await adminSupabase
             .from('empresas')
             .update(datosEmpresa)

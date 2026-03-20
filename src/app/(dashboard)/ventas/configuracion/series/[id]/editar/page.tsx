@@ -1,4 +1,5 @@
 import { createServerClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { redirect, notFound } from 'next/navigation'
 import { SerieForm } from '@/components/series/serie-form'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
@@ -14,14 +15,15 @@ export default async function EditarSeriePage({ params }: EditarSeriePageProps) 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')
 
-    const { empresaId, rol } = await getUserContext()
-    const isGlobal = !empresaId && rol === 'admin'
+    const { empresaId } = await getUserContext()
 
-    let query = supabase
+    // Usar adminClient para bypassar RLS y poder leer la serie
+    const adminClient = createAdminClient()
+    let query = adminClient
         .from('series_facturacion')
         .select('*')
         .eq('id', id)
-    if (!isGlobal && empresaId) {
+    if (empresaId) {
         query = query.eq('empresa_id', empresaId)
     }
     const { data: serie } = await query.single()

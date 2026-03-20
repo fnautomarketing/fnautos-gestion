@@ -97,9 +97,12 @@ export async function GET(request: Request) {
     // Fallback al logo principal del sistema si la empresa no subió ninguno
     if (!logoUrl) {
         try {
-            const logoPath = join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+            // Usar logoPngPath si existe, si no logoPath
+            const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
+            const logoPath = join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
             const buf = await readFile(logoPath)
-            logoUrl = `data:image/png;base64,${buf.toString('base64')}`
+            const mime = relativeLogoPath.endsWith('.png') ? 'image/png' : 'image/svg+xml'
+            logoUrl = `data:${mime};base64,${buf.toString('base64')}`
         } catch (error) {
             console.error('Error cargando el logo por defecto (clientConfig):', error)
         }

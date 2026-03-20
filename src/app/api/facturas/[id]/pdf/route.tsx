@@ -5,6 +5,7 @@ import { FacturaPdfDocument, type Empresa, type PdfOptions } from '@/components/
 import { NextResponse } from 'next/server'
 import path from 'path'
 import fs from 'fs'
+import sharp from 'sharp'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 
 import { clientConfig } from '@/config/clients'
@@ -44,15 +45,21 @@ export async function GET(
         .select(`
             *,
             cliente:clientes(*),
-            lineas:lineas_factura(*)
+            lineas:lineas_factura(*),
+            serie_info:series_facturacion(codigo)
         `)
         .eq('id', id)
     if (empresaFiltro) query = query.eq('empresa_id', empresaFiltro)
-    const { data: factura, error } = await query.single()
+    const { data: facturaRaw, error } = await query.single()
 
-    if (error || !factura) {
+    if (error || !facturaRaw) {
         return new NextResponse('Invoice not found', { status: 404 })
     }
+
+    const factura = facturaRaw as any
+    // Asegurar que la serie es el código oficial (F2026, etc.)
+    const codigoSerie = factura.serie_info?.codigo || factura.serie || 'F2026'
+    const facturaConSerie = { ...factura, serie: codigoSerie }
 
     // PLANTILLA LOGIC (RFC-025 override)
     // If no query param provided, check DB invoice template
@@ -106,19 +113,43 @@ export async function GET(
     // Load Logo dinámicamente desde el config del cliente
     let logoUrl: string | undefined
     try {
-        const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
-        const logoPath = path.join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
-        if (fs.existsSync(logoPath)) {
-            const logoBuffer = fs.readFileSync(logoPath)
-            const isSvg = relativeLogoPath.endsWith('.svg')
-            const mimeType = isSvg ? 'image/svg+xml' : 'image/png'
-            logoUrl = `data:${mimeType};base64,${logoBuffer.toString('base64')}`
-        } else {
-            logoUrl = undefined
+        // 1. Intentar logo de la empresa (subido a Supabase)
+        if (empresa.logo_url) {
+            try {
+                const res = await fetch(empresa.logo_url)
+                if (res.ok) {
+                    const buf = Buffer.from(await res.arrayBuffer())
+                    // Usar sharp para redimensionar logos externos/grandes a un tamaño manejable (400px x 400px)
+                    // Esto evita PDFs gigantes y errores de memoria con imágenes de 4096px
+                    const resizedBuffer = await sharp(buf)
+                        .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
+                        .png()
+                        .toBuffer()
+                    logoUrl = `data:image/png;base64,${resizedBuffer.toString('base64')}`
+                }
+            } catch (e) {
+                console.error('Error cargando logo de empresa:', e)
+            }
+        }
+
+        // 2. Fallback al logo del sistema (FNAUTOS) if unavailable
+        if (!logoUrl) {
+            // Priorizar siempre PNG sobre SVG para el PDF
+            const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
+            const logoPath = path.join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
+            
+            if (fs.existsSync(logoPath)) {
+                const logoBuffer = fs.readFileSync(logoPath)
+                // Redimensionar también el logo del sistema si es muy grande
+                const resizedBuffer = await sharp(logoBuffer)
+                    .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
+                    .png()
+                    .toBuffer()
+                logoUrl = `data:image/png;base64,${resizedBuffer.toString('base64')}`
+            }
         }
     } catch (e) {
         console.warn('Could not load logo for PDF', e)
-        logoUrl = undefined
     }
 
     // Generate Stream
@@ -126,7 +157,7 @@ export async function GET(
 
         const stream = await renderToStream(
             <FacturaPdfDocument
-                factura={factura as unknown as any}
+                factura={facturaConSerie as unknown as any}
                 empresa={empresa}
                 options={options}
                 logoUrl={logoUrl}
@@ -134,7 +165,7 @@ export async function GET(
         )
 
         // Return PDF Response
-        const filename = `${factura.serie}-${factura.numero}.pdf`
+        const filename = `${facturaConSerie.serie}-${facturaConSerie.numero}.pdf`
         return new NextResponse(stream as any, {
             headers: {
                 'Content-Type': 'application/pdf',
