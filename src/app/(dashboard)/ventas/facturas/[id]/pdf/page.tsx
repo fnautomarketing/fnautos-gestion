@@ -127,8 +127,8 @@ export default function FacturaPdfPage({ params }: PageProps) {
             // Generar el mismo PDF que la vista previa (mismo componente y datos) para que el archivo guardado sea idéntico
             const { pdf } = await import('@react-pdf/renderer')
             // 1. Usar logo de la empresa si existe (URL absoluta de Supabase Storage)
-            // 2. Fallback al logo del sistema (FNAUTOS-PNG)
-            const fallbackLogo = typeof window !== 'undefined' ? `${window.location.origin}${clientConfig.logoPngPath || clientConfig.logoPath}` : undefined
+            // 2. Fallback al logo optimizado para PDF (8.7 KB en vez de 3.3 MB del original)
+            const fallbackLogo = typeof window !== 'undefined' ? `${window.location.origin}/logo-fnautos-pdf.png` : undefined
             const logoUrl = empresa.logo_url || fallbackLogo
             const doc = (
                 <FacturaPdfDocument

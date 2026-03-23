@@ -58,7 +58,18 @@ export async function GET(
 
     const factura = facturaRaw as any
     // Asegurar que la serie es el código oficial (F2026, etc.)
-    const codigoSerie = factura.serie_info?.codigo || factura.serie || 'F2026'
+    let codigoSerie = 'F2026'
+    if (factura.serie_info) {
+        if (Array.isArray(factura.serie_info) && factura.serie_info.length > 0) {
+            codigoSerie = factura.serie_info[0].codigo || 'F2026'
+        } else if (!Array.isArray(factura.serie_info) && factura.serie_info.codigo) {
+            codigoSerie = factura.serie_info.codigo
+        }
+    } else if (factura.serie && typeof factura.serie === 'string' && !factura.serie.includes('-')) {
+        // Fallback para series pre-migración (IDs eran strings como 'F2026' en vez de UUIDs)
+        codigoSerie = factura.serie
+    }
+    
     const facturaConSerie = { ...factura, serie: codigoSerie }
 
     // PLANTILLA LOGIC (RFC-025 override)
@@ -110,7 +121,13 @@ export async function GET(
         cif: '',
     }
 
-    // Load Logo dinámicamente desde el config del cliente
+    // Load Logo dinámicamente — optimizado para PDFs ligeros (<200KB)
+    // El logo se muestra a 70×70px en el PDF, por lo que 200px es más que suficiente.
+    // Usamos JPEG q75 (más ligero que PNG) y un logo pre-optimizado como fallback.
+    const MAX_LOGO_PX = 200
+    const JPEG_QUALITY = 75
+    const MAX_RAW_BYTES = 200 * 1024 // 200 KB máximo para fallback sin sharp
+
     let logoUrl: string | undefined
     try {
         // 1. Intentar logo de la empresa (subido a Supabase)
@@ -119,33 +136,55 @@ export async function GET(
                 const res = await fetch(empresa.logo_url)
                 if (res.ok) {
                     const buf = Buffer.from(await res.arrayBuffer())
-                    // Usar sharp para redimensionar logos externos/grandes a un tamaño manejable (400px x 400px)
-                    // Esto evita PDFs gigantes y errores de memoria con imágenes de 4096px
-                    const resizedBuffer = await sharp(buf)
-                        .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
-                        .png()
-                        .toBuffer()
-                    logoUrl = `data:image/png;base64,${resizedBuffer.toString('base64')}`
+                    const isSvg = empresa.logo_url.toLowerCase().endsWith('.svg') || res.headers.get('content-type')?.includes('svg')
+
+                    try {
+                        const resizedBuffer = await sharp(buf)
+                            .resize(MAX_LOGO_PX, MAX_LOGO_PX, { fit: 'inside', withoutEnlargement: true })
+                            .flatten({ background: { r: 255, g: 255, b: 255 } })
+                            .jpeg({ quality: JPEG_QUALITY })
+                            .toBuffer()
+                        logoUrl = `data:image/jpeg;base64,${resizedBuffer.toString('base64')}`
+                    } catch (sharpError) {
+                        console.warn('Sharp falló al redimensionar logo de empresa:', sharpError)
+                        // Fallback: usar el original solo si pesa menos de 200 KB y no es SVG
+                        if (!isSvg && buf.length <= MAX_RAW_BYTES) {
+                            logoUrl = `data:image/png;base64,${buf.toString('base64')}`
+                        }
+                    }
                 }
             } catch (e) {
                 console.error('Error cargando logo de empresa:', e)
             }
         }
 
-        // 2. Fallback al logo del sistema (FNAUTOS) if unavailable
+        // 2. Fallback: logo pre-optimizado para PDF (8.9 KB, 240×240px)
         if (!logoUrl) {
-            // Priorizar siempre PNG sobre SVG para el PDF
-            const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
-            const logoPath = path.join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
-            
-            if (fs.existsSync(logoPath)) {
-                const logoBuffer = fs.readFileSync(logoPath)
-                // Redimensionar también el logo del sistema si es muy grande
-                const resizedBuffer = await sharp(logoBuffer)
-                    .resize(400, 400, { fit: 'inside', withoutEnlargement: true })
-                    .png()
-                    .toBuffer()
-                logoUrl = `data:image/png;base64,${resizedBuffer.toString('base64')}`
+            const pdfLogoPath = path.join(process.cwd(), 'public', 'logo-fnautos-pdf.png')
+            if (fs.existsSync(pdfLogoPath)) {
+                const logoBuffer = fs.readFileSync(pdfLogoPath)
+                logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+            } else {
+                // Último recurso: comprimir el logo original con sharp
+                const relativeLogoPath = clientConfig.logoPngPath || clientConfig.logoPath
+                const logoPath = path.join(process.cwd(), 'public', relativeLogoPath.replace(/^\//, ''))
+                if (fs.existsSync(logoPath)) {
+                    const logoBuffer = fs.readFileSync(logoPath)
+                    try {
+                        const resizedBuffer = await sharp(logoBuffer)
+                            .resize(MAX_LOGO_PX, MAX_LOGO_PX, { fit: 'inside', withoutEnlargement: true })
+                            .flatten({ background: { r: 255, g: 255, b: 255 } })
+                            .jpeg({ quality: JPEG_QUALITY })
+                            .toBuffer()
+                        logoUrl = `data:image/jpeg;base64,${resizedBuffer.toString('base64')}`
+                    } catch (sharpError) {
+                        console.warn('Sharp falló con logo del sistema:', sharpError)
+                        // Solo usar raw si pesa menos de 200 KB
+                        if (logoBuffer.length <= MAX_RAW_BYTES) {
+                            logoUrl = `data:image/png;base64,${logoBuffer.toString('base64')}`
+                        }
+                    }
+                }
             }
         }
     } catch (e) {
