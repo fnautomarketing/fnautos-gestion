@@ -27,12 +27,12 @@ export async function GET() {
             .select('*')
             .eq('empresa_id', context.empresaId || '')
 
-        const { data: clientesEmpresas } = await admin
+        const { data: clientesEmpresas } = await (admin as any)
             .from('clientes_empresas')
             .select('cliente_id')
             .eq('empresa_id', context.empresaId || '')
         
-        const clienteIds = (clientesEmpresas || []).map(c => c.cliente_id)
+        const clienteIds = (clientesEmpresas || []).map((c: any) => c.cliente_id)
         const { data: clientesAdmin } = clienteIds.length > 0 
             ? await admin.from('clientes').select('*').in('id', clienteIds)
             : { data: [] }
@@ -45,7 +45,7 @@ export async function GET() {
             context: {
                 empresaId: context.empresaId,
                 rol: context.rol,
-                empresa: context.empresa,
+                empresa: context.empresas,
                 empresas: context.empresas
             },
             perfil,

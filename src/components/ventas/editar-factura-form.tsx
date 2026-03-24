@@ -42,10 +42,10 @@ interface FacturaWithRelations extends Factura {
 interface LineaForm {
     concepto: string
     descripcion: string
-    cantidad: number
-    precio_unitario: number
-    descuento_porcentaje: number
-    iva_porcentaje: number
+    cantidad: number | string
+    precio_unitario: number | string
+    descuento_porcentaje: number | string
+    iva_porcentaje: number | string
 }
 
 interface EditarFacturaFormProps {
@@ -145,7 +145,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
         if (field === 'concepto' || field === 'descripcion') {
             linea[field] = value as string
         } else {
-            linea[field] = value as number
+            linea[field] = value
         }
         setLineas(newLineas)
     }
@@ -176,7 +176,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
         let subtotal = 0
         const lineasCalculadas = lineas.map(linea => {
             // Re-calcular subtotal de línea para asegurar consistencia
-            const st = linea.cantidad * linea.precio_unitario * (1 - (linea.descuento_porcentaje || 0) / 100)
+            const st = Number(linea.cantidad) * Number(linea.precio_unitario) * (1 - (Number(linea.descuento_porcentaje) || 0) / 100)
             subtotal += st
             return { ...linea, subtotalCalculado: st }
         })
@@ -199,12 +199,12 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
             // Prorrateo del descuento global
             const ratioDescuento = subtotal > 0 ? descuentoGlobalMonto / subtotal : 0
             const baseLinea = linea.subtotalCalculado * (1 - ratioDescuento)
-            const ivaLinea = baseLinea * (linea.iva_porcentaje / 100)
+            const ivaLinea = baseLinea * (Number(linea.iva_porcentaje) / 100)
 
-            if (!ivasPorPorcentaje[linea.iva_porcentaje]) {
-                ivasPorPorcentaje[linea.iva_porcentaje] = 0
+            if (!ivasPorPorcentaje[Number(linea.iva_porcentaje)]) {
+                ivasPorPorcentaje[Number(linea.iva_porcentaje)] = 0
             }
-            ivasPorPorcentaje[linea.iva_porcentaje] += ivaLinea
+            ivasPorPorcentaje[Number(linea.iva_porcentaje)] += ivaLinea
             totalIva += ivaLinea
         })
 
@@ -321,7 +321,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                     setIsSubmitting(false)
                     return
                 }
-                if (lineasValidas.some(l => l.cantidad <= 0 || l.precio_unitario < 0)) {
+                if (lineasValidas.some(l => Number(l.cantidad) <= 0 || Number(l.precio_unitario) < 0)) {
                     toast.error('Cantidad debe ser mayor a 0 y precio no puede ser negativo')
                     setIsSubmitting(false)
                     return
@@ -339,8 +339,8 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                 const lineasForSchema = lineasValidas.map(l => ({
                     concepto: l.concepto,
                     descripcion: l.descripcion || '',
-                    cantidad: l.cantidad,
-                    precio_unitario: l.precio_unitario,
+                    cantidad: Number(l.cantidad) || 0,
+                    precio_unitario: Number(l.precio_unitario) || 0,
                     descuento_porcentaje: l.descuento_porcentaje || 0,
                     iva_porcentaje: l.iva_porcentaje || 21,
                 }))
@@ -706,9 +706,10 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                                         <Input
                                                             type="number"
                                                             min={0.01}
-                                                            step={0.01}
+                                                            step="any"
                                                             value={linea.cantidad}
-                                                            onChange={(e) => updateLinea(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                                                            onChange={(e) => updateLinea(index, 'cantidad', e.target.value)}
+                                                            onFocus={(e) => e.target.select()}
                                                             className="bg-white text-center"
                                                         />
                                                     ) : (
@@ -720,13 +721,14 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                                         <Input
                                                             type="number"
                                                             min={0}
-                                                            step={0.01}
+                                                            step="any"
                                                             value={linea.precio_unitario}
-                                                            onChange={(e) => updateLinea(index, 'precio_unitario', parseFloat(e.target.value) || 0)}
+                                                            onChange={(e) => updateLinea(index, 'precio_unitario', e.target.value)}
+                                                            onFocus={(e) => e.target.select()}
                                                             className="bg-white text-right"
                                                         />
                                                     ) : (
-                                                        <span className="block text-right">{formatCurrency(linea.precio_unitario)}</span>
+                                                        <span className="block text-right">{formatCurrency(Number(linea.precio_unitario))}</span>
                                                     )}
                                                 </td>
                                                 <td className="p-2">
@@ -745,7 +747,7 @@ export function EditarFacturaForm({ factura, empresaId, cambios, clientes = [] }
                                                     )}
                                                 </td>
                                                 <td className="p-2 text-right font-semibold">
-                                                    {formatCurrency(linea.cantidad * linea.precio_unitario * (1 - (linea.descuento_porcentaje || 0) / 100))}
+                                                    {formatCurrency(Number(linea.cantidad) * Number(linea.precio_unitario) * (1 - (Number(linea.descuento_porcentaje) || 0) / 100))}
                                                 </td>
                                                 {permisos.todo && (
                                                     <td className="p-2">

@@ -46,7 +46,7 @@ export default async function PlantillasPage() {
             </div>
 
             {/* Grid de plantillas */}
-            <PlantillasGrid plantillas={plantillas || []} />
+            <PlantillasGrid plantillas={(plantillas as any) || []} />
         </div>
     )
 }

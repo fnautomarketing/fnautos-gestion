@@ -38,7 +38,7 @@ export function EmailActivityCard({ historial }: EmailActivityCardProps) {
                                         Para: {email.para.join(', ')}
                                     </p>
                                     <p className="text-[10px] text-slate-400">
-                                        {formatDistanceToNow(new Date(email.created_at), { addSuffix: true, locale: es })}
+                                        {email.created_at ? formatDistanceToNow(new Date(email.created_at), { addSuffix: true, locale: es }) : 'Fecha desconocida'}
                                     </p>
                                 </div>
                             </div>

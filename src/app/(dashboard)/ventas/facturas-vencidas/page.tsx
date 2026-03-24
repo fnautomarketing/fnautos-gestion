@@ -64,7 +64,7 @@ export default async function FacturasVencidasPage({
 
             <VencidasStats stats={stats} />
 
-            <VencidasTabla facturas={facturas || []} nivel={nivel} />
+            <VencidasTabla facturas={(facturas as any) || []} nivel={nivel} />
         </div>
     )
 }

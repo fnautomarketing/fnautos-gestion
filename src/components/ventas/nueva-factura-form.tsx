@@ -16,17 +16,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { PlantillaSelector } from '@/components/plantilla-selector'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
+import { CrearClienteRapidoModal } from './crear-cliente-rapido-modal'
 import { SimpleCombobox } from '@/components/ui/simple-combobox'
 import { Cliente, Serie } from '@/types/ventas'
 import { Empresa } from '@/types/empresa'
 
 interface LineaForm {
     concepto: string
-    cantidad: number
-    precio_unitario: number
-    iva_porcentaje: number
-    descuento_porcentaje: number
-    subtotal: number
+    cantidad: number | string
+    precio_unitario: number | string
+    iva_porcentaje: number | string
+    descuento_porcentaje: number | string
+    subtotal: number | string
 }
 
 interface NuevaFacturaFormProps {
@@ -58,6 +59,8 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
     )
     const [selectedPlantillaId, setSelectedPlantillaId] = useState('')
     const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+    const [showCrearClienteModal, setShowCrearClienteModal] = useState(false)
+    const [clientesNuevosLocales, setClientesNuevosLocales] = useState<Cliente[]>([])
 
     // Form state
     const [serieId, setSerieId] = useState('')
@@ -97,9 +100,12 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         ? series.filter((s: Serie) => s.empresa_id === selectedEmpresaId)
         : series
 
-    const clientesParaMostrar = (empresaId === EMPRESA_VISION_GLOBAL_ID && clientesByEmpresa[selectedEmpresaId])
+    const clientesParaMostrarBase = (empresaId === EMPRESA_VISION_GLOBAL_ID && clientesByEmpresa[selectedEmpresaId])
         ? clientesByEmpresa[selectedEmpresaId]
         : clientes
+
+    // Merge the prop clients with newly created ones in this session
+    const clientesParaMostrar = [...clientesParaMostrarBase, ...clientesNuevosLocales.filter(nc => !clientesParaMostrarBase.some(c => c.id === nc.id))]
 
     // Preview del próximo número al cambiar serie
     useEffect(() => {
@@ -137,7 +143,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
     }, [selectedEmpresaId, empresasConfigs, empresaConfig])
 
     useEffect(() => {
-        const subtotal = lineas.reduce((acc, linea) => acc + (linea.cantidad * linea.precio_unitario), 0)
+        const subtotal = lineas.reduce((acc, linea) => acc + (Number(linea.cantidad) * Number(linea.precio_unitario)), 0)
         let importe_descuento = 0
 
         if (descuentoTipo === 'porcentaje') {
@@ -147,7 +153,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         }
 
         const base_imponible = subtotal - importe_descuento
-        const iva = lineas.reduce((acc, l) => acc + (l.cantidad * l.precio_unitario * (l.iva_porcentaje || 21) / 100), 0)
+        const iva = lineas.reduce((acc, l) => acc + (Number(l.cantidad) * Number(l.precio_unitario) * (Number(l.iva_porcentaje) || 21) / 100), 0)
         // efectoRetencion: negativo cuando el porcentaje es negativo (resta), positivo cuando suma
         const efectoRetencion = base_imponible * (retencionPorcentaje / 100)
         const total = base_imponible + iva + efectoRetencion
@@ -177,7 +183,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         if (field === 'concepto') {
             linea[field] = value as string
         } else {
-            linea[field] = value as number
+            linea[field] = value
         }
         setLineas(newLineas)
     }
@@ -186,10 +192,10 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         const lineasForSchema = lineas.map(l => ({
             concepto: l.concepto,
             descripcion: '',
-            cantidad: l.cantidad,
-            precio_unitario: l.precio_unitario,
-            descuento_porcentaje: l.descuento_porcentaje || 0,
-            iva_porcentaje: l.iva_porcentaje || 21,
+            cantidad: Number(l.cantidad) || 0,
+            precio_unitario: Number(l.precio_unitario) || 0,
+            descuento_porcentaje: Number(l.descuento_porcentaje) || 0,
+            iva_porcentaje: Number(l.iva_porcentaje) || 21,
         }))
         const fd = new FormData()
         fd.set('empresa_id', selectedEmpresaId)
@@ -258,7 +264,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
             toast.error('Por favor, selecciona un cliente')
             return
         }
-        if (lineas.some(l => !l.concepto || l.precio_unitario <= 0)) {
+        if (lineas.some(l => !l.concepto || Number(l.precio_unitario) <= 0)) {
             toast.error('Completa todos los conceptos y precios')
             return
         }
@@ -273,7 +279,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
             toast.error('Por favor, selecciona un cliente')
             return
         }
-        if (lineas.some(l => !l.concepto || l.precio_unitario <= 0)) {
+        if (lineas.some(l => !l.concepto || Number(l.precio_unitario) <= 0)) {
             toast.error('Completa todos los conceptos y precios')
             return
         }
@@ -458,19 +464,33 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                             )}
                             <div className="space-y-2" data-testid="cliente-combobox-wrapper">
                                 <Label htmlFor="cliente">Cliente</Label>
-                                <SimpleCombobox
-                                    data-testid="combobox-cliente"
-                                    options={clientesParaMostrar.map(c => ({
-                                        value: c.id,
-                                        label: c.nombre_fiscal,
-                                        subLabel: c.cif
-                                    }))}
-                                    value={clienteId}
-                                    onChange={(val) => setClienteId(val)}
-                                    placeholder="Seleccionar cliente..."
-                                    searchPlaceholder="Buscar cliente por nombre o CIF..."
-                                    emptyText="No se encontraron clientes."
-                                />
+                                <div className="flex gap-2">
+                                    <div className="flex-1 min-w-0">
+                                        <SimpleCombobox
+                                            data-testid="combobox-cliente"
+                                            options={clientesParaMostrar.map(c => ({
+                                                value: c.id,
+                                                label: c.nombre_fiscal || '',
+                                                subLabel: c.cif || ''
+                                            }))}
+                                            value={clienteId}
+                                            onChange={(val) => setClienteId(val)}
+                                            placeholder="Seleccionar cliente..."
+                                            searchPlaceholder="Buscar cliente por nombre o CIF..."
+                                            emptyText="No se encontraron clientes."
+                                        />
+                                    </div>
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        size="icon"
+                                        className="shrink-0 text-primary border-primary/20 hover:bg-primary/5 h-10 w-10 md:h-9 md:w-9"
+                                        onClick={() => setShowCrearClienteModal(true)}
+                                        title="Crear nuevo cliente rápido"
+                                    >
+                                        <Plus className="h-5 w-5 md:h-4 md:w-4" />
+                                    </Button>
+                                </div>
                             </div>
                             <div className="space-y-2">
                                 <Label>Fecha de emisión</Label>
@@ -554,9 +574,11 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                                                     <Label className="md:hidden text-[10px] font-bold uppercase text-slate-400">Cantidad</Label>
                                                     <Input
                                                         type="number"
+                                                        step="any"
                                                         placeholder="0"
-                                                        value={Number.isNaN(linea.cantidad) ? '' : linea.cantidad}
-                                                        onChange={(e) => updateLinea(index, 'cantidad', parseFloat(e.target.value) || 0)}
+                                                        value={linea.cantidad}
+                                                        onChange={(e) => updateLinea(index, 'cantidad', e.target.value)}
+                                                        onFocus={(e) => e.target.select()}
                                                         className="bg-white dark:bg-slate-950 h-11 md:h-10 text-center w-full md:w-20 text-base md:text-sm"
                                                     />
                                                 </div>
@@ -565,9 +587,11 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                                                     <div className="relative">
                                                         <Input
                                                             type="number"
+                                                            step="any"
                                                             placeholder="0.00"
-                                                            value={Number.isNaN(linea.precio_unitario) ? '' : linea.precio_unitario}
-                                                            onChange={(e) => updateLinea(index, 'precio_unitario', parseFloat(e.target.value) || 0)}
+                                                            value={linea.precio_unitario}
+                                                            onChange={(e) => updateLinea(index, 'precio_unitario', e.target.value)}
+                                                            onFocus={(e) => e.target.select()}
                                                             className="bg-white dark:bg-slate-950 h-11 md:h-10 pl-7 w-full md:w-32 text-base md:text-sm"
                                                         />
                                                         <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 font-medium text-sm">{getSimboloDivisa(divisa)}</span>
@@ -681,7 +705,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                             <span className="text-slate-500">
                                 IVA (
                                 {lineas.length > 0
-                                    ? [...new Set(lineas.map((l) => l.iva_porcentaje ?? 21))].sort((a, b) => a - b).join('%, ') + '%'
+                                    ? [...new Set(lineas.map((l) => Number(l.iva_porcentaje) || 21))].sort((a, b) => a - b).join('%, ') + '%'
                                     : '21%'}
                                 )
                             </span>
@@ -788,6 +812,21 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                     confirmText="Sí, emitir factura"
                     cancelText="Revisar datos"
                     onConfirm={handleEmitir}
+                />
+
+                {/* Modal Crear Cliente Rápido */}
+                <CrearClienteRapidoModal
+                    open={showCrearClienteModal}
+                    onOpenChange={setShowCrearClienteModal}
+                    empresasIds={empresas.map(e => e.id)}
+                    onClienteCreado={(id, nombre_fiscal, cif) => {
+                        setClientesNuevosLocales(prev => [
+                            ...prev,
+                            { id, nombre_fiscal, cif, activo: true } as Cliente
+                        ])
+                        setClienteId(id)
+                        router.refresh()
+                    }}
                 />
 
                 {/* Info Card */}

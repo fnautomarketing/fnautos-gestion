@@ -100,7 +100,7 @@ export async function POST(request: Request) {
         incluirLogoPdf = true
       }
       const pdfOptions: PdfOptions = {
-        plantilla: pdfPlantilla,
+        plantilla: pdfPlantilla as 'premium',
         idioma: 'es',
         incluirLogo: incluirLogoPdf,
         incluirDatosBancarios: true,

@@ -174,7 +174,7 @@ async function enviarFactura(facturaId: string, to: string, empRazonSocial: stri
     incluirLogoPdf = true
   }
   const pdfOptions: PdfOptions = {
-    plantilla: pdfPlantilla,
+    plantilla: pdfPlantilla as 'premium',
     idioma: 'es',
     incluirLogo: incluirLogoPdf,
     incluirDatosBancarios: true,

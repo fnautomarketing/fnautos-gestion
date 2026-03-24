@@ -44,7 +44,7 @@ export default async function EditarPlantillaPage({ params }: EditarPlantillaPag
             </p>
 
             {/* Editor con valores por defecto */}
-            <PlantillaEditor plantillaId={id} defaultValues={plantilla} />
+            <PlantillaEditor plantillaId={id} defaultValues={plantilla as any} />
         </div>
     )
 }

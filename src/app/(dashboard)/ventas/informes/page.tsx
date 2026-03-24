@@ -69,7 +69,7 @@ export default function InformesPage() {
                     const activaId = res.data.empresaActivaId ?? null
                     setEmpresaId(activaId)
                     if (activaId && res.data.empresas) {
-                        const emp = res.data.empresas.find((e: { id: string; razon_social?: string; nombre_comercial?: string }) => e.id === activaId)
+                        const emp = (res.data.empresas as any[]).find((e: { id: string; razon_social?: string; nombre_comercial?: string }) => e.id === activaId)
                         setEmpresaNombre(emp?.nombre_comercial || emp?.razon_social || '')
                     } else if (res.data.isGlobal) {
                         setEmpresaNombre('Todas las empresas')

@@ -92,7 +92,7 @@ export default async function ConceptosPage({
                 precioPromedio={precioPromedio}
             />
 
-            <ConceptosTabla conceptos={conceptos || []} />
+            <ConceptosTabla conceptos={(conceptos as any) || []} />
         </div>
     )
 }
