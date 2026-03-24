@@ -24,9 +24,21 @@ async function obtenerSiguienteNumero(empresaId: string, serieId: string): Promi
     }
     const full = (resultado as string) || ''
     const parts = full.split('-')
+    // El RPC devuelve PREFIJO-NUMERO. Si no hay guion, asumimos que no hay prefijo.
     const numero = parts.length > 1 ? parts[parts.length - 1] : full || '0001'
-    const serieCodigo = parts.length > 1 ? parts.slice(0, -1).join('-') : ''
-    return { numero, serieCodigo }
+    const serieCodigoFromFull = parts.length > 1 ? parts.slice(0, -1).join('-') : ''
+
+    // Obtener el código de la serie real de la tabla para asegurar consistencia
+    const { data: serie } = await admin
+        .from('series_facturacion')
+        .select('codigo')
+        .eq('id', serieId)
+        .single()
+
+    return { 
+        numero, 
+        serieCodigo: serie?.codigo || serieCodigoFromFull 
+    }
 }
 
 // Liberar número reservado cuando se elimina borrador externa
@@ -412,6 +424,7 @@ export async function editarFacturaAction(formData: FormData) {
             fecha_emision?: string | null
             notas?: string | null
             serie_id?: string | null
+            serie?: string | null
             subtotal?: number | null
             descuento_tipo?: string | null
             descuento_valor?: number | null
@@ -456,6 +469,13 @@ export async function editarFacturaAction(formData: FormData) {
             }
             if (validatedData.serie && validatedData.serie !== factura.serie_id) {
                 updates.serie_id = validatedData.serie
+                // Obtener el código de la nueva serie
+                const { data: s } = await supabase
+                    .from('series_facturacion')
+                    .select('codigo')
+                    .eq('id', validatedData.serie)
+                    .single()
+                if (s) updates.serie = s.codigo
                 cambios.push(`Serie actualizada`)
             }
 

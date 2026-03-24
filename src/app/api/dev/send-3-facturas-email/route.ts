@@ -139,7 +139,8 @@ export async function POST(request: Request) {
       const subject = `Factura ${factura.serie || 'FAC'}-${factura.numero} - ${empresaNombre}`
       const message = `Estimado cliente,\n\nAdjuntamos la factura ${factura.serie}-${factura.numero} correspondiente a los servicios prestados.\n\nQuedamos a su disposición para cualquier consulta.\n\nAtentamente,\n${clientConfig.nombre}`
 
-      const fromDomain = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
+      const fromEnv = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
+      const fromDomain = fromEnv.replace(/^["']|["']$/g, '').trim()
       const htmlTemplate = `
       <!DOCTYPE html>
       <html>

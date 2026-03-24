@@ -148,7 +148,8 @@ export async function sendFacturaEmailAction(formData: FormData) {
             ccFinal.push(user.email)
         }
 
-        const fromDomain = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
+        const fromEnv = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
+        const fromDomain = fromEnv.replace(/^["']|["']$/g, '').trim()
         const empresaNombre = empresaRow?.razon_social || empresaRow?.nombre_comercial || clientConfig.nombre
         const subjectFinal = subject || `Factura ${fullFactura.serie || 'FAC'}-${fullFactura.numero} - ${empresaNombre}`
 

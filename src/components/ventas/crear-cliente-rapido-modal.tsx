@@ -198,6 +198,54 @@ export function CrearClienteRapidoModal({
                                 disabled={isSubmitting}
                             />
                         </div>
+
+                        <div className="col-span-2 md:col-span-1 space-y-2">
+                            <Label htmlFor="provincia_rapida">Provincia</Label>
+                            <Input
+                                id="provincia_rapida"
+                                name="provincia"
+                                placeholder="Madrid"
+                                disabled={isSubmitting}
+                            />
+                        </div>
+
+                        <div className="col-span-2 md:col-span-1 space-y-2">
+                            <Label htmlFor="telefono_principal_rapido">Teléfono</Label>
+                            <Input
+                                id="telefono_principal_rapido"
+                                name="telefono_principal"
+                                placeholder="600 000 000"
+                                disabled={isSubmitting}
+                            />
+                        </div>
+
+                        <div className="col-span-2 sm:col-span-2 pt-2 pb-1">
+                            <h4 className="text-sm font-semibold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+                                <span className="h-px bg-slate-200 flex-1" />
+                                Datos Bancarios
+                                <span className="h-px bg-slate-200 flex-1" />
+                            </h4>
+                        </div>
+
+                        <div className="col-span-2 md:col-span-1 space-y-2">
+                            <Label htmlFor="banco_rapido">Banco</Label>
+                            <Input
+                                id="banco_rapido"
+                                name="banco"
+                                placeholder="Santander, BBVA..."
+                                disabled={isSubmitting}
+                            />
+                        </div>
+
+                        <div className="col-span-2 md:col-span-1 space-y-2">
+                            <Label htmlFor="iban_rapido">IBAN</Label>
+                            <Input
+                                id="iban_rapido"
+                                name="iban"
+                                placeholder="ES00 0000..."
+                                disabled={isSubmitting}
+                            />
+                        </div>
                     </div>
 
                     <div className="flex justify-end gap-3 pt-4 border-t border-slate-100 mt-6">
