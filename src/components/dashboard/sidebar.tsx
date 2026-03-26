@@ -17,6 +17,7 @@ import {
     ChevronDown,
     ChevronRight,
     Hash,
+    FileText,
 } from 'lucide-react'
 
 interface NavItem {
@@ -42,6 +43,7 @@ const navigation: NavItem[] = [
         icon: ShoppingCart,
         submenu: [
             { name: 'Facturas', href: '/ventas/facturas', icon: Receipt },
+            { name: 'Contratos', href: '/ventas/contratos', icon: FileText },
             { name: 'Clientes', href: '/ventas/clientes', icon: Users },
             { name: 'Pagos', href: '/ventas/pagos', icon: CreditCard },
             { name: 'Informes', href: '/ventas/informes', icon: BarChart3 },

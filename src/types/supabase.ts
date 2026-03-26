@@ -14,6 +14,12 @@ export type Database = {
   }
   public: {
     Tables: {
+      contratos: {
+        Row: any
+        Insert: any
+        Update: any
+        Relationships: []
+      }
       clientes: {
         Row: {
           activo: boolean | null
