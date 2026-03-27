@@ -21,6 +21,13 @@ export default async function NuevoContratoPage() {
     }
 
     const { data: clientes } = await query
+    
+    // Cargar datos de la empresa para autocompletar vendedor/comprador
+    const { data: empresa } = await adminClient
+        .from('empresas')
+        .select('*')
+        .eq('id', empresaId || '')
+        .single()
 
     return (
         <div className="space-y-6 max-w-5xl mx-auto pb-10">
@@ -30,7 +37,10 @@ export default async function NuevoContratoPage() {
                     Crea un contrato digital de compra o venta de vehículos.
                 </p>
             </div>
-            <ContratoForm clientes={clientes || []} />
+            <ContratoForm 
+                clientes={clientes || []} 
+                empresa={empresa || undefined}
+            />
         </div>
     )
 }

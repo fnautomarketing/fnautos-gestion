@@ -339,6 +339,10 @@ function generarClausulas(contrato: Contrato): Array<{ titulo: string; texto: st
             titulo: 'DÉCIMA — Jurisdicción competente',
             texto: `Para la resolución de cualquier controversia derivada de este contrato, las partes se someten a los Juzgados y Tribunales del domicilio del vendedor, con renuncia a cualquier otro fuero que pudiera corresponderles.`,
         },
+        {
+            titulo: 'UNDÉCIMA — Protección de datos (RGPD)',
+            texto: `De conformidad con el Reglamento (UE) 2016/679 (RGPD) y la LOPDGDD 3/2018, las partes quedan informadas de que sus datos personales serán tratados con la única finalidad de gestionar la relación contractual. Podrán ejercitar sus derechos de acceso, rectificación, supresión y otros legalmente previstos ante la otra parte.`,
+        },
     ]
 
     if (contrato.clausulas_adicionales) {

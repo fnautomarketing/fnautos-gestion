@@ -17,8 +17,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CarFront, FileText, UserSquare, Users, CreditCard, ChevronRight, Save, Info } from 'lucide-react'
+import { CarFront, FileText, UserSquare, Users, CreditCard, ChevronRight, ChevronLeft, Save, Info, Check, AlertCircle } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { useEffect } from 'react'
 
 interface ContratoFormProps {
     clientes: Array<{
@@ -33,12 +34,31 @@ interface ContratoFormProps {
         telefono?: string | null
         email?: string | null
     }>
+    empresa?: {
+        razon_social: string
+        nombre_comercial?: string | null
+        cif: string
+        direccion?: string | null
+        ciudad?: string | null
+        codigo_postal?: string | null
+        telefono?: string | null
+        email?: string | null
+    }
 }
 
-export function ContratoForm({ clientes }: ContratoFormProps) {
+export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [activeTab, setActiveTab] = useState('operacion')
+
+    const steps = [
+        { id: 'operacion', label: 'Operación', icon: FileText },
+        { id: 'vendedor', label: 'Vendedor', icon: UserSquare },
+        { id: 'comprador', label: 'Comprador', icon: Users },
+        { id: 'vehiculo', label: 'Vehículo', icon: CarFront },
+        { id: 'economico', label: 'Económicos', icon: CreditCard },
+        { id: 'clausulas', label: 'Cláusulas', icon: Info },
+    ]
 
     type FormValues = z.infer<typeof crearContratoSchema>
 
@@ -101,6 +121,43 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
         })
     }
 
+    const onError = (errors: any) => {
+        console.log('Form errors:', errors)
+        toast.error('Corrige los errores antes de continuar', {
+            description: 'Revisa los campos obligatorios en cada sección.'
+        })
+        
+        // Saltar a la primera pestaña que tenga un error
+        if (errors.tipo_operacion) setActiveTab('operacion')
+        else if (errors.vendedor_nombre || errors.vendedor_nif) setActiveTab('vendedor')
+        else if (errors.comprador_nombre || errors.comprador_nif) setActiveTab('comprador')
+        else if (errors.vehiculo_matricula || errors.vehiculo_bastidor || errors.vehiculo_marca || errors.vehiculo_modelo) setActiveTab('vehiculo')
+        else if (errors.precio_venta) setActiveTab('economico')
+    }
+
+    // Llenado automático de datos de empresa
+    useEffect(() => {
+        if (!empresa) return
+
+        if (tipoOperacion === 'venta') {
+            form.setValue('vendedor_nombre', empresa.razon_social || '')
+            form.setValue('vendedor_nif', empresa.cif || '')
+            form.setValue('vendedor_direccion', empresa.direccion || '')
+            form.setValue('vendedor_ciudad', empresa.ciudad || '')
+            form.setValue('vendedor_codigo_postal', empresa.codigo_postal || '')
+            form.setValue('vendedor_telefono', empresa.telefono || '')
+            form.setValue('vendedor_email', empresa.email || '')
+        } else if (tipoOperacion === 'compra') {
+            form.setValue('comprador_nombre', empresa.razon_social || '')
+            form.setValue('comprador_nif', empresa.cif || '')
+            form.setValue('comprador_direccion', empresa.direccion || '')
+            form.setValue('comprador_ciudad', empresa.ciudad || '')
+            form.setValue('comprador_codigo_postal', empresa.codigo_postal || '')
+            form.setValue('comprador_telefono', empresa.telefono || '')
+            form.setValue('comprador_email', empresa.email || '')
+        }
+    }, [tipoOperacion, empresa, form])
+
     const nextTab = (next: string) => {
         // Podríamos validar la tab actual antes de continuar
         setActiveTab(next)
@@ -124,28 +181,47 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
     }
 
     return (
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+        <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 lg:grid-cols-6 h-auto p-1 bg-slate-100/50 dark:bg-slate-800/50 rounded-2xl mb-6">
-                    <TabsTrigger value="operacion" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <FileText className="w-4 h-4 mr-2" /> Operación
-                    </TabsTrigger>
-                    <TabsTrigger value="vendedor" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <UserSquare className="w-4 h-4 mr-2" /> Vendedor
-                    </TabsTrigger>
-                    <TabsTrigger value="comprador" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Users className="w-4 h-4 mr-2" /> Comprador
-                    </TabsTrigger>
-                    <TabsTrigger value="vehiculo" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <CarFront className="w-4 h-4 mr-2" /> Vehículo
-                    </TabsTrigger>
-                    <TabsTrigger value="economico" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <CreditCard className="w-4 h-4 mr-2" /> Datos Económicos
-                    </TabsTrigger>
-                    <TabsTrigger value="clausulas" className="rounded-xl py-2.5 data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                        <Info className="w-4 h-4 mr-2" /> Cláusulas
-                    </TabsTrigger>
-                </TabsList>
+                {/* Visual Stepper */}
+                <div className="relative mb-12 px-4 md:px-0">
+                    <div className="absolute top-5 left-0 w-full h-0.5 bg-slate-100 dark:bg-slate-800 -z-10" />
+                    <TabsList className="flex justify-between items-start bg-transparent h-auto p-0 border-none shadow-none w-full">
+                        {steps.map((step, index) => {
+                            const Icon = step.icon
+                            const isActive = activeTab === step.id
+                            const isPast = steps.findIndex(s => s.id === activeTab) > index
+                            
+                            return (
+                                <TabsTrigger 
+                                    key={step.id} 
+                                    value={step.id}
+                                    className={cn(
+                                        "flex flex-col items-center gap-2 bg-transparent border-none shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none group px-0 min-w-[60px] md:min-w-[80px]",
+                                        isActive ? "text-primary" : isPast ? "text-green-600" : "text-slate-400"
+                                    )}
+                                >
+                                    <div className={cn(
+                                        "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
+                                        isActive 
+                                            ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20" 
+                                            : isPast 
+                                                ? "bg-green-50 border-green-600 text-green-600" 
+                                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                                    )}>
+                                        {isPast ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                    </div>
+                                    <span className={cn(
+                                        "text-[10px] md:text-xs font-medium uppercase tracking-wider hidden md:block",
+                                        isActive ? "opacity-100" : "opacity-60"
+                                    )}>
+                                        {step.label}
+                                    </span>
+                                </TabsTrigger>
+                            )
+                        })}
+                    </TabsList>
+                </div>
 
                 {/* 1. OPERACIÓN */}
                 <TabsContent value="operacion" className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
@@ -240,8 +316,13 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                     <Input {...form.register('vendedor_telefono')} className="rounded-xl" />
                                 </div>
                             </div>
-                            <div className="mt-8 flex justify-end">
-                                <Button type="button" onClick={() => nextTab('comprador')} className="rounded-xl">Siguiente: Comprador <ChevronRight className="w-4 h-4 ml-2" /></Button>
+                            <div className="mt-8 flex justify-between gap-4">
+                                <Button type="button" variant="outline" onClick={() => setActiveTab('operacion')} className="rounded-xl px-6 group">
+                                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Anterior
+                                </Button>
+                                <Button type="button" onClick={() => nextTab('comprador')} className="rounded-xl px-6 group">
+                                    Siguiente: Comprador <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -303,8 +384,13 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                     <Input {...form.register('comprador_telefono')} className="rounded-xl" />
                                 </div>
                             </div>
-                            <div className="mt-8 flex justify-end">
-                                <Button type="button" onClick={() => nextTab('vehiculo')} className="rounded-xl">Siguiente: Vehículo <ChevronRight className="w-4 h-4 ml-2" /></Button>
+                            <div className="mt-8 flex justify-between gap-4">
+                                <Button type="button" variant="outline" onClick={() => setActiveTab('vendedor')} className="rounded-xl px-6 group">
+                                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Anterior
+                                </Button>
+                                <Button type="button" onClick={() => nextTab('vehiculo')} className="rounded-xl px-6 group">
+                                    Siguiente: Vehículo <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -361,8 +447,13 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                     </Select>
                                 </div>
                             </div>
-                            <div className="mt-8 flex justify-end">
-                                <Button type="button" onClick={() => nextTab('economico')} className="rounded-xl">Siguiente: Datos Econ. <ChevronRight className="w-4 h-4 ml-2" /></Button>
+                            <div className="mt-8 flex justify-between gap-4">
+                                <Button type="button" variant="outline" onClick={() => setActiveTab('comprador')} className="rounded-xl px-6 group">
+                                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Anterior
+                                </Button>
+                                <Button type="button" onClick={() => nextTab('economico')} className="rounded-xl px-6 group">
+                                    Siguiente: Económicos <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -399,8 +490,13 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                     <p className="text-[10px] text-slate-500 mt-1">Si aplicas el Régimen Especial de Bienes Usados (REBU), deja el IVA al 0%.</p>
                                 </div>
                             </div>
-                            <div className="mt-8 flex justify-end">
-                                <Button type="button" onClick={() => nextTab('clausulas')} className="rounded-xl">Siguiente: Cláusulas <ChevronRight className="w-4 h-4 ml-2" /></Button>
+                            <div className="mt-8 flex justify-between gap-4">
+                                <Button type="button" variant="outline" onClick={() => setActiveTab('vehiculo')} className="rounded-xl px-6 group">
+                                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Anterior
+                                </Button>
+                                <Button type="button" onClick={() => nextTab('clausulas')} className="rounded-xl px-6 group">
+                                    Siguiente: Cláusulas <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
                             </div>
                         </CardContent>
                     </Card>
@@ -441,12 +537,15 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                 </div>
                             </div>
                             
-                            <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                             <div className="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 flex justify-between items-center gap-4">
+                                <Button type="button" variant="outline" onClick={() => setActiveTab('economico')} className="rounded-xl px-6 group">
+                                    <ChevronLeft className="w-4 h-4 mr-2 group-hover:-translate-x-1 transition-transform" /> Anterior
+                                </Button>
                                 <Button 
                                     type="submit" 
                                     size="lg"
                                     disabled={isPending}
-                                    className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 px-8"
+                                    className="bg-primary hover:bg-primary/90 text-white rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 px-8 flex-1 md:flex-none"
                                 >
                                     {isPending ? (
                                         <span className="flex items-center gap-2">
