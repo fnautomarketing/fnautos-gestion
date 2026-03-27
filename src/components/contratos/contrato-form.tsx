@@ -63,43 +63,68 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
     type FormValues = z.infer<typeof crearContratoSchema>
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(crearContratoSchema) as any, // Cast to any due to complex nullable schema and hook-form version mismatch
+        resolver: zodResolver(crearContratoSchema) as any,
         defaultValues: {
             tipo_operacion: 'venta',
             comprador_nombre: '',
             comprador_nif: '',
-            comprador_direccion: null,
-            comprador_ciudad: null,
-            comprador_codigo_postal: null,
-            comprador_telefono: null,
-            comprador_email: null,
+            comprador_direccion: '',
+            comprador_ciudad: '',
+            comprador_codigo_postal: '',
+            comprador_telefono: '',
+            comprador_email: '',
             vendedor_nombre: '',
             vendedor_nif: '',
-            vendedor_direccion: null,
-            vendedor_ciudad: null,
-            vendedor_codigo_postal: null,
-            vendedor_telefono: null,
-            vendedor_email: null,
+            vendedor_direccion: '',
+            vendedor_ciudad: '',
+            vendedor_codigo_postal: '',
+            vendedor_telefono: '',
+            vendedor_email: '',
             vehiculo_marca: '',
             vehiculo_modelo: '',
-            vehiculo_version: null,
+            vehiculo_version: '',
             vehiculo_matricula: '',
             vehiculo_bastidor: '',
-            vehiculo_fecha_matriculacion: null,
+            vehiculo_fecha_matriculacion: '',
             vehiculo_kilometraje: null,
-            vehiculo_color: null,
-            vehiculo_combustible: null,
+            vehiculo_color: '',
+            vehiculo_combustible: 'diesel',
             precio_venta: 0,
             forma_pago: 'transferencia',
             iva_porcentaje: 0,
-            vehiculo_estado_declarado: null,
+            vehiculo_estado_declarado: '',
             vehiculo_libre_cargas: true,
             documentacion_entregada: [],
-            clausulas_adicionales: null,
+            clausulas_adicionales: '',
             cliente_id: null,
-            notas_internas: null,
+            notas_internas: '',
         }
     })
+
+    const stepFields: Record<string, (keyof FormValues)[]> = {
+        operacion: ['tipo_operacion'],
+        vendedor: ['vendedor_nombre', 'vendedor_nif'],
+        comprador: ['comprador_nombre', 'comprador_nif'],
+        vehiculo: ['vehiculo_marca', 'vehiculo_modelo', 'vehiculo_matricula', 'vehiculo_bastidor'],
+        economico: ['precio_venta'],
+        clausulas: [],
+    }
+
+    const getStepStatus = (stepId: string) => {
+        const fields = stepFields[stepId]
+        if (!fields || fields.length === 0) return 'pending'
+
+        const hasError = fields.some(field => form.formState.errors[field])
+        if (hasError) return 'error'
+
+        const isFilled = fields.every(field => {
+            const val = form.watch(field)
+            return val !== undefined && val !== null && val !== '' && val !== 0
+        })
+
+        if (isFilled) return 'success'
+        return 'pending'
+    }
 
     const tipoOperacion = form.watch('tipo_operacion')
 
@@ -140,6 +165,7 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
         if (!empresa) return
 
         if (tipoOperacion === 'venta') {
+            // Empresa es Vendedor
             form.setValue('vendedor_nombre', empresa.razon_social || '')
             form.setValue('vendedor_nif', empresa.cif || '')
             form.setValue('vendedor_direccion', empresa.direccion || '')
@@ -147,7 +173,20 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
             form.setValue('vendedor_codigo_postal', empresa.codigo_postal || '')
             form.setValue('vendedor_telefono', empresa.telefono || '')
             form.setValue('vendedor_email', empresa.email || '')
+            
+            // Vaciar Comprador si era la empresa antes (protegemos si el usuario ya escribió algo)
+            const compNombre = form.getValues('comprador_nombre')
+            if (compNombre === empresa.razon_social || !compNombre) {
+                form.setValue('comprador_nombre', '')
+                form.setValue('comprador_nif', '')
+                form.setValue('comprador_direccion', '')
+                form.setValue('comprador_ciudad', '')
+                form.setValue('comprador_codigo_postal', '')
+                form.setValue('comprador_telefono', '')
+                form.setValue('comprador_email', '')
+            }
         } else if (tipoOperacion === 'compra') {
+            // Empresa es Comprador
             form.setValue('comprador_nombre', empresa.razon_social || '')
             form.setValue('comprador_nif', empresa.cif || '')
             form.setValue('comprador_direccion', empresa.direccion || '')
@@ -155,6 +194,18 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
             form.setValue('comprador_codigo_postal', empresa.codigo_postal || '')
             form.setValue('comprador_telefono', empresa.telefono || '')
             form.setValue('comprador_email', empresa.email || '')
+
+            // Vaciar Vendedor si era la empresa antes
+            const vendNombre = form.getValues('vendedor_nombre')
+            if (vendNombre === empresa.razon_social || !vendNombre) {
+                form.setValue('vendedor_nombre', '')
+                form.setValue('vendedor_nif', '')
+                form.setValue('vendedor_direccion', '')
+                form.setValue('vendedor_ciudad', '')
+                form.setValue('vendedor_codigo_postal', '')
+                form.setValue('vendedor_telefono', '')
+                form.setValue('vendedor_email', '')
+            }
         }
     }, [tipoOperacion, empresa, form])
 
@@ -190,7 +241,7 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                         {steps.map((step, index) => {
                             const Icon = step.icon
                             const isActive = activeTab === step.id
-                            const isPast = steps.findIndex(s => s.id === activeTab) > index
+                            const status = getStepStatus(step.id)
                             
                             return (
                                 <TabsTrigger 
@@ -198,18 +249,26 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                                     value={step.id}
                                     className={cn(
                                         "flex flex-col items-center gap-2 bg-transparent border-none shadow-none data-[state=active]:bg-transparent data-[state=active]:shadow-none group px-0 min-w-[60px] md:min-w-[80px]",
-                                        isActive ? "text-primary" : isPast ? "text-green-600" : "text-slate-400"
+                                        isActive ? "text-primary" : status === 'success' ? "text-green-600" : status === 'error' ? "text-red-500" : "text-slate-400"
                                     )}
                                 >
                                     <div className={cn(
                                         "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300",
                                         isActive 
                                             ? "bg-primary border-primary text-white scale-110 shadow-lg shadow-primary/20" 
-                                            : isPast 
+                                            : status === 'success'
                                                 ? "bg-green-50 border-green-600 text-green-600" 
-                                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
+                                                : status === 'error'
+                                                    ? "bg-red-50 border-red-500 text-red-500 animate-pulse"
+                                                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800"
                                     )}>
-                                        {isPast ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                        {status === 'success' ? (
+                                            <Check className="w-5 h-5" />
+                                        ) : status === 'error' ? (
+                                            <AlertCircle className="w-5 h-5" />
+                                        ) : (
+                                            <Icon className="w-5 h-5" />
+                                        )}
                                     </div>
                                     <span className={cn(
                                         "text-[10px] md:text-xs font-medium uppercase tracking-wider hidden md:block",
@@ -270,19 +329,26 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
-                            {/* Autocompletar desde clientes si aplica */}
-                            <div className="mb-6 max-w-sm">
-                                <Label className="uppercase text-[10px] font-bold tracking-widest text-slate-500 mb-2 block">Autocompletar desde Clientes (Opcional)</Label>
-                                <Select onValueChange={(val) => selectCliente(val, 'vendedor')}>
-                                    <SelectTrigger className="rounded-xl bg-slate-50 dark:bg-slate-800/50"><SelectValue placeholder="Seleccionar cliente..." /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">--- Ninguno (Manual) ---</SelectItem>
-                                        {clientes.map(c => (
-                                            <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            {/* Autocompletar desde clientes solo si es COMPRA (donde el vendedor es el cliente) */}
+                            {tipoOperacion === 'compra' && (
+                                <div className="mb-6 p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/50 rounded-xl max-w-md">
+                                    <Label className="uppercase text-[10px] font-bold tracking-widest text-blue-600 dark:text-blue-400 mb-2 block">Seleccionar Cliente Existente</Label>
+                                    <Select onValueChange={(val) => selectCliente(val, 'vendedor')}>
+                                        <SelectTrigger className="rounded-xl bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800">
+                                            <SelectValue placeholder="Búscar cliente..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">--- Datos manuales ---</SelectItem>
+                                            {clientes.map(c => (
+                                                <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-[10px] text-blue-500 mt-2 flex items-center gap-1">
+                                        <Info className="w-3 h-3" /> Esto rellenará los campos automáticamente con los datos de facturación.
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
@@ -339,18 +405,26 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                             </CardTitle>
                         </CardHeader>
                         <CardContent className="p-6">
-                            <div className="mb-6 max-w-sm">
-                                <Label className="uppercase text-[10px] font-bold tracking-widest text-slate-500 mb-2 block">Autocompletar desde Clientes (Opcional)</Label>
-                                <Select onValueChange={(val) => selectCliente(val, 'comprador')}>
-                                    <SelectTrigger className="rounded-xl bg-slate-50 dark:bg-slate-800/50"><SelectValue placeholder="Seleccionar cliente..." /></SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="none">--- Ninguno (Manual) ---</SelectItem>
-                                        {clientes.map(c => (
-                                            <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
-                                        ))}
-                                    </SelectContent>
-                                </Select>
-                            </div>
+                            {/* Autocompletar desde clientes solo si es VENTA (donde el comprador es el cliente) */}
+                            {tipoOperacion === 'venta' && (
+                                <div className="mb-6 p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/50 rounded-xl max-w-md">
+                                    <Label className="uppercase text-[10px] font-bold tracking-widest text-blue-600 dark:text-blue-400 mb-2 block">Seleccionar Cliente Existente</Label>
+                                    <Select onValueChange={(val) => selectCliente(val, 'comprador')}>
+                                        <SelectTrigger className="rounded-xl bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800">
+                                            <SelectValue placeholder="Búscar cliente..." />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value="none">--- Datos manuales ---</SelectItem>
+                                            {clientes.map(c => (
+                                                <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                    <p className="text-[10px] text-blue-500 mt-2 flex items-center gap-1">
+                                        <Info className="w-3 h-3" /> Esto rellenará los campos automáticamente con los datos de facturación.
+                                    </p>
+                                </div>
+                            )}
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
