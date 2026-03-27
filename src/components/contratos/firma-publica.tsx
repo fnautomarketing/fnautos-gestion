@@ -12,6 +12,14 @@ import type { Contrato } from '@/types/contratos'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Label } from '@/components/ui/label'
+import { 
+    Dialog, 
+    DialogContent, 
+    DialogHeader, 
+    DialogTitle, 
+    DialogDescription 
+} from "@/components/ui/dialog"
+import { ScrollArea } from "@/components/ui/scroll-area"
 
 interface FirmaPublicaProps {
     contrato: Contrato
@@ -24,6 +32,7 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
     const [aceptaTerminos, setAceptaTerminos] = useState(false)
     const [certificaFirma, setCertificaFirma] = useState(false)
     const [hasReadPdf, setHasReadPdf] = useState(false)
+    const [isViewingPdf, setIsViewingPdf] = useState(false)
     const [isCanvasEmpty, setIsCanvasEmpty] = useState(true)
     const sigCanvas = useRef<SignatureCanvas | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
@@ -42,6 +51,11 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
         window.addEventListener('resize', handleResize)
         return () => window.removeEventListener('resize', handleResize)
     }, [])
+
+    const openPdfViewer = () => {
+        setHasReadPdf(true)
+        setIsViewingPdf(true)
+    }
 
     const clearSignature = () => {
         sigCanvas.current?.clear()
@@ -202,20 +216,17 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
                                             ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400" 
                                             : "bg-primary hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/40"
                                     )}
-                                    asChild
-                                    onClick={() => setHasReadPdf(true)}
+                                    onClick={openPdfViewer}
                                 >
-                                    <a href={pdfPublicLink} target="_blank" rel="noopener noreferrer">
-                                        {hasReadPdf ? (
-                                            <span className="flex items-center gap-2">
-                                                <Check className="w-5 h-5 text-emerald-500" /> Documento Leído
-                                            </span>
-                                        ) : (
-                                            <span className="flex items-center gap-2">
-                                                <Eye className="w-5 h-5 mr-1" /> Paso 2: Leer Documento
-                                            </span>
-                                        )}
-                                    </a>
+                                    {hasReadPdf ? (
+                                        <span className="flex items-center gap-2">
+                                            <Check className="w-5 h-5 text-emerald-500" /> Documento Leído
+                                        </span>
+                                    ) : (
+                                        <span className="flex items-center gap-2">
+                                            <Eye className="w-5 h-5 mr-1" /> Paso 2: Leer Documento
+                                        </span>
+                                    )}
                                 </Button>
                                 {!hasReadPdf && (
                                     <div className="mt-3 flex items-center gap-2 text-[10px] text-primary font-black uppercase leading-none justify-center">
@@ -383,12 +394,9 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
                                     <Button 
                                         variant="outline" 
                                         className="mt-4 border-primary/20 text-primary font-black hover:bg-primary/5 rounded-xl h-12"
-                                        asChild
-                                        onClick={() => setHasReadPdf(true)}
+                                        onClick={openPdfViewer}
                                     >
-                                        <a href={pdfPublicLink} target="_blank" rel="noopener noreferrer">
-                                            ABRIR PDF AHORA
-                                        </a>
+                                        ABRIR PDF AHORA
                                     </Button>
                                     <div className="lg:hidden mt-2 text-[10px] text-primary font-black flex items-center gap-1.5 animate-pulse">
                                         <AlertCircle className="w-3.5 h-3.5" /> El botón de arriba es el Paso 2
@@ -400,6 +408,40 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
                 </div>
             </div>
             
+            {/* Modal de Visor de PDF Premium */}
+            <Dialog open={isViewingPdf} onOpenChange={setIsViewingPdf}>
+                <DialogContent className="max-w-5xl h-[90vh] p-0 overflow-hidden border-none bg-slate-100 dark:bg-slate-950 shadow-2xl">
+                    <DialogHeader className="p-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex flex-row items-center justify-between">
+                        <div>
+                            <DialogTitle className="text-xl font-bold flex items-center gap-2">
+                                <FileText className="w-5 h-5 text-primary" />
+                                {contrato.numero_contrato} - Revisión de Contrato
+                            </DialogTitle>
+                            <DialogDescription className="text-xs">
+                                Lea atentamente todas las cláusulas antes de proceder a la firma.
+                            </DialogDescription>
+                        </div>
+                    </DialogHeader>
+                    
+                    <div className="flex-1 w-full h-full p-4 sm:p-6 bg-slate-200/50 dark:bg-slate-900/50">
+                        <iframe 
+                            src={`${pdfPublicLink}#toolbar=0&navpanes=0`} 
+                            className="w-full h-full rounded-xl shadow-inner border border-slate-300/50 dark:border-slate-700/50 bg-white"
+                            title="Visor de Contrato"
+                        />
+                    </div>
+
+                    <div className="p-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end">
+                        <Button 
+                            onClick={() => setIsViewingPdf(false)}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 rounded-xl shadow-lg"
+                        >
+                            <Check className="w-4 h-4 mr-2" /> He leído el documento
+                        </Button>
+                    </div>
+                </DialogContent>
+            </Dialog>
+
             <style jsx global>{`
                 @keyframes bounce-x {
                     0%, 100% { transform: translateX(0); }

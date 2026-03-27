@@ -384,7 +384,7 @@ export async function enviarContratoAction(id: string) {
             .from('contratos')
             .update({
                 estado: 'pendiente_firma',
-                token_firma: crypto.randomUUID(),
+                token_firma: globalThis.crypto.randomUUID(),
                 token_firma_expira: tokenExpira.toISOString(),
             } as never)
             .eq('id', id)

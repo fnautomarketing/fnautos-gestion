@@ -49,7 +49,8 @@ export async function updateSession(request: NextRequest) {
         sinSesion &&
         !request.nextUrl.pathname.startsWith('/login') &&
         !request.nextUrl.pathname.startsWith('/registro') &&
-        !request.nextUrl.pathname.startsWith('/contratos/firmar')
+        !request.nextUrl.pathname.startsWith('/contratos/firmar') &&
+        !request.nextUrl.pathname.startsWith('/api/contratos/public')
     ) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
