@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
-import { FileText, Download, ShieldCheck, PenTool, Eraser, Check, Eye, AlertCircle } from 'lucide-react'
+import { FileText, Download, ShieldCheck, PenTool, Eraser, Check, Eye, AlertCircle, Info, ArrowRight } from 'lucide-react'
 import type { Contrato } from '@/types/contratos'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -27,13 +27,14 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
     const [isCanvasEmpty, setIsCanvasEmpty] = useState(true)
     const sigCanvas = useRef<SignatureCanvas | null>(null)
     const containerRef = useRef<HTMLDivElement>(null)
+    const canvasContainerRef = useRef<HTMLDivElement>(null)
     const [canvasSize, setCanvasSize] = useState({ width: 500, height: 250 })
 
     // Responsive canvas
     useEffect(() => {
         function handleResize() {
-            if (containerRef.current) {
-                const maxW = Math.min(containerRef.current.clientWidth - 32, 600)
+            if (canvasContainerRef.current) {
+                const maxW = Math.min(canvasContainerRef.current.clientWidth, 600)
                 setCanvasSize({ width: maxW, height: 250 })
             }
         }
@@ -111,223 +112,304 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
     const nombreAgente = contrato.tipo_operacion === 'venta' ? contrato.comprador_nombre : contrato.vendedor_nombre
     const rolAgente = contrato.tipo_operacion === 'venta' ? 'Comprador' : 'Vendedor'
     
-    // URL Segura con Token para el firmante
     const pdfPublicLink = `/api/contratos/public/pdf?id=${contrato.id}&token=${token}`
 
+    const steps = [
+        { name: 'Identidad', icon: UsersIcon, completed: true },
+        { name: 'Lectura', icon: Eye, completed: hasReadPdf },
+        { name: 'Firma', icon: PenTool, completed: !isCanvasEmpty },
+        { name: 'Legal', icon: ShieldCheck, completed: aceptaTerminos && certificaFirma }
+    ]
+
+    function UsersIcon(props: any) {
+        return (
+            <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        )
+    }
+
     return (
-        <div className="w-full max-w-4xl mx-auto py-8 px-4 sm:px-6 md:py-12 animate-in fade-in slide-in-from-bottom-8 duration-700">
-            {/* Header / Logo */}
-            <div className="flex flex-col items-center mb-8 space-y-4">
-                <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center shadow-lg shadow-primary/5 ring-4 ring-white dark:ring-slate-900 ring-offset-2 ring-offset-primary/20">
-                    <ShieldCheck className="w-10 h-10 text-primary" />
+        <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 md:py-16 animate-in fade-in duration-1000">
+            {/* Nav Stepper Premium */}
+            <div className="mb-12">
+                <div className="flex items-center justify-between max-w-2xl mx-auto relative px-4 sm:px-0">
+                    <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-200 dark:bg-slate-800 -translate-y-1/2 z-0" />
+                    {steps.map((step, idx) => {
+                        const Icon = step.icon
+                        return (
+                            <div key={idx} className="relative z-10 flex flex-col items-center gap-2">
+                                <div className={cn(
+                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-500 border-2",
+                                    step.completed 
+                                        ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/20" 
+                                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-slate-400"
+                                )}>
+                                    {step.completed && idx < 3 ? <Check className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
+                                </div>
+                                <span className={cn(
+                                    "text-[10px] sm:text-xs font-bold uppercase tracking-widest",
+                                    step.completed ? "text-emerald-600" : "text-slate-400"
+                                )}>
+                                    {step.name}
+                                </span>
+                            </div>
+                        )
+                    })}
                 </div>
-                <h1 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900 dark:text-white text-center tracking-tight">
-                    Firma de Documento Legal
+            </div>
+
+            {/* Header */}
+            <div className="text-center mb-12 space-y-4">
+                <Badge variant="outline" className="px-4 py-1 text-primary border-primary/20 bg-primary/5 rounded-full font-bold tracking-widest uppercase text-[10px]">
+                    Proceso de Firma Segura Pro
+                </Badge>
+                <h1 className="text-4xl sm:text-5xl font-serif font-black text-slate-900 dark:text-white tracking-tight">
+                    Confirmación de Contrato
                 </h1>
-                <p className="text-slate-500 text-center max-w-lg">
-                    Estás firmando digitalmente el contrato con <strong>FN Autos</strong>. Sigue los pasos numerados para completar el proceso con validez legal.
+                <p className="text-slate-500 max-w-xl mx-auto">
+                    Has recibido este documento de <strong>FN Autos</strong> para su revisión y firma legal vinculante.
                 </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 
-                {/* Panel lateral con Pasos y Resumen */}
-                <div className="lg:col-span-5 space-y-6 lg:sticky lg:top-8">
-                    <Card className="bg-white/60 dark:bg-slate-900/60 backdrop-blur-xl border-slate-200/60 dark:border-slate-800/60 shadow-xl overflow-hidden overflow-y-auto max-h-[calc(100vh-120px)] lg:max-h-none">
-                        <div className="bg-slate-100/50 dark:bg-slate-800/50 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <FileText className="w-5 h-5 text-slate-500" />
-                                <h2 className="font-bold text-slate-900 dark:text-white">Resumen Legal</h2>
-                            </div>
-                            <Badge variant="outline" className="font-mono text-[10px]">{contrato.numero_contrato}</Badge>
+                {/* Lateral: Información y Lectura */}
+                <div className="lg:col-span-4 space-y-6">
+                    <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden ring-1 ring-slate-200 dark:ring-slate-800">
+                        <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <h3 className="font-bold flex items-center gap-2">
+                                <Info className="w-4 h-4 text-primary" /> Detalles
+                            </h3>
+                            <span className="text-xs font-mono text-slate-400">{contrato.numero_contrato}</span>
                         </div>
-                        <CardContent className="p-0">
-                            <div className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                                <div className="p-6">
-                                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-1.5 flex items-center gap-1.5">
-                                        <Check className="w-3 h-3 text-emerald-500" /> Paso 1: Identificación
-                                    </p>
-                                    <p className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-1">{rolAgente}</p>
-                                    <p className="font-medium text-slate-900 dark:text-white text-lg">{nombreAgente}</p>
-                                    <p className="text-sm text-slate-500 mt-1 font-mono">NIF/CIF: {contrato.tipo_operacion === 'venta' ? contrato.comprador_nif : contrato.vendedor_nif}</p>
-                                </div>
-                                <div className="p-6 bg-slate-50/50 dark:bg-slate-800/20">
-                                    <p className="text-xs uppercase font-bold text-slate-500 tracking-wider mb-1">Objeto del Contrato</p>
-                                    <p className="font-medium text-slate-900 dark:text-white leading-tight">
-                                        Vehículo {contrato.vehiculo_marca} {contrato.vehiculo_modelo}
-                                    </p>
-                                    <div className="mt-3 flex gap-2">
-                                        <span className="inline-flex items-center px-2 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded text-xs font-mono font-bold">
-                                            {contrato.vehiculo_matricula}
-                                        </span>
-                                    </div>
-                                </div>
-                                <div className="p-6">
-                                    <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-3 flex items-center gap-1.5">
-                                        {hasReadPdf ? <Check className="w-3 h-3 text-emerald-500" /> : <div className="w-3 h-3 rounded-full border border-slate-300" />} Paso 2: Lectura
-                                    </p>
-                                    <Button 
-                                        variant={hasReadPdf ? "outline" : "default"}
-                                        className={cn(
-                                            "w-full h-12 shadow-sm transition-all duration-300",
-                                            !hasReadPdf && "bg-primary hover:bg-primary/90 animate-pulse-subtle"
-                                        )} 
-                                        asChild
-                                        onClick={() => setHasReadPdf(true)}
-                                    >
-                                        <a href={pdfPublicLink} target="_blank" rel="noopener noreferrer">
-                                            <Eye className="w-4 h-4 mr-2" /> Leer Documento Completo
-                                        </a>
-                                    </Button>
-                                    {!hasReadPdf && (
-                                        <p className="text-[10px] text-red-500 font-bold mt-2 text-center uppercase tracking-tighter italic flex items-center justify-center gap-1">
-                                            <AlertCircle className="w-3 h-3" /> Debe abrir el documento antes de firmar
-                                        </p>
+                        <CardContent className="p-6 space-y-6">
+                            <div className="space-y-1">
+                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{rolAgente}</p>
+                                <p className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{nombreAgente}</p>
+                                <p className="text-sm font-mono text-slate-500">{contrato.tipo_operacion === 'venta' ? contrato.comprador_nif : contrato.vendedor_nif}</p>
+                            </div>
+                            
+                            <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800">
+                                <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest mb-2">Vehículo</p>
+                                <p className="font-bold text-slate-900 dark:text-white">{contrato.vehiculo_marca} {contrato.vehiculo_modelo}</p>
+                                <Badge variant="secondary" className="mt-2 font-mono">{contrato.vehiculo_matricula}</Badge>
+                            </div>
+
+                            <div className="pt-2">
+                                <Button 
+                                    className={cn(
+                                        "w-full h-14 text-white font-bold rounded-xl transition-all duration-500 shadow-xl",
+                                        hasReadPdf 
+                                            ? "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400" 
+                                            : "bg-primary hover:bg-primary/90 shadow-primary/20 hover:shadow-primary/40"
                                     )}
-                                </div>
+                                    asChild
+                                    onClick={() => setHasReadPdf(true)}
+                                >
+                                    <a href={pdfPublicLink} target="_blank" rel="noopener noreferrer">
+                                        {hasReadPdf ? (
+                                            <span className="flex items-center gap-2">
+                                                <Check className="w-5 h-5 text-emerald-500" /> Documento Leído
+                                            </span>
+                                        ) : (
+                                            <span className="flex items-center gap-2">
+                                                <Eye className="w-5 h-5 mr-1" /> Paso 2: Leer Documento
+                                            </span>
+                                        )}
+                                    </a>
+                                </Button>
+                                {!hasReadPdf && (
+                                    <div className="mt-3 flex items-center gap-2 text-[10px] text-primary font-black uppercase leading-none justify-center">
+                                        <ArrowRight className="w-3 h-3 animate-bounce-x" /> Haz clic para desbloquear firma
+                                    </div>
+                                )}
                             </div>
                         </CardContent>
                     </Card>
                 </div>
 
-                {/* Panel de Firma Principal */}
-                <div className="lg:col-span-7 space-y-6">
-                    <Card className={cn(
-                        "transition-all duration-500 overflow-hidden shadow-2xl relative",
-                        !hasReadPdf ? "opacity-50 grayscale pointer-events-none" : "opacity-100 ring-4 ring-primary/5"
-                    )}>
-                        {!hasReadPdf && (
-                            <div className="absolute inset-0 z-50 flex items-center justify-center bg-slate-950/10 backdrop-blur-[1px]">
-                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl shadow-2xl flex items-center gap-3 border border-slate-200 dark:border-slate-800 scale-90 sm:scale-100">
-                                    <Eye className="w-5 h-5 text-primary" />
-                                    <span className="font-bold text-sm">Lea el documento arriba primero</span>
-                                </div>
-                            </div>
-                        )}
-                        <CardContent className="p-6 sm:p-8">
-                            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                                <PenTool className="w-5 h-5 text-primary" />
-                                Paso 3: Estampa tu firma
-                            </h3>
+                {/* Principal: Firma y Legal */}
+                <div className="lg:col-span-8">
+                    <Card className="border-none shadow-2xl bg-white dark:bg-slate-900 overflow-hidden ring-1 ring-slate-200 dark:ring-slate-800">
+                        <CardContent className="p-6 sm:p-10">
                             
-                            <div 
-                                ref={containerRef}
-                                className={cn(
-                                    "relative w-full rounded-2xl border-2 transition-all duration-300 overflow-hidden bg-white dark:bg-slate-950",
-                                    isCanvasEmpty ? "border-dashed border-slate-300 dark:border-slate-700" : "border-solid border-primary/50"
-                                )}
-                            >
-                                <SignatureCanvas 
-                                    ref={sigCanvas}
-                                    canvasProps={{
-                                        width: canvasSize.width,
-                                        height: canvasSize.height,
-                                        className: 'sigCanvas touch-none select-none cursor-crosshair'
-                                    }}
-                                    onEnd={handleSignEnd}
-                                    penColor="black"
-                                    backgroundColor="rgba(255,255,255,0)"
-                                />
-                                
-                                {isCanvasEmpty && (
-                                    <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center opacity-40">
-                                        <PenTool className="w-8 h-8 mb-2 dark:text-white" />
-                                        <p className="text-sm font-medium dark:text-white">Dibuja tu firma digital aquí</p>
-                                    </div>
-                                )}
-
-                                {!isCanvasEmpty && (
-                                    <button 
-                                        type="button"
-                                        onClick={clearSignature}
-                                        className="absolute top-3 right-3 p-2 bg-slate-100/80 dark:bg-slate-800/80 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/50 dark:hover:text-red-400 rounded-lg backdrop-blur text-slate-500 transition-colors z-10"
-                                        title="Borrar firma"
+                            <div className={cn(
+                                "space-y-8 transition-all duration-700",
+                                !hasReadPdf ? "opacity-20 blur-[2px] pointer-events-none" : "opacity-100 blur-0"
+                            )}>
+                                {/* Signature Area */}
+                                <div className="space-y-4">
+                                    <h3 className="text-xl font-bold flex items-center gap-3">
+                                        <div className="p-2 bg-primary/10 rounded-lg">
+                                            <PenTool className="w-5 h-5 text-primary" />
+                                        </div>
+                                        Paso 3: Realiza tu firma
+                                    </h3>
+                                    
+                                    <div 
+                                        ref={canvasContainerRef}
+                                        className={cn(
+                                            "relative w-full rounded-2xl border-2 transition-all duration-300 bg-white dark:bg-slate-950",
+                                            isCanvasEmpty ? "border-dashed border-slate-200 dark:border-slate-800" : "border-solid border-emerald-500/30 shadow-[inset_0_0_20px_rgba(16,185,129,0.05)]"
+                                        )}
                                     >
-                                        <Eraser className="w-4 h-4" />
-                                    </button>
-                                )}
-                            </div>
-                            <p className="text-[10px] text-center text-slate-400 mt-2 uppercase tracking-widest font-bold">
-                                Firma vinculante bajo eIDAS • {new Date().getFullYear()}
-                            </p>
+                                        <SignatureCanvas 
+                                            ref={sigCanvas}
+                                            canvasProps={{
+                                                width: canvasSize.width,
+                                                height: canvasSize.height,
+                                                className: 'sigCanvas touch-none select-none'
+                                            }}
+                                            onEnd={handleSignEnd}
+                                            penColor="black"
+                                            backgroundColor="transparent"
+                                        />
+                                        
+                                        {isCanvasEmpty && (
+                                            <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-center text-slate-300 dark:text-slate-700">
+                                                <PenTool className="w-10 h-10 mb-2 opacity-20" />
+                                                <p className="text-sm font-bold uppercase tracking-widest opacity-40">Firma aquí usando tu dedo o ratón</p>
+                                            </div>
+                                        )}
 
-                            <div className="mt-8 space-y-4">
-                                <p className="text-[10px] uppercase font-black text-slate-400 tracking-widest mb-3 flex items-center gap-1.5 px-1">
-                                    {(aceptaTerminos && certificaFirma) ? <Check className="w-3 h-3 text-emerald-500" /> : <div className="w-3 h-3 rounded-full border border-slate-300" />} Paso 4: Consentimiento Legal
-                                </p>
-                                
-                                <Card className="p-4 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/30 space-y-4">
-                                    {/* Checkbox 1 */}
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex items-center pt-1">
-                                            <Checkbox 
-                                                id="terminos" 
-                                                checked={aceptaTerminos}
-                                                onCheckedChange={(c) => setAceptaTerminos(c as boolean)}
-                                                className="h-5 w-5 border-slate-300 dark:border-slate-700 data-[state=checked]:bg-emerald-600"
-                                            />
-                                        </div>
-                                        <Label htmlFor="terminos" className="text-sm font-medium leading-relaxed text-slate-700 dark:text-slate-300 cursor-pointer">
-                                            Acepto los términos del contrato y las condiciones de firma electrónica.
-                                        </Label>
+                                        {!isCanvasEmpty && (
+                                            <button 
+                                                type="button"
+                                                onClick={clearSignature}
+                                                className="absolute top-4 right-4 p-2.5 bg-white shadow-lg dark:bg-slate-800 text-slate-500 hover:text-red-500 rounded-xl transition-all active:scale-90"
+                                                title="Limpiar"
+                                            >
+                                                <Eraser className="w-5 h-5" />
+                                            </button>
+                                        )}
                                     </div>
-
-                                    {/* Checkbox 2 */}
-                                    <div className="flex items-start gap-3">
-                                        <div className="flex items-center pt-1">
-                                            <Checkbox 
-                                                id="certifica" 
-                                                checked={certificaFirma}
-                                                onCheckedChange={(c) => setCertificaFirma(c as boolean)}
-                                                className="h-5 w-5 border-slate-300 dark:border-slate-700 data-[state=checked]:bg-emerald-600"
-                                            />
-                                        </div>
-                                        <Label htmlFor="certifica" className="text-sm font-medium leading-relaxed text-slate-700 dark:text-slate-300 cursor-pointer">
-                                            Certifico que soy <strong>{nombreAgente}</strong> y que la firma realizada arriba es auténtica y vinculante.
-                                        </Label>
+                                    <div className="flex justify-between items-center text-[10px] font-black uppercase text-slate-400 tracking-tighter px-1">
+                                        <span>Validez Legal eIDAS</span>
+                                        <span>{formatDate(new Date())}</span>
                                     </div>
-                                </Card>
+                                </div>
 
-                                <div className="pt-2">
+                                {/* Legal Checks */}
+                                <div className="space-y-4 pt-4">
+                                    <h3 className="text-xl font-bold flex items-center gap-3">
+                                        <div className="p-2 bg-emerald-500/10 rounded-lg">
+                                            <ShieldCheck className="w-5 h-5 text-emerald-500" />
+                                        </div>
+                                        Paso 4: Consentimiento Final
+                                    </h3>
+                                    
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div 
+                                            onClick={() => setAceptaTerminos(!aceptaTerminos)}
+                                            className={cn(
+                                                "p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex gap-3",
+                                                aceptaTerminos 
+                                                    ? "bg-emerald-50 border-emerald-500/30 dark:bg-emerald-950/20 dark:border-emerald-500/50" 
+                                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200"
+                                            )}
+                                        >
+                                            <div className="pt-0.5">
+                                                <Checkbox 
+                                                    checked={aceptaTerminos}
+                                                    onCheckedChange={(c) => setAceptaTerminos(c as boolean)}
+                                                    className="h-5 w-5 border-slate-300 data-[state=checked]:bg-emerald-600"
+                                                />
+                                            </div>
+                                            <Label className="text-sm font-bold leading-tight cursor-pointer">
+                                                Acepto los términos del contrato
+                                            </Label>
+                                        </div>
+
+                                        <div 
+                                            onClick={() => setCertificaFirma(!certificaFirma)}
+                                            className={cn(
+                                                "p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300 flex gap-3",
+                                                certificaFirma 
+                                                    ? "bg-emerald-50 border-emerald-500/30 dark:bg-emerald-950/20 dark:border-emerald-500/50" 
+                                                    : "bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 hover:border-slate-200"
+                                            )}
+                                        >
+                                            <div className="pt-0.5">
+                                                <Checkbox 
+                                                    checked={certificaFirma}
+                                                    onCheckedChange={(c) => setCertificaFirma(c as boolean)}
+                                                    className="h-5 w-5 border-slate-300 data-[state=checked]:bg-emerald-600"
+                                                />
+                                            </div>
+                                            <Label className="text-sm font-bold leading-tight cursor-pointer">
+                                                Certifico mi identidad y firma
+                                            </Label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Submit */}
+                                <div className="pt-6">
                                     <Button 
                                         size="lg" 
+                                        disabled={isSubmitting || isCanvasEmpty || !aceptaTerminos || !certificaFirma}
                                         className={cn(
-                                            "w-full text-lg h-14 rounded-xl shadow-xl transition-all duration-500",
-                                            isSubmitting || !aceptaTerminos || !certificaFirma || isCanvasEmpty 
-                                                ? "bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed grayscale"
-                                                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/20 hover:shadow-emerald-500/40"
+                                            "w-full h-16 text-xl font-black rounded-2xl transition-all duration-500 shadow-2xl",
+                                            (isCanvasEmpty || !aceptaTerminos || !certificaFirma) 
+                                                ? "bg-slate-100 dark:bg-slate-800 text-slate-300 dark:text-slate-700 grayscale"
+                                                : "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-500/30 hover:scale-[1.02] border-b-4 border-emerald-800"
                                         )}
                                         onClick={handleFirmar}
-                                        disabled={isSubmitting || isCanvasEmpty || !aceptaTerminos || !certificaFirma}
                                     >
                                         {isSubmitting ? (
-                                            <span className="flex items-center gap-2">
-                                                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> Procesando firma...
+                                            <span className="flex items-center gap-3">
+                                                <div className="w-6 h-6 border-4 border-white/30 border-t-white rounded-full animate-spin" /> Finalizando Proceso Seguro...
                                             </span>
                                         ) : (
-                                            <span className="flex items-center gap-2">
-                                                <Check className="w-5 h-5" /> Confirmar y Finalizar Firma
+                                            <span className="flex items-center gap-3">
+                                                <ShieldCheck className="w-6 h-6" /> FIRMAR LEGALMENTE
                                             </span>
                                         )}
                                     </Button>
-                                    <p className="text-[10px] text-center text-slate-400 mt-4 flex items-center justify-center gap-1.5 uppercase tracking-widest font-bold">
-                                        <ShieldCheck className="w-3.5 h-3.5" />
-                                        Entorno Directo Seguro eIDAS - IP: Registrada
+                                    <p className="text-center text-[10px] text-slate-400 mt-6 font-bold tracking-widest uppercase">
+                                        Seguridad Cifrada TLS • IP {formatDate(new Date())} • FN AUTOS
                                     </p>
                                 </div>
                             </div>
+
+                            {!hasReadPdf && (
+                                <div className="py-20 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in duration-1000">
+                                    <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mb-2">
+                                        <Eye className="w-8 h-8" />
+                                    </div>
+                                    <h3 className="text-2xl font-black text-slate-900 dark:text-white">Para continuar, lea el contrato</h3>
+                                    <p className="text-slate-500 max-w-sm">
+                                        Por motivos legales, debe abrir el documento PDF lateral para revisar las cláusulas antes de realizar su firma.
+                                    </p>
+                                    <Button 
+                                        variant="outline" 
+                                        className="mt-4 border-primary/20 text-primary font-black hover:bg-primary/5 rounded-xl h-12"
+                                        asChild
+                                        onClick={() => setHasReadPdf(true)}
+                                    >
+                                        <a href={pdfPublicLink} target="_blank" rel="noopener noreferrer">
+                                            ABRIR PDF AHORA
+                                        </a>
+                                    </Button>
+                                    <div className="lg:hidden mt-2 text-[10px] text-primary font-black flex items-center gap-1.5 animate-pulse">
+                                        <AlertCircle className="w-3.5 h-3.5" /> El botón de arriba es el Paso 2
+                                    </div>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
             </div>
             
             <style jsx global>{`
-                @keyframes pulse-subtle {
-                    0%, 100% { opacity: 1; transform: scale(1); }
-                    50% { opacity: 0.9; transform: scale(1.02); }
+                @keyframes bounce-x {
+                    0%, 100% { transform: translateX(0); }
+                    50% { transform: translateX(5px); }
                 }
-                .animate-pulse-subtle {
-                    animation: pulse-subtle 2s infinite ease-in-out;
+                .animate-bounce-x {
+                    animation: bounce-x 1s infinite;
+                }
+                .sigCanvas {
+                    background-color: transparent !important;
                 }
             `}</style>
         </div>
