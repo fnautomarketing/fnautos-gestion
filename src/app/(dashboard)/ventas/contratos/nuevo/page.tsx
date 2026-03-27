@@ -15,7 +15,7 @@ export default async function NuevoContratoPage() {
     const { empresaId } = await getUserContext()
 
     // Opcional: cargar clientes para un selector, igual que en facturas
-    let query = adminClient.from('clientes').select('id, nombre_fiscal, nombre_comercial, nif, cif, es_empresa, direccion, ciudad, codigo_postal, telefono, email').order('nombre_fiscal', { ascending: true })
+    let query = adminClient.from('clientes').select('id, nombre_fiscal, nombre_comercial, cif, direccion, ciudad, codigo_postal, telefono:telefono_principal, email:email_principal').order('nombre_fiscal', { ascending: true })
     if (empresaId) {
         query = query.eq('empresa_id', empresaId)
     }

@@ -68,16 +68,20 @@ export function getRangeForVistaSemana(): { desde: string; hasta: string } {
 }
 
 /** Parsea searchParams y devuelve periodo + vista + fechas (para uso en Server Component). */
-export function parseDashboardPeriod(searchParams: { periodo?: string; vista?: string; desde?: string; hasta?: string } | null) {
-    const periodo = (searchParams?.periodo as PeriodoValue) || 'actual'
-    const vista = (searchParams?.vista as VistaValue) === 'semana' ? 'semana' : 'mes'
+export function parseDashboardPeriod(searchParams: Record<string, string | string[] | undefined> | null) {
+    const rawPeriodo = searchParams?.periodo
+    const periodo: PeriodoValue = (typeof rawPeriodo === 'string' && ['actual', 'anterior', 'trimestre', 'ytd', 'ultimo_anio', 'custom'].includes(rawPeriodo)) 
+        ? (rawPeriodo as PeriodoValue) 
+        : 'actual'
+    
+    const vista: VistaValue = searchParams?.vista === 'semana' ? 'semana' : 'mes'
 
     if (vista === 'semana') {
         const range = getRangeForVistaSemana()
         return { periodo, vista, desde: range.desde, hasta: range.hasta }
     }
 
-    if (periodo === 'custom' && searchParams?.desde && searchParams?.hasta) {
+    if (periodo === 'custom' && typeof searchParams?.desde === 'string' && typeof searchParams?.hasta === 'string') {
         return {
             periodo: 'custom' as const,
             vista,
@@ -86,6 +90,6 @@ export function parseDashboardPeriod(searchParams: { periodo?: string; vista?: s
         }
     }
 
-    const range = getRangeForPeriodo(periodo, searchParams?.desde, searchParams?.hasta)
+    const range = getRangeForPeriodo(periodo, typeof searchParams?.desde === 'string' ? searchParams.desde : undefined, typeof searchParams?.hasta === 'string' ? searchParams.hasta : undefined)
     return { periodo, vista, desde: range.desde, hasta: range.hasta }
 }

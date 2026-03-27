@@ -11,12 +11,7 @@ import {
 import { Card, CardContent } from '@/components/ui/card'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
-    LineChart,
-    Line,
-    XAxis,
-    YAxis,
     ResponsiveContainer,
-    Tooltip,
     AreaChart,
     Area,
 } from 'recharts'

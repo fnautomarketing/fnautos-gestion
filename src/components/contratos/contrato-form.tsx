@@ -21,7 +21,18 @@ import { CarFront, FileText, UserSquare, Users, CreditCard, ChevronRight, Save, 
 import { cn } from '@/lib/utils'
 
 interface ContratoFormProps {
-    clientes: any[] // TODO: Type properly based on real schema
+    clientes: Array<{
+        id: string
+        nombre_fiscal?: string | null
+        nombre_comercial?: string | null
+        cif?: string | null
+        nif?: string | null
+        direccion?: string | null
+        ciudad?: string | null
+        codigo_postal?: string | null
+        telefono?: string | null
+        email?: string | null
+    }>
 }
 
 export function ContratoForm({ clientes }: ContratoFormProps) {
@@ -32,22 +43,41 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
     type FormValues = z.infer<typeof crearContratoSchema>
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(crearContratoSchema) as any,
+        resolver: zodResolver(crearContratoSchema) as any, // Cast to any due to complex nullable schema and hook-form version mismatch
         defaultValues: {
             tipo_operacion: 'venta',
             comprador_nombre: '',
             comprador_nif: '',
+            comprador_direccion: null,
+            comprador_ciudad: null,
+            comprador_codigo_postal: null,
+            comprador_telefono: null,
+            comprador_email: null,
             vendedor_nombre: '',
             vendedor_nif: '',
+            vendedor_direccion: null,
+            vendedor_ciudad: null,
+            vendedor_codigo_postal: null,
+            vendedor_telefono: null,
+            vendedor_email: null,
             vehiculo_marca: '',
             vehiculo_modelo: '',
+            vehiculo_version: null,
             vehiculo_matricula: '',
             vehiculo_bastidor: '',
+            vehiculo_fecha_matriculacion: null,
+            vehiculo_kilometraje: null,
+            vehiculo_color: null,
+            vehiculo_combustible: null,
             precio_venta: 0,
             forma_pago: 'transferencia',
             iva_porcentaje: 0,
+            vehiculo_estado_declarado: null,
             vehiculo_libre_cargas: true,
             documentacion_entregada: [],
+            clausulas_adicionales: null,
+            cliente_id: null,
+            notas_internas: null,
         }
     })
 
@@ -82,14 +112,14 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
         const c = clientes.find(x => x.id === clienteId)
         if (!c) return
         
-        const prefix = role
-        form.setValue(`${prefix}_nombre` as any, c.nombre_fiscal || c.nombre_comercial || '')
-        form.setValue(`${prefix}_nif` as any, c.cif || c.nif || '')
-        form.setValue(`${prefix}_direccion` as any, c.direccion || '')
-        form.setValue(`${prefix}_ciudad` as any, c.ciudad || '')
-        form.setValue(`${prefix}_codigo_postal` as any, c.codigo_postal || '')
-        form.setValue(`${prefix}_telefono` as any, c.telefono || '')
-        form.setValue(`${prefix}_email` as any, c.email || '')
+        const prefix = role === 'comprador' ? 'comprador' : 'vendedor'
+        form.setValue(`${prefix}_nombre` as keyof FormValues, c.nombre_fiscal || c.nombre_comercial || '')
+        form.setValue(`${prefix}_nif` as keyof FormValues, c.cif || c.nif || '')
+        form.setValue(`${prefix}_direccion` as keyof FormValues, c.direccion || '')
+        form.setValue(`${prefix}_ciudad` as keyof FormValues, c.ciudad || '')
+        form.setValue(`${prefix}_codigo_postal` as keyof FormValues, c.codigo_postal || '')
+        form.setValue(`${prefix}_telefono` as keyof FormValues, c.telefono || '')
+        form.setValue(`${prefix}_email` as keyof FormValues, c.email || '')
         form.setValue('cliente_id', c.id) // Opcional la relación BD
     }
 
@@ -130,7 +160,7 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                     <Label className="uppercase text-[10px] font-bold tracking-widest text-slate-500">Tipo de Contrato</Label>
                                     <Select 
                                         value={form.watch('tipo_operacion')} 
-                                        onValueChange={(val: any) => form.setValue('tipo_operacion', val)}
+                                        onValueChange={(val: 'venta' | 'compra') => form.setValue('tipo_operacion', val)}
                                     >
                                         <SelectTrigger className="h-12 rounded-xl">
                                             <SelectValue placeholder="Seleccione..." />
@@ -320,7 +350,7 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Combustible</Label>
-                                    <Select onValueChange={(val: any) => form.setValue('vehiculo_combustible', val)}>
+                                    <Select onValueChange={(val: 'diesel' | 'gasolina' | 'hibrido' | 'electrico') => form.setValue('vehiculo_combustible', val)}>
                                         <SelectTrigger className="rounded-xl"><SelectValue placeholder="Seleccionar..." /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="diesel">Diésel</SelectItem>
@@ -353,7 +383,7 @@ export function ContratoForm({ clientes }: ContratoFormProps) {
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Forma de Pago</Label>
-                                    <Select value={form.watch('forma_pago')} onValueChange={(val: any) => form.setValue('forma_pago', val)}>
+                                    <Select value={form.watch('forma_pago')} onValueChange={(val: 'transferencia' | 'efectivo' | 'cheque' | 'financiacion') => form.setValue('forma_pago', val)}>
                                         <SelectTrigger className="rounded-xl"><SelectValue /></SelectTrigger>
                                         <SelectContent>
                                             <SelectItem value="transferencia">Transferencia Bancaria</SelectItem>

@@ -137,9 +137,9 @@ export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, cliente
                                                 axisLine={false}
                                                 tickLine={false}
                                             />
-                                            <Tooltip formatter={(v: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Facturado']} />
+                                            <Tooltip formatter={(v: string | number | undefined) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Facturado']} />
                                             <Bar dataKey="facturacion" fill="hsl(var(--primary))" radius={[0, 6, 6, 0]} barSize={20} name="Facturado">
-                                                <LabelList position="right" formatter={(v: any) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(v || 0)) + '€'} />
+                                                <LabelList position="right" formatter={(v: string | number | boolean | null | undefined) => new Intl.NumberFormat('es-ES', { notation: 'compact', maximumFractionDigits: 1 }).format(Number(v || 0)) + '€'} />
                                             </Bar>
                                         </BarChart>
                                     </ResponsiveContainer>
@@ -184,7 +184,7 @@ export function InformesTabClientes({ fechaDesde, fechaHasta, empresaId, cliente
                                                 <Cell key={i} fill={COLORS[i % COLORS.length]} />
                                             ))}
                                         </Pie>
-                                        <Tooltip formatter={(v: any) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Ingresos']} />
+                                        <Tooltip formatter={(v: string | number | undefined) => [new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(Number(v || 0)), 'Ingresos']} />
                                         <Legend
                                             verticalAlign="bottom"
                                             height={48}

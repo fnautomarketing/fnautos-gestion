@@ -94,9 +94,10 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
             // Recargar la página para que el server component muestre la vista de éxito
             router.refresh()
             
-        } catch (error: any) {
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Error desconocido'
             toast.error('Ocurrió un error al firmar el contrato', {
-                description: error.message
+                description: message
             })
             setIsSubmitting(false)
         }

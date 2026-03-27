@@ -21,9 +21,7 @@ const VIN_REGEX = /^[A-HJ-NPR-Za-hj-npr-z0-9]{17}$/
 // ── Schema del contrato (creación / edición) ─────────────
 
 export const crearContratoSchema = z.object({
-    tipo_operacion: z.enum(['compra', 'venta'], {
-        error: 'Selecciona un tipo de operación válido'
-    } as any),
+    tipo_operacion: z.enum(['compra', 'venta']),
 
     // ── Comprador ────────────────────────────────────────
     comprador_nombre: z.string().min(1, 'El nombre del comprador es obligatorio').max(200),
@@ -85,9 +83,7 @@ export const crearContratoSchema = z.object({
 export const firmarContratoSchema = z.object({
     token: z.string().uuid('Token de firma inválido'),
     firma_data: z.string().min(100, 'La firma es obligatoria'),
-    aceptar_terminos: z.literal(true, {
-        error: 'Debes aceptar los términos del contrato'
-    } as any),
+    aceptar_terminos: z.literal(true),
 })
 
 // ── Types inferidos de los schemas ───────────────────────

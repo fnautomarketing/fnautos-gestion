@@ -115,13 +115,13 @@ export async function getKPIsAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_kpis_ventas', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_kpis_ventas', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
             const paramsRetry = { ...params }
             delete paramsRetry.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_kpis_ventas', paramsRetry)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_kpis_ventas', paramsRetry)
             data = retry.data
             error = retry.error
         }
@@ -160,12 +160,12 @@ export async function getEvolucionFacturacionAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_evolucion_facturacion', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_evolucion_facturacion', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_evolucion_facturacion', params)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_evolucion_facturacion', params)
             data = retry.data
             error = retry.error
         }
@@ -196,12 +196,12 @@ export async function getEstadoFacturasAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_estado_facturas', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_estado_facturas', params)
 
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_estado_facturas', params)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_estado_facturas', params)
             data = retry.data
             error = retry.error
         }
@@ -234,11 +234,11 @@ export async function getTopClientesAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_top_clientes', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_top_clientes', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_top_clientes', params)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_top_clientes', params)
             data = retry.data
             error = retry.error
         }
@@ -269,11 +269,11 @@ export async function getFacturacionPorCategoriaAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_facturacion_por_categoria', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_facturacion_por_categoria', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_facturacion_por_categoria', params)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_facturacion_por_categoria', params)
             data = retry.data
             error = retry.error
         }
@@ -304,11 +304,11 @@ export async function getDesgloseIVAAction(
         }
         if (clienteId != null) params.p_cliente_id = clienteId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_desglose_iva', params)
+         
+        let { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_desglose_iva', params)
         if (error && isRpcSignatureError(error) && clienteId != null) {
             delete params.p_cliente_id
-            const retry = await (supabase as unknown as { rpc: Function }).rpc('get_desglose_iva', params)
+            const retry = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_desglose_iva', params)
             data = retry.data
             error = retry.error
         }
@@ -332,8 +332,8 @@ export async function getRankingConceptosAction(
         const { supabase, empresaId: ctxEmpresaId } = await getEmpresaId()
         const empresaId = empresaIdOverride !== undefined ? empresaIdOverride : ctxEmpresaId
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const { data, error } = await (supabase as unknown as { rpc: Function }).rpc('get_ranking_conceptos', {
+         
+        const { data, error } = await (supabase as unknown as { rpc: (name: string, args?: Record<string, unknown>) => Promise<{ data: unknown; error: unknown }> }).rpc('get_ranking_conceptos', {
             p_empresa_id: empresaId,
             p_fecha_desde: fechaDesde || null,
             p_fecha_hasta: fechaHasta || null,

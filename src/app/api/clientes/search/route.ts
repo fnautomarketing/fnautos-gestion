@@ -28,7 +28,7 @@ export async function GET(request: Request) {
         const { empresaId: contextEmpresaId, empresas, isAdmin } = ctx
 
         // SEC-012: Validar que empresa_id del query pertenece al usuario
-        let empresaId = empresaIdParam || contextEmpresaId
+        const empresaId = empresaIdParam || contextEmpresaId
         if (empresaIdParam) {
             const tieneAcceso = isAdmin || (empresas as { empresa_id?: string }[]).some((e) => e.empresa_id === empresaIdParam)
             if (!tieneAcceso) {

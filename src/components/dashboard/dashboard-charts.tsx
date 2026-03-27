@@ -59,13 +59,24 @@ interface DashboardChartsProps {
     empresaId?: string | null
 }
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+interface CustomTooltipProps {
+    active?: boolean
+    payload?: Array<{
+        name: string
+        value: number
+        color?: string
+        fill?: string
+    }>
+    label?: string | number
+}
+
+const CustomTooltip = ({ active, payload, label }: CustomTooltipProps) => {
     if (active && payload && payload.length) {
         return (
             <div className="backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 border border-white/20 dark:border-white/10 p-4 shadow-2xl rounded-2xl animate-in zoom-in-95 duration-200">
                 <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-2">{label}</p>
                 <div className="space-y-1.5">
-                    {payload.map((entry: any, index: number) => (
+                    {payload.map((entry, index: number) => (
                         <div key={index} className="flex items-center gap-3">
                             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: entry.color || entry.fill }} />
                             <p className="text-sm font-black text-slate-900 dark:text-white tabular-nums">

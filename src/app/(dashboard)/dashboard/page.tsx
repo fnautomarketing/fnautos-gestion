@@ -20,10 +20,23 @@ import { getEvolucionFacturacionAction } from '@/app/actions/informes'
 
 export const dynamic = 'force-dynamic'
 
+interface FacturaReciente {
+    id: string
+    numero: string
+    serie: string | null
+    total: number
+    estado: string
+    fecha_emision: string
+    fecha_vencimiento?: string
+    divisa: string | null
+    cliente: { nombre_fiscal: string | null, nombre_comercial: string | null } | null
+    empresa: { nombre_comercial: string | null, razon_social: string | null } | null
+}
+
 export default async function DashboardPage({
     searchParams,
 }: {
-    searchParams: Promise<{ periodo?: string; vista?: string; desde?: string; hasta?: string }>
+    searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
     const params = await searchParams
     const supabase = await createServerClient()
@@ -44,8 +57,8 @@ export default async function DashboardPage({
 
     const { periodo, vista, desde, hasta } = parseDashboardPeriod(params)
     // Garantizar que son string para evitar lints
-    const fechaDesde = `${desde as string}T00:00:00.000Z`
-    const fechaHasta = `${hasta as string}T23:59:59.999Z`
+    const fechaDesde = `${desde}T00:00:00.000Z`
+    const fechaHasta = `${hasta}T23:59:59.999Z`
 
     const { data: { user } } = await supabase.auth.getUser()
     const userName = (user?.user_metadata?.nombre as string) || (user?.user_metadata?.full_name as string)?.split(' ')[0] || 'Usuario'
@@ -58,7 +71,7 @@ export default async function DashboardPage({
             companyName = 'Visión Global'
             welcomeText = `${greeting}, ${userName}. Resumen consolidado de todas las empresas.`
         } else if (userContext.empresaId) {
-            const active = userContext.empresas.find((e: { empresa_id: string }) => e.empresa_id === userContext.empresaId) as any
+            const active = userContext.empresas.find((e: { empresa_id: string }) => e.empresa_id === userContext.empresaId) as { empresa?: { nombre_comercial?: string | null, razon_social?: string | null } } | undefined
             companyName = active?.empresa?.nombre_comercial || active?.empresa?.razon_social || 'Tu Empresa'
             welcomeText = `${greeting}, ${userName}. Bienvenido al panel de control de ${companyName}.`
         }
@@ -119,7 +132,7 @@ export default async function DashboardPage({
     // ── Desglose por empresa (solo visión global) ──────────────────────────────
     let desgloseEmpresas: Array<{ nombre: string; facturacion: number; num_facturas: number; ticket_medio: number; id: string }> = []
     if (isGlobal && userContext) {
-        const empresasDisp = (userContext.empresas as any[])
+        const empresasDisp = (userContext.empresas as Array<{ empresa_id: string, empresa?: { nombre_comercial?: string | null, razon_social?: string | null } }>)
             .filter((e) => e.empresa_id)
             .slice(0, 10)
         const resultados = await Promise.all(
@@ -262,14 +275,14 @@ export default async function DashboardPage({
                             </div>
                         ) : (
                             <div className="space-y-2">
-                                {vencimientosProximos.map((f: any) => (
+                                {vencimientosProximos.map((f) => (
                                     <Link key={f.id} href={`/ventas/facturas/${f.id}`} className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors duration-150 group min-h-[44px] sm:min-h-0">
                                         <div className="flex items-center gap-2 min-w-0 flex-1">
                                             <div className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded font-mono font-semibold shrink-0">
                                                 {f.serie ? `${f.serie}-${f.numero}` : f.numero}
                                             </div>
                                             <span className="text-sm text-slate-700 dark:text-slate-300 truncate min-w-0">
-                                                {(f.cliente as any)?.nombre_comercial || (f.cliente as any)?.nombre_fiscal || '—'}
+                                                {f.cliente?.nombre_comercial || f.cliente?.nombre_fiscal || '—'}
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
@@ -332,7 +345,7 @@ export default async function DashboardPage({
                     </CardHeader>
                     <CardContent>
                         <div className="space-y-1">
-                            {facturasRecientes.map((f: any) => (
+                            {facturasRecientes.map((f: FacturaReciente) => (
                                 <Link key={f.id} href={`/ventas/facturas/${f.id}`}
                                     className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors duration-150 group min-h-[44px] sm:min-h-0">
                                     <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
@@ -340,11 +353,11 @@ export default async function DashboardPage({
                                             {f.serie ? `${f.serie}-${f.numero}` : f.numero}
                                         </span>
                                         <span className="text-sm text-slate-600 dark:text-slate-400 truncate">
-                                            {(f.cliente as any)?.nombre_comercial || (f.cliente as any)?.nombre_fiscal || '—'}
+                                            {f.cliente?.nombre_comercial || f.cliente?.nombre_fiscal || '—'}
                                         </span>
                                         {isGlobal && (
                                             <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 px-1.5 py-0.5 rounded shrink-0">
-                                                {(f.empresa as any)?.nombre_comercial || (f.empresa as any)?.razon_social}
+                                                {f.empresa?.nombre_comercial || f.empresa?.razon_social}
                                             </span>
                                         )}
                                     </div>

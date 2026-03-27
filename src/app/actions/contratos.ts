@@ -13,7 +13,7 @@ import {
     calcularIVA,
     precioEnLetras,
 } from '@/lib/utils/contrato-utils'
-import type { Contrato, ContratoConCliente, EstadoContrato, TipoOperacion } from '@/types/contratos'
+import type { Contrato, EstadoContrato, TipoOperacion } from '@/types/contratos'
 
 // ╔══════════════════════════════════════════════════════════╗
 // ║  Server Actions — Contratos de compraventa              ║
@@ -84,27 +84,7 @@ export async function crearContratoAction(input: z.infer<typeof crearContratoSch
         )
         const precioLetras = precioEnLetras(totalConIva)
 
-        // Auto-rellenar datos de la empresa según tipo de operación
-        let datosEmpresa: Record<string, string | null> = {}
-        if (validatedData.tipo_operacion === 'venta' || validatedData.tipo_operacion === 'compra') {
-            const { data: empresa } = await admin
-                .from('empresas')
-                .select('razon_social, cif, direccion, ciudad, codigo_postal, telefono, email')
-                .eq('id', empresa_id)
-                .single()
 
-            if (empresa) {
-                datosEmpresa = {
-                    nombre: empresa.razon_social || '',
-                    nif: empresa.cif || '',
-                    direccion: empresa.direccion || null,
-                    ciudad: empresa.ciudad || null,
-                    codigo_postal: empresa.codigo_postal || null,
-                    telefono: empresa.telefono || null,
-                    email: empresa.email || null,
-                }
-            }
-        }
 
         // Insertar contrato
         const insertData: Record<string, unknown> = {

@@ -25,7 +25,7 @@ export default async function DetalleContratoPage({
     const adminClient = createAdminClient()
     const { empresaId } = await getUserContext()
 
-    let query = adminClient
+    const query = adminClient
         .from('contratos')
         .select('*')
         .eq('id', id)

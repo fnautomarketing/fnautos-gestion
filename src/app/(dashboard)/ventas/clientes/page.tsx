@@ -69,7 +69,7 @@ export default async function ClientesPage({
     }
 
     // Cuando hay empresa seleccionada: facturación solo de esa empresa (no global)
-    let totalFacturadoPorCliente: Record<string, number> = {}
+    const totalFacturadoPorCliente: Record<string, number> = {}
     if (empresaId && clientes && clientes.length > 0) {
         const clienteIds = clientes.map((c) => c.id)
         const { data: facturas } = await supabase
