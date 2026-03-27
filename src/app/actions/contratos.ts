@@ -433,6 +433,46 @@ export async function enviarContratoAction(id: string) {
     }
 }
 
+export async function enviarContratoConEmailAction(id: string, email: string) {
+    try {
+        const { empresa_id } = await getAuthContext()
+        const admin = createAdminClient()
+
+        // 1. Obtener contrato para saber qué campo actualizar
+        const { data: contrato } = await admin
+            .from('contratos')
+            .select('tipo_operacion')
+            .eq('id', id)
+            .eq('empresa_id', empresa_id)
+            .single()
+
+        if (!contrato) throw new Error('Contrato no encontrado')
+
+        // 2. Actualizar el email del cliente
+        const campoEmail = contrato.tipo_operacion === 'venta' 
+            ? 'comprador_email' 
+            : 'vendedor_email'
+
+        const { error: updateError } = await admin
+            .from('contratos')
+            .update({ [campoEmail]: email } as never)
+            .eq('id', id)
+
+        if (updateError) {
+            console.error('Error actualizando email:', updateError)
+            throw new Error('No se pudo actualizar el email del contrato')
+        }
+
+        // 3. Proceder con el envío normal
+        return await enviarContratoAction(id)
+
+    } catch (error: unknown) {
+        console.error('Error en enviarContratoConEmailAction:', error)
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
+    }
+}
+
 // ── ANULAR CONTRATO ─────────────────────────────────────
 
 export async function anularContratoAction(id: string) {

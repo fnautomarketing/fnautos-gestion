@@ -138,18 +138,19 @@ export function Sidebar({ className, userEmail }: SidebarProps) {
                         <div className="pl-4 space-y-1 animate-in slide-in-from-top-2 duration-200">
                             {item.submenu.map(sub => {
                                 const SubIcon = sub.icon
+                                const isSubActive = pathname.startsWith(sub.href)
                                 return (
                                     <Link
                                         key={sub.name}
                                         href={sub.href}
                                         className={cn(
                                             'group flex items-center gap-3 rounded-lg px-3 py-2.5 min-h-[44px] sm:min-h-0 sm:py-2 text-sm font-medium transition-all duration-300 relative touch-manipulation',
-                                            pathname === sub.href
+                                            isSubActive
                                                 ? 'bg-primary/10 text-white font-semibold'
                                                 : 'text-slate-400 hover:bg-white/5 hover:text-slate-100'
                                         )}
                                     >
-                                        <SubIcon className={cn("h-4 w-4 shrink-0 transition-colors", pathname === sub.href ? "text-primary" : "group-hover:text-primary")} />
+                                        <SubIcon className={cn("h-4 w-4 shrink-0 transition-colors", isSubActive ? "text-primary" : "group-hover:text-primary")} />
                                         {sub.name}
                                     </Link>
                                 )

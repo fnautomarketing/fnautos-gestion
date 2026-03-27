@@ -35,7 +35,8 @@ import {
     Copy,
     PenTool,
     Clock,
-    FileText
+    FileText,
+    Send
 } from 'lucide-react'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import type { Contrato } from '@/types/contratos'
@@ -354,17 +355,32 @@ export function ContratosTable({
                                                             </DropdownMenuTrigger>
                                                             <DropdownMenuContent align="end" className="w-52 p-1 border-white/20 bg-white/95 backdrop-blur-xl shadow-2xl rounded-xl">
                                                                 <DropdownMenuItem asChild>
+                                                                    <Link href={`/ventas/contratos/${contrato.id}`} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
+                                                                        <Eye className="mr-3 h-5 w-5 text-slate-600" /> Ver Detalles
+                                                                    </Link>
+                                                                </DropdownMenuItem>
+                                                                <DropdownMenuItem asChild>
                                                                     <Link href={`/api/contratos/${contrato.id}/pdf`} target="_blank" className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
                                                                         <FileText className="mr-3 h-5 w-5 text-slate-600" /> Previsualizar PDF
                                                                     </Link>
                                                                 </DropdownMenuItem>
 
+                                                                {contrato.estado === 'borrador' && (
+                                                                    <DropdownMenuItem asChild>
+                                                                        <Link href={`/ventas/contratos/${contrato.id}`} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
+                                                                            <Send className="mr-3 h-5 w-5 text-blue-600" /> Enviar para Firma
+                                                                        </Link>
+                                                                    </DropdownMenuItem>
+                                                                )}
+
                                                                 {contrato.estado === 'pendiente_firma' && (
                                                                     <>
-                                                                        <DropdownMenuItem onClick={() => handleEnviarEmail(contrato.id)} disabled={isSending === contrato.id} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
-                                                                            <Mail className="mr-3 h-5 w-5 text-primary" /> {isSending === contrato.id ? 'Enviando...' : 'Enviar enlace por email'}
+                                                                        <DropdownMenuItem asChild>
+                                                                            <Link href={`/ventas/contratos/${contrato.id}`} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5 font-medium text-primary">
+                                                                                <Mail className="mr-3 h-5 w-5" /> Reenviar / Cambiar Email
+                                                                            </Link>
                                                                         </DropdownMenuItem>
-                                                                        <DropdownMenuItem onClick={() => handleCopyLink(contrato.token_firma!)} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
+                                                                        <DropdownMenuItem onClick={() => handleCopyLink(contrato.token_firma!)} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5 text-slate-600">
                                                                             <Copy className="mr-3 h-5 w-5 text-blue-500" /> Copiar enlace de firma
                                                                         </DropdownMenuItem>
                                                                         <DropdownMenuItem asChild>

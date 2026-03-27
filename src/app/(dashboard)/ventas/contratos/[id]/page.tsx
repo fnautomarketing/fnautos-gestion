@@ -6,8 +6,9 @@ import { getUserContext } from '@/app/actions/usuarios-empresas'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { ChevronLeft, Download, Mail, PenTool, Edit, Trash, FileText, CheckCircle2, Clock, XCircle, Send } from 'lucide-react'
+import { ChevronLeft, Download, Mail, PenTool, Edit, Trash, FileText, CheckCircle2, Clock, XCircle, Send, AlertCircle } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
+import { BotonEnviarContrato } from '@/components/contratos/boton-enviar-contrato'
 
 export const metadata: Metadata = {
     title: 'Detalle de Contrato | FN Autos',
@@ -92,15 +93,11 @@ export default async function DetalleContratoPage({
                     </Button>
                     
                     {contrato.estado === 'borrador' && (
-                        <form action={async () => {
-                            'use server'
-                            await enviarContratoAction(id)
-                        }}>
-                            <Button type="submit" variant="default" className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-                                <Send className="w-4 h-4 mr-2" />
-                                Enviar para Firma
-                            </Button>
-                        </form>
+                        <BotonEnviarContrato 
+                            contratoId={contrato.id} 
+                            emailInicial={isVenta ? contrato.comprador_email : contrato.vendedor_email}
+                            tipoOperacion={contrato.tipo_operacion}
+                        />
                     )}
                     
                     {contrato.estado === 'pendiente_firma' && (
@@ -111,15 +108,12 @@ export default async function DetalleContratoPage({
                                     Firma Presencial
                                 </Link>
                             </Button>
-                            <form action={async () => {
-                                'use server'
-                                await enviarContratoAction(id)
-                            }}>
-                                <Button type="submit" variant="default" className="rounded-xl bg-blue-600 hover:bg-blue-700 text-white shadow-sm">
-                                    <Send className="w-4 h-4 mr-2" />
-                                    Reenviar Email
-                                </Button>
-                            </form>
+                            <BotonEnviarContrato 
+                                contratoId={contrato.id} 
+                                emailInicial={isVenta ? contrato.comprador_email : contrato.vendedor_email}
+                                tipoOperacion={contrato.tipo_operacion}
+                                label="Reenviar Email"
+                            />
                         </>
                     )}
                 </div>
