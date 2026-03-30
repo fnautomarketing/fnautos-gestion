@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { renderToStream } from '@react-pdf/renderer'
 import { ContratoPdfDocument } from '@/components/contratos/pdf/contrato-pdf-document'
 import type { Contrato } from '@/types/contratos'
@@ -8,6 +7,11 @@ import React from 'react'
 import path from 'path'
 import fs from 'fs'
 import { clientConfig } from '@/config/clients'
+
+// ╔══════════════════════════════════════════════════════════╗
+// ║  API Route — PDF público de contrato (sin auth)         ║
+// ║  Seguridad: Verificación por ID + token_firma           ║
+// ╚══════════════════════════════════════════════════════════╝
 
 export const dynamic = 'force-dynamic'
 
@@ -44,25 +48,14 @@ export async function GET(request: Request) {
         const token = searchParams.get('token')
 
         if (!id || !token) {
-            return new NextResponse('ID y Token requeridos', { status: 400 })
+            return new NextResponse('Parámetros requeridos: id y token', { status: 400 })
         }
 
-        const cookieStore = await cookies()
-        const supabase = createServerClient(
-            process.env.NEXT_PUBLIC_SUPABASE_URL!,
-            process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-            {
-                cookies: {
-                    get(name: string) {
-                        return cookieStore.get(name)?.value
-                    },
-                },
-            }
-        )
+        // Usar admin client para evitar problemas de RLS con usuarios no autenticados
+        const admin = createAdminClient()
 
-        // IMPORTANTE: Aquí NO verificamos sesión, sino que verificamos que el CONTRACT ID coincida con el TOKEN 
-        // Esto permite que el firmante vea el documento de forma segura.
-        const { data: contratoData, error: contratoError } = await supabase
+        // Verificar que el contrato existe Y que el token coincide (seguridad por token)
+        const { data: contratoData, error: contratoError } = await admin
             .from('contratos')
             .select('*')
             .eq('id', id)
@@ -70,13 +63,24 @@ export async function GET(request: Request) {
             .single()
 
         if (contratoError || !contratoData) {
-            console.error('Error al verificar token de contrato publico:', contratoError)
+            console.error('Error verificando token público PDF:', contratoError?.message)
             return new NextResponse('No autorizado o contrato no encontrado', { status: 401 })
         }
 
         const contrato = contratoData as unknown as Contrato
 
-        const { data: empresaData } = await supabase
+        // Verificar que el contrato está en estado válido para visualización
+        if (contrato.estado !== 'pendiente_firma' && contrato.estado !== 'firmado') {
+            return new NextResponse('Contrato no disponible para visualización', { status: 403 })
+        }
+
+        // Verificar expiración del token
+        if (contrato.token_firma_expira && new Date(contrato.token_firma_expira) < new Date()) {
+            return new NextResponse('El enlace ha expirado', { status: 410 })
+        }
+
+        // Obtener datos de la empresa
+        const { data: empresaData } = await admin
             .from('empresas')
             .select('*')
             .eq('id', contrato.empresa_id)
@@ -89,6 +93,7 @@ export async function GET(request: Request) {
         const empresaNombre = empresaData.razon_social || empresaData.nombre_comercial || 'Empresa'
         const logoUrl = resolveLogoUrl()
 
+        // Generar PDF
         const stream = await renderToStream(
             React.createElement(ContratoPdfDocument, {
                 contrato,
@@ -107,16 +112,18 @@ export async function GET(request: Request) {
         const pdfBuffer = await streamToBuffer(stream as unknown as NodeJS.ReadableStream)
 
         const filename = `Contrato-${contrato.numero_contrato}.pdf`
-        
+
         return new NextResponse(pdfBuffer as unknown as BodyInit, {
             headers: {
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': `inline; filename="${filename}"`,
+                'Cache-Control': 'no-store, no-cache, must-revalidate',
             },
         })
 
-    } catch (error: any) {
-        console.error('Error al generar PDF de contrato publico:', error)
-        return new NextResponse(`Error generando PDF: ${error.message}`, { status: 500 })
+    } catch (error: unknown) {
+        const message = error instanceof Error ? error.message : 'Error interno'
+        console.error('Error generando PDF público:', message)
+        return new NextResponse(`Error generando PDF: ${message}`, { status: 500 })
     }
 }
