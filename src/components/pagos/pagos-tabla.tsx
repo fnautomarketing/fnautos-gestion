@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
 import { toggleConciliadoAction } from '@/app/actions/pagos'
+import { isVencida } from '@/lib/utils'
 import { toast } from 'sonner'
 
 interface Pago {
@@ -47,14 +48,56 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
         }
     }
 
-    const getEstadoBadge = (estado: string) => {
-        if (estado === 'pagada') {
-            return <Badge className="bg-green-100 text-green-700">✅ Pagado</Badge>
+    const getEstadoBadge = (estado: string, fechaVencimiento: string) => {
+        const vencida = isVencida(fechaVencimiento) && estado !== 'pagada' && estado !== 'anulada'
+
+        if (vencida) {
+            return (
+                <Badge variant="destructive" className="bg-rose-500/10 text-rose-600 border-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-900/50 font-medium px-2.5 py-0.5 rounded-full animate-pulse-slow">
+                    Vencida
+                </Badge>
+            )
         }
-        if (estado === 'parcial') {
-            return <Badge className="bg-yellow-100 text-yellow-700">🟡 Parcial</Badge>
+
+        switch (estado) {
+            case 'pagada':
+                return (
+                    <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-200 dark:bg-emerald-500/20 dark:text-emerald-400 dark:border-emerald-900/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Pagada
+                    </Badge>
+                )
+            case 'parcial':
+            case 'cobro_parcial':
+                return (
+                    <Badge variant="outline" className="bg-sky-500/10 text-sky-600 border-sky-200 dark:bg-sky-500/20 dark:text-sky-400 dark:border-sky-900/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Cobro Parcial
+                    </Badge>
+                )
+            case 'emitida':
+                return (
+                    <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-200 dark:bg-blue-500/20 dark:text-blue-400 dark:border-blue-900/50 font-medium px-2.5 py-0.5 rounded-full text-center">
+                        Emitida
+                    </Badge>
+                )
+            case 'borrador':
+                return (
+                    <Badge variant="secondary" className="bg-slate-500/10 text-slate-600 border-slate-200 dark:bg-slate-500/20 dark:text-slate-400 dark:border-slate-800/50 font-medium px-2.5 py-0.5 rounded-full">
+                        Borrador
+                    </Badge>
+                )
+            case 'anulada':
+                return (
+                    <Badge variant="destructive" className="bg-slate-100 text-slate-400 border-slate-200 dark:bg-slate-800 dark:text-slate-500 dark:border-slate-700 font-medium px-2.5 py-0.5 rounded-full opacity-60">
+                        Anulada
+                    </Badge>
+                )
+            default:
+                return (
+                    <Badge variant="outline" className="font-medium px-2.5 py-0.5 rounded-full capitalize">
+                        {estado || 'Pendiente'}
+                    </Badge>
+                )
         }
-        return <Badge className="bg-blue-100 text-blue-700">⏳ Pendiente</Badge>
     }
 
     const buildUrl = (nextTab: string, nextSearch: string, nextMetodo: string) => {
@@ -145,7 +188,7 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
                                 <td className="p-4 text-right text-green-600 font-semibold">{(pago.factura_total - pago.pendiente).toFixed(2)}€</td>
                                 <td className="p-4 text-right text-red-600 font-semibold">{pago.pendiente.toFixed(2)}€</td>
                                 <td className="p-4 text-center text-sm">{pago.metodo_pago || '-'}</td>
-                                <td className="p-4 text-center">{getEstadoBadge(pago.factura_estado)}</td>
+                                <td className="p-4 text-center">{getEstadoBadge(pago.factura_estado, pago.fecha_vencimiento)}</td>
                                 <td className="p-4 text-center">
                                     {pago.esFacturaRow ? (
                                         <span className="text-slate-400 text-sm">—</span>

@@ -98,24 +98,35 @@ export default async function PagosPage({
         // Filtro por método no aplica a facturas pendientes sin pago (todas tienen metodo null)
         // Se ignora para no vaciar la lista; el usuario puede filtrar por método en Cobrados/Parciales
     } else {
-        // Cobrados, Parciales, Todos: usamos vista_pagos_dashboard (una fila por pago)
-        let query = supabase.from('vista_pagos_dashboard' as any).select('*')
+        // Cobrados, Parciales, Todos: usamos la tabla pagos con un JOIN a facturas y clientes en lugar de una vista SQL
+        let query = supabase.from('pagos').select(`
+            id,
+            factura_id,
+            importe,
+            metodo_pago,
+            fecha_pago,
+            referencia,
+            conciliado,
+            empresa_id,
+            factura:facturas!inner (
+                serie,
+                numero,
+                total,
+                pagado,
+                estado,
+                fecha_vencimiento,
+                cliente:clientes (nombre_fiscal, nombre_comercial)
+            )
+        `)
 
         if (!isGlobalAdmin && empresaId) {
             query = query.eq('empresa_id', empresaId)
         }
 
         if (tab === 'cobrados') {
-            query = query.eq('factura_estado', 'pagada')
+            query = query.eq('factura.estado', 'pagada')
         } else if (tab === 'parciales') {
-            query = query.eq('factura_estado', 'parcial')
-        }
-
-        const searchSanitized = sanitizeSearchInput(search)
-        if (searchSanitized) {
-            query = query.or(
-                `serie.ilike.%${searchSanitized}%,cliente_nombre.ilike.%${searchSanitized}%,referencia.ilike.%${searchSanitized}%`
-            )
+            query = query.eq('factura.estado', 'parcial')
         }
 
         if (metodo !== 'todos') {
@@ -125,7 +136,38 @@ export default async function PagosPage({
         query = query.order('fecha_pago', { ascending: false })
 
         const { data } = await query
-        pagos = (data || []).map((p) => ({ ...(p as Record<string, any>), esFacturaRow: false }))
+
+        // El filtrado de texto lo hacemos en memoria para abarcar campos anidados y la referencia
+        const searchSanitized = sanitizeSearchInput(search).toLowerCase()
+
+        // Mapear al modelo que espera la tabla
+        pagos = (data || [])
+            .map((p: any) => {
+                const f = p.factura || {}
+                const c = f.cliente || {}
+                const clienteNombre = c.nombre_fiscal || c.nombre_comercial || '-'
+                
+                return {
+                    id: p.id,
+                    factura_id: p.factura_id || '',
+                    serie: f.serie || '',
+                    numero: f.numero || '',
+                    cliente_nombre: clienteNombre,
+                    fecha_vencimiento: f.fecha_vencimiento || p.fecha_pago,
+                    factura_total: Number(f.total) || 0,
+                    pendiente: Math.max(0, Number(f.total) - Number(f.pagado)),
+                    metodo_pago: p.metodo_pago,
+                    factura_estado: f.estado,
+                    conciliado: Boolean(p.conciliado),
+                    referencia: p.referencia || '',
+                    esFacturaRow: false,
+                }
+            })
+            .filter((p) => {
+                 if (!searchSanitized) return true
+                 const str = `${p.serie}-${p.numero} ${p.cliente_nombre} ${p.referencia}`.toLowerCase()
+                 return str.includes(searchSanitized)
+            })
     }
 
     // Cargar estadísticas
