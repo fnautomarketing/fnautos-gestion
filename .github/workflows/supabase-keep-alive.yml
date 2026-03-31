@@ -1,0 +1,29 @@
+name: Supabase Keep-Alive
+
+# Ejecutar cada 3 días (lunes, miércoles, viernes a las 9:00 UTC)
+# También permite ejecución manual desde la UI de GitHub Actions
+on:
+  schedule:
+    - cron: '0 9 * * 1,3,5'
+  workflow_dispatch:
+
+jobs:
+  keep-alive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Instalar dependencia Supabase
+        run: npm install @supabase/supabase-js
+
+      - name: Ejecutar ping keep-alive
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: node scripts/keep-alive.mjs
