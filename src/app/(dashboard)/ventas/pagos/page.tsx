@@ -27,7 +27,23 @@ export default async function PagosPage({
     const metodo = resolvedSearchParams.metodo || 'todos'
     const today = new Date().toISOString().split('T')[0]
 
-    let pagos: (any & { esFacturaRow: boolean })[] = [] // Still partially generic due to view structure but typed with row indicator
+    interface PagoRow {
+        id: string
+        factura_id: string
+        serie: string
+        numero: number | string
+        cliente_nombre: string
+        fecha_vencimiento: string
+        factura_total: number
+        pendiente: number
+        metodo_pago: string | null
+        factura_estado: string
+        conciliado: boolean
+        esFacturaRow: boolean
+        referencia?: string
+    }
+
+    let pagos: PagoRow[] = []
 
     // IMPORTANTE: Las pestañas "Pendientes" y "Vencidos" deben mostrar FACTURAS pendientes de cobro,
     // no solo registros de pago. vista_pagos_dashboard solo tiene filas por cada PAGO registrado,
@@ -142,8 +158,8 @@ export default async function PagosPage({
 
         // Mapear al modelo que espera la tabla
         pagos = (data || [])
-            .map((p: any) => {
-                const f = p.factura || {}
+            .map((p) => {
+                const f = (p as any).factura || {}
                 const c = f.cliente || {}
                 const clienteNombre = c.nombre_fiscal || c.nombre_comercial || '-'
                 
@@ -187,7 +203,12 @@ export default async function PagosPage({
     // Import the action
     const { getEstadisticasPagosAction } = await import('@/app/actions/pagos')
     const statsResult = await getEstadisticasPagosAction()
-    const stats = statsResult.success ? statsResult.data : ({} as any)
+    const stats = statsResult.success ? statsResult.data : ({
+        total_recuperado: 0,
+        total_pendiente: 0,
+        facturas_vencidas: 0,
+        tasa_recuperacion: 0
+    })
 
     return (
         <div className="space-y-6">
