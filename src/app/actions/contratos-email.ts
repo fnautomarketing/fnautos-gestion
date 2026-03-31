@@ -177,6 +177,7 @@ interface EnviarCopiaFirmadaParams {
     emailDestinatario: string
     pdfBuffer: Buffer
     empresaId: string
+    baseUrl?: string
 }
 
 export async function enviarEmailCopiaFirmada({
@@ -184,12 +185,15 @@ export async function enviarEmailCopiaFirmada({
     emailDestinatario,
     pdfBuffer,
     empresaId,
+    baseUrl,
 }: EnviarCopiaFirmadaParams) {
     const { logoBuffer, logoMime } = getLogoForEmail()
     const empresa = await getEmpresaData(empresaId)
     const empresaNombre = empresa?.razon_social || empresa?.nombre_comercial || clientConfig.nombre
     const fromEnv = process.env.RESEND_FROM || `FN AUTOS <info@fnautos.es>`
     const fromDomain = fromEnv.replace(/^["']|["']$/g, '').trim()
+    const bUrl = baseUrl || getBaseUrlFallback()
+    const pdfUrl = `${bUrl}/api/contratos/public/pdf?id=${contrato.id}&token=${contrato.token_firma}`
 
     const fechaFirma = contrato.firmado_en
         ? new Date(contrato.firmado_en).toLocaleDateString('es-ES', {
@@ -238,6 +242,10 @@ export async function enviarEmailCopiaFirmada({
                         <td class="info-value highlight">${formatPrecio(contrato.total_con_iva || contrato.precio_venta)}</td>
                     </tr>
                 </table>
+
+                <div style="text-align: center; margin-top: 30px;">
+                    <a href="${pdfUrl}" class="button" style="color: white !important;">📄 VER CONTRATO EN LÍNEA</a>
+                </div>
 
                 <div class="divider"></div>
                 <p style="font-size: 13px; color: #94a3b8;">Conserve este email y el PDF adjunto como comprobante del contrato.</p>

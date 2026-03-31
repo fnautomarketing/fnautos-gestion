@@ -2,6 +2,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ConfiguracionEmpresaForm } from '@/components/configuracion/empresa-form'
 import { DescargarDatosFiscalesButton } from '@/components/configuracion/descargar-datos-fiscales-button'
+import { FirmaEmpresaManager } from '@/components/configuracion/firma-empresa-manager'
 import type { Empresa } from '@/types/empresa'
 import { getUserContext } from '@/app/actions/usuarios-empresas'
 
@@ -11,7 +12,7 @@ export default async function ConfiguracionEmpresaPage() {
     if (!user) redirect('/login')
     const { empresaId: empresaActivaId, empresas, rol } = await getUserContext()
 
-    // Fallback: si por alguna raz?n no hay empresa activa en el contexto, usar perfil cl?sico
+    // Fallback: si por alguna razón no hay empresa activa en el contexto, usar perfil clásico
     let empresaIdParaConfig = empresaActivaId
     if (!empresaIdParaConfig) {
         const { data: perfil } = await supabase.from('perfiles').select('empresa_id').eq('user_id', user.id).single()
@@ -57,6 +58,12 @@ export default async function ConfiguracionEmpresaPage() {
                 />
             </div>
             <ConfiguracionEmpresaForm empresa={empresa} series={series} plantillas={plantillas} />
+            
+            {/* Firma de empresa — para contratos de compraventa */}
+            <FirmaEmpresaManager 
+                empresaId={empresaIdParaConfig} 
+                firmaUrlActual={empresa.firma_url || null}
+            />
         </div>
     )
 }

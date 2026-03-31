@@ -14,10 +14,136 @@ export type Database = {
   }
   public: {
     Tables: {
-      contratos: {
-        Row: any
-        Insert: any
-        Update: any
+      blog_posts: {
+        Row: {
+          author: string | null
+          authorImage: string | null
+          authorRole: string | null
+          category: string
+          content: string
+          createdAt: string | null
+          excerpt: string
+          id: string
+          image: string | null
+          publishedAt: string | null
+          readingTimeMinutes: number | null
+          slug: string
+          status: string
+          tags: string[] | null
+          title: string
+          updatedAt: string | null
+          views: number
+        }
+        Insert: {
+          author?: string | null
+          authorImage?: string | null
+          authorRole?: string | null
+          category: string
+          content: string
+          createdAt?: string | null
+          excerpt: string
+          id?: string
+          image?: string | null
+          publishedAt?: string | null
+          readingTimeMinutes?: number | null
+          slug: string
+          status?: string
+          tags?: string[] | null
+          title: string
+          updatedAt?: string | null
+          views?: number
+        }
+        Update: {
+          author?: string | null
+          authorImage?: string | null
+          authorRole?: string | null
+          category?: string
+          content?: string
+          createdAt?: string | null
+          excerpt?: string
+          id?: string
+          image?: string | null
+          publishedAt?: string | null
+          readingTimeMinutes?: number | null
+          slug?: string
+          status?: string
+          tags?: string[] | null
+          title?: string
+          updatedAt?: string | null
+          views?: number
+        }
+        Relationships: []
+      }
+      cars: {
+        Row: {
+          brand: string
+          color: string | null
+          createdAt: string | null
+          description: string
+          emissionsLabel: string | null
+          featured: boolean | null
+          fuel: string
+          gearbox: string
+          id: string
+          images: string[] | null
+          km: number
+          model: string
+          power: number | null
+          price: number
+          priceBadge: string | null
+          slug: string
+          sold: boolean | null
+          status: string | null
+          title: string
+          updatedAt: string | null
+          year: number
+        }
+        Insert: {
+          brand: string
+          color?: string | null
+          createdAt?: string | null
+          description: string
+          emissionsLabel?: string | null
+          featured?: boolean | null
+          fuel: string
+          gearbox: string
+          id: string
+          images?: string[] | null
+          km: number
+          model: string
+          power?: number | null
+          price: number
+          priceBadge?: string | null
+          slug: string
+          sold?: boolean | null
+          status?: string | null
+          title: string
+          updatedAt?: string | null
+          year: number
+        }
+        Update: {
+          brand?: string
+          color?: string | null
+          createdAt?: string | null
+          description?: string
+          emissionsLabel?: string | null
+          featured?: boolean | null
+          fuel?: string
+          gearbox?: string
+          id?: string
+          images?: string[] | null
+          km?: number
+          model?: string
+          power?: number | null
+          price?: number
+          priceBadge?: string | null
+          slug?: string
+          sold?: boolean | null
+          status?: string | null
+          title?: string
+          updatedAt?: string | null
+          year?: number
+        }
         Relationships: []
       }
       clientes: {
@@ -132,7 +258,48 @@ export type Database = {
           ultima_factura_fecha?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "clientes_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      clientes_empresas: {
+        Row: {
+          cliente_id: string
+          created_at: string | null
+          empresa_id: string
+        }
+        Insert: {
+          cliente_id: string
+          created_at?: string | null
+          empresa_id: string
+        }
+        Update: {
+          cliente_id?: string
+          created_at?: string | null
+          empresa_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "clientes_empresas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "clientes_empresas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       conceptos_catalogo: {
         Row: {
@@ -201,7 +368,195 @@ export type Database = {
           updated_at?: string | null
           veces_usado?: number | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "conceptos_catalogo_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      contratos: {
+        Row: {
+          clausulas_adicionales: string | null
+          cliente_id: string | null
+          comprador_ciudad: string | null
+          comprador_codigo_postal: string | null
+          comprador_direccion: string | null
+          comprador_email: string | null
+          comprador_nif: string
+          comprador_nombre: string
+          comprador_telefono: string | null
+          creado_por: string | null
+          created_at: string
+          documentacion_entregada: string[] | null
+          empresa_id: string
+          estado: string
+          firma_comprador_data: string | null
+          firma_ip: string | null
+          firma_user_agent: string | null
+          firma_vendedor_data: string | null
+          firmado_en: string | null
+          forma_pago: string | null
+          id: string
+          iva_importe: number | null
+          iva_porcentaje: number | null
+          notas_internas: string | null
+          numero_contrato: string
+          pdf_borrador_url: string | null
+          pdf_firmado_url: string | null
+          precio_letras: string | null
+          precio_venta: number
+          tipo_operacion: string
+          token_firma: string | null
+          token_firma_expira: string | null
+          total_con_iva: number | null
+          updated_at: string
+          vehiculo_bastidor: string
+          vehiculo_color: string | null
+          vehiculo_combustible: string | null
+          vehiculo_estado_declarado: string | null
+          vehiculo_fecha_matriculacion: string | null
+          vehiculo_kilometraje: number | null
+          vehiculo_libre_cargas: boolean | null
+          vehiculo_marca: string
+          vehiculo_matricula: string
+          vehiculo_modelo: string
+          vehiculo_version: string | null
+          vendedor_ciudad: string | null
+          vendedor_codigo_postal: string | null
+          vendedor_direccion: string | null
+          vendedor_email: string | null
+          vendedor_nif: string
+          vendedor_nombre: string
+          vendedor_telefono: string | null
+        }
+        Insert: {
+          clausulas_adicionales?: string | null
+          cliente_id?: string | null
+          comprador_ciudad?: string | null
+          comprador_codigo_postal?: string | null
+          comprador_direccion?: string | null
+          comprador_email?: string | null
+          comprador_nif: string
+          comprador_nombre: string
+          comprador_telefono?: string | null
+          creado_por?: string | null
+          created_at?: string
+          documentacion_entregada?: string[] | null
+          empresa_id: string
+          estado?: string
+          firma_comprador_data?: string | null
+          firma_ip?: string | null
+          firma_user_agent?: string | null
+          firma_vendedor_data?: string | null
+          firmado_en?: string | null
+          forma_pago?: string | null
+          id?: string
+          iva_importe?: number | null
+          iva_porcentaje?: number | null
+          notas_internas?: string | null
+          numero_contrato: string
+          pdf_borrador_url?: string | null
+          pdf_firmado_url?: string | null
+          precio_letras?: string | null
+          precio_venta: number
+          tipo_operacion: string
+          token_firma?: string | null
+          token_firma_expira?: string | null
+          total_con_iva?: number | null
+          updated_at?: string
+          vehiculo_bastidor: string
+          vehiculo_color?: string | null
+          vehiculo_combustible?: string | null
+          vehiculo_estado_declarado?: string | null
+          vehiculo_fecha_matriculacion?: string | null
+          vehiculo_kilometraje?: number | null
+          vehiculo_libre_cargas?: boolean | null
+          vehiculo_marca: string
+          vehiculo_matricula: string
+          vehiculo_modelo: string
+          vehiculo_version?: string | null
+          vendedor_ciudad?: string | null
+          vendedor_codigo_postal?: string | null
+          vendedor_direccion?: string | null
+          vendedor_email?: string | null
+          vendedor_nif: string
+          vendedor_nombre: string
+          vendedor_telefono?: string | null
+        }
+        Update: {
+          clausulas_adicionales?: string | null
+          cliente_id?: string | null
+          comprador_ciudad?: string | null
+          comprador_codigo_postal?: string | null
+          comprador_direccion?: string | null
+          comprador_email?: string | null
+          comprador_nif?: string
+          comprador_nombre?: string
+          comprador_telefono?: string | null
+          creado_por?: string | null
+          created_at?: string
+          documentacion_entregada?: string[] | null
+          empresa_id?: string
+          estado?: string
+          firma_comprador_data?: string | null
+          firma_ip?: string | null
+          firma_user_agent?: string | null
+          firma_vendedor_data?: string | null
+          firmado_en?: string | null
+          forma_pago?: string | null
+          id?: string
+          iva_importe?: number | null
+          iva_porcentaje?: number | null
+          notas_internas?: string | null
+          numero_contrato?: string
+          pdf_borrador_url?: string | null
+          pdf_firmado_url?: string | null
+          precio_letras?: string | null
+          precio_venta?: number
+          tipo_operacion?: string
+          token_firma?: string | null
+          token_firma_expira?: string | null
+          total_con_iva?: number | null
+          updated_at?: string
+          vehiculo_bastidor?: string
+          vehiculo_color?: string | null
+          vehiculo_combustible?: string | null
+          vehiculo_estado_declarado?: string | null
+          vehiculo_fecha_matriculacion?: string | null
+          vehiculo_kilometraje?: number | null
+          vehiculo_libre_cargas?: boolean | null
+          vehiculo_marca?: string
+          vehiculo_matricula?: string
+          vehiculo_modelo?: string
+          vehiculo_version?: string | null
+          vendedor_ciudad?: string | null
+          vendedor_codigo_postal?: string | null
+          vendedor_direccion?: string | null
+          vendedor_email?: string | null
+          vendedor_nif?: string
+          vendedor_nombre?: string
+          vendedor_telefono?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contratos_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contratos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       emails_factura: {
         Row: {
@@ -254,25 +609,18 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "emails_factura_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "emails_factura_factura_id_fkey"
             columns: ["factura_id"]
             isOneToOne: false
             referencedRelation: "facturas"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "emails_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "emails_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
           },
           {
             foreignKeyName: "emails_factura_factura_id_fkey"
@@ -297,6 +645,7 @@ export type Database = {
           dias_pago_predeterminados: number | null
           direccion: string | null
           email: string | null
+          firma_url: string | null
           formato_fecha: string | null
           formato_numero_factura: string | null
           iban: string | null
@@ -312,6 +661,7 @@ export type Database = {
           pais: string | null
           pie_factura: string | null
           plantilla_pdf_predeterminada_id: string | null
+          prefijo_serie: string | null
           provincia: string | null
           razon_social: string
           recargo_porcentaje: number | null
@@ -341,6 +691,7 @@ export type Database = {
           dias_pago_predeterminados?: number | null
           direccion?: string | null
           email?: string | null
+          firma_url?: string | null
           formato_fecha?: string | null
           formato_numero_factura?: string | null
           iban?: string | null
@@ -356,6 +707,7 @@ export type Database = {
           pais?: string | null
           pie_factura?: string | null
           plantilla_pdf_predeterminada_id?: string | null
+          prefijo_serie?: string | null
           provincia?: string | null
           razon_social: string
           recargo_porcentaje?: number | null
@@ -385,6 +737,7 @@ export type Database = {
           dias_pago_predeterminados?: number | null
           direccion?: string | null
           email?: string | null
+          firma_url?: string | null
           formato_fecha?: string | null
           formato_numero_factura?: string | null
           iban?: string | null
@@ -400,6 +753,7 @@ export type Database = {
           pais?: string | null
           pie_factura?: string | null
           plantilla_pdf_predeterminada_id?: string | null
+          prefijo_serie?: string | null
           provincia?: string | null
           razon_social?: string
           recargo_porcentaje?: number | null
@@ -458,20 +812,6 @@ export type Database = {
             foreignKeyName: "eventos_factura_factura_id_fkey"
             columns: ["factura_id"]
             isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "eventos_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
-          },
-          {
-            foreignKeyName: "eventos_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
             referencedRelation: "vista_facturas_vencidas"
             referencedColumns: ["id"]
           },
@@ -479,6 +819,7 @@ export type Database = {
       }
       facturas: {
         Row: {
+          archivo_url: string | null
           base_imponible: number
           cliente_id: string
           created_at: string | null
@@ -487,6 +828,7 @@ export type Database = {
           descuento_valor: number | null
           divisa: string | null
           empresa_id: string
+          es_externa: boolean | null
           es_rectificativa: boolean | null
           estado: string
           factura_rectificada_id: string | null
@@ -501,6 +843,8 @@ export type Database = {
           motivo_rectificacion: string | null
           notas: string | null
           numero: string
+          numero_manual: string | null
+          numero_orden: number | null
           pagado: number | null
           plantilla_pdf_id: string | null
           recargo_equivalencia: boolean | null
@@ -515,6 +859,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          archivo_url?: string | null
           base_imponible?: number
           cliente_id: string
           created_at?: string | null
@@ -523,6 +868,7 @@ export type Database = {
           descuento_valor?: number | null
           divisa?: string | null
           empresa_id: string
+          es_externa?: boolean | null
           es_rectificativa?: boolean | null
           estado?: string
           factura_rectificada_id?: string | null
@@ -537,6 +883,8 @@ export type Database = {
           motivo_rectificacion?: string | null
           notas?: string | null
           numero: string
+          numero_manual?: string | null
+          numero_orden?: number | null
           pagado?: number | null
           plantilla_pdf_id?: string | null
           recargo_equivalencia?: boolean | null
@@ -551,6 +899,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          archivo_url?: string | null
           base_imponible?: number
           cliente_id?: string
           created_at?: string | null
@@ -559,6 +908,7 @@ export type Database = {
           descuento_valor?: number | null
           divisa?: string | null
           empresa_id?: string
+          es_externa?: boolean | null
           es_rectificativa?: boolean | null
           estado?: string
           factura_rectificada_id?: string | null
@@ -573,6 +923,8 @@ export type Database = {
           motivo_rectificacion?: string | null
           notas?: string | null
           numero?: string
+          numero_manual?: string | null
+          numero_orden?: number | null
           pagado?: number | null
           plantilla_pdf_id?: string | null
           recargo_equivalencia?: boolean | null
@@ -588,6 +940,20 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "facturas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facturas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "facturas_factura_rectificada_id_fkey"
             columns: ["factura_rectificada_id"]
             isOneToOne: false
@@ -598,21 +964,14 @@ export type Database = {
             foreignKeyName: "facturas_factura_rectificada_id_fkey"
             columns: ["factura_rectificada_id"]
             isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
+            referencedRelation: "vista_facturas_vencidas"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "facturas_factura_rectificada_id_fkey"
-            columns: ["factura_rectificada_id"]
+            foreignKeyName: "facturas_plantilla_pdf_id_fkey"
+            columns: ["plantilla_pdf_id"]
             isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
-          },
-          {
-            foreignKeyName: "facturas_factura_rectificada_id_fkey"
-            columns: ["factura_rectificada_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_vencidas"
+            referencedRelation: "plantillas_pdf"
             referencedColumns: ["id"]
           },
           {
@@ -622,25 +981,48 @@ export type Database = {
             referencedRelation: "series_facturacion"
             referencedColumns: ["id"]
           },
+        ]
+      }
+      leads: {
+        Row: {
+          carId: string | null
+          createdAt: string | null
+          email: string | null
+          id: string
+          message: string
+          name: string
+          phone: string
+          source: string | null
+          status: string | null
+        }
+        Insert: {
+          carId?: string | null
+          createdAt?: string | null
+          email?: string | null
+          id: string
+          message: string
+          name: string
+          phone: string
+          source?: string | null
+          status?: string | null
+        }
+        Update: {
+          carId?: string | null
+          createdAt?: string | null
+          email?: string | null
+          id?: string
+          message?: string
+          name?: string
+          phone?: string
+          source?: string | null
+          status?: string | null
+        }
+        Relationships: [
           {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
+            foreignKeyName: "fk_car"
+            columns: ["carId"]
             isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["cliente_id"]
-          },
-          {
-            foreignKeyName: "fk_facturas_empresa"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
+            referencedRelation: "cars"
             referencedColumns: ["id"]
           },
         ]
@@ -699,20 +1081,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "facturas"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "lineas_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "lineas_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
           },
           {
             foreignKeyName: "lineas_factura_factura_id_fkey"
@@ -836,6 +1204,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "pagos_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "pagos_factura_id_fkey"
             columns: ["factura_id"]
             isOneToOne: false
@@ -844,88 +1219,6 @@ export type Database = {
           },
           {
             foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_vencidas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      pagos_factura: {
-        Row: {
-          created_at: string | null
-          cuenta_bancaria: string | null
-          empresa_id: string | null
-          factura_id: string
-          fecha_pago: string
-          id: string
-          importe: number
-          metodo_pago: string
-          notas: string | null
-          referencia: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          cuenta_bancaria?: string | null
-          empresa_id?: string | null
-          factura_id: string
-          fecha_pago: string
-          id?: string
-          importe: number
-          metodo_pago: string
-          notas?: string | null
-          referencia?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          cuenta_bancaria?: string | null
-          empresa_id?: string | null
-          factura_id?: string
-          fecha_pago?: string
-          id?: string
-          importe?: number
-          metodo_pago?: string
-          notas?: string | null
-          referencia?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pagos_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "facturas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_factura_id_fkey"
             columns: ["factura_id"]
             isOneToOne: false
             referencedRelation: "vista_facturas_vencidas"
@@ -936,26 +1229,37 @@ export type Database = {
       perfiles: {
         Row: {
           created_at: string | null
-          empresa_id: string
+          empresa_id: string | null
           id: string
           rol: string | null
+          updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          empresa_id: string
+          empresa_id?: string | null
           id?: string
           rol?: string | null
+          updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
-          empresa_id?: string
+          empresa_id?: string | null
           id?: string
           rol?: string | null
+          updated_at?: string | null
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "perfiles_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plantillas_pdf: {
         Row: {
@@ -1054,7 +1358,15 @@ export type Database = {
           texto_pie?: string | null
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plantillas_pdf_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       plantillas_recordatorio: {
         Row: {
@@ -1096,7 +1408,15 @@ export type Database = {
           tipo?: string
           updated_at?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plantillas_recordatorio_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       recordatorios: {
         Row: {
@@ -1182,25 +1502,18 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "recordatorios_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "recordatorios_factura_id_fkey"
             columns: ["factura_id"]
             isOneToOne: false
             referencedRelation: "facturas"
             referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "recordatorios_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "recordatorios_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
           },
           {
             foreignKeyName: "recordatorios_factura_id_fkey"
@@ -1272,6 +1585,56 @@ export type Database = {
           tipo?: string | null
           updated_at?: string | null
         }
+        Relationships: [
+          {
+            foreignKeyName: "series_facturacion_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_sessions: {
+        Row: {
+          chat_id: number
+          state: Json
+          updated_at: string
+        }
+        Insert: {
+          chat_id: number
+          state?: Json
+          updated_at?: string
+        }
+        Update: {
+          chat_id?: number
+          state?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      users: {
+        Row: {
+          createdAt: string | null
+          email: string
+          id: string
+          role: string | null
+          updatedAt: string | null
+        }
+        Insert: {
+          createdAt?: string | null
+          email: string
+          id: string
+          role?: string | null
+          updatedAt?: string | null
+        }
+        Update: {
+          createdAt?: string | null
+          email?: string
+          id?: string
+          role?: string | null
+          updatedAt?: string | null
+        }
         Relationships: []
       }
       usuarios_empresas: {
@@ -1282,7 +1645,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           last_accessed_at: string | null
-          rol: string | null
+          rol: string
           user_id: string
         }
         Insert: {
@@ -1292,7 +1655,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           last_accessed_at?: string | null
-          rol?: string | null
+          rol?: string
           user_id: string
         }
         Update: {
@@ -1302,7 +1665,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           last_accessed_at?: string | null
-          rol?: string | null
+          rol?: string
           user_id?: string
         }
         Relationships: [
@@ -1331,31 +1694,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "fk_facturas_empresa"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vista_facturas_rectificativas: {
-        Row: {
-          cliente_id: string | null
-          cliente_nombre: string | null
-          created_at: string | null
-          empresa_id: string | null
-          es_rectificativa: boolean | null
-          estado: string | null
-          id: string | null
-          original_id: string | null
-          original_numero: string | null
-          rectificativa_numero: string | null
-          total: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_facturas_empresa"
+            foreignKeyName: "facturas_empresa_id_fkey"
             columns: ["empresa_id"]
             isOneToOne: false
             referencedRelation: "empresas"
@@ -1365,6 +1704,7 @@ export type Database = {
       }
       vista_facturas_vencidas: {
         Row: {
+          archivo_url: string | null
           base_imponible: number | null
           cliente_email: string | null
           cliente_id: string | null
@@ -1372,28 +1712,81 @@ export type Database = {
           cliente_telefono: string | null
           created_at: string | null
           descuento: number | null
+          descuento_tipo: string | null
+          descuento_valor: number | null
           dias_vencido: number | null
+          divisa: string | null
           empresa_id: string | null
+          es_externa: boolean | null
+          es_rectificativa: boolean | null
           estado: string | null
+          factura_rectificada_id: string | null
           fecha_emision: string | null
           fecha_pago: string | null
           fecha_ultimo_recordatorio: string | null
           fecha_vencimiento: string | null
           id: string | null
+          importe_descuento: number | null
+          importe_recargo: number | null
+          importe_retencion: number | null
           iva: number | null
+          motivo_rectificacion: string | null
           nivel_criticidad: string | null
           notas: string | null
           num_recordatorios_enviados: number | null
           numero: string | null
+          numero_manual: string | null
+          numero_orden: number | null
           pagado: number | null
           pendiente: number | null
+          plantilla_pdf_id: string | null
+          recargo_equivalencia: boolean | null
+          recargo_porcentaje: number | null
+          retencion_porcentaje: number | null
           serie: string | null
           serie_id: string | null
           subtotal: number | null
+          tipo_cambio: number | null
+          tipo_rectificativa: string | null
           total: number | null
           updated_at: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "facturas_cliente_id_fkey"
+            columns: ["cliente_id"]
+            isOneToOne: false
+            referencedRelation: "clientes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facturas_empresa_id_fkey"
+            columns: ["empresa_id"]
+            isOneToOne: false
+            referencedRelation: "empresas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facturas_factura_rectificada_id_fkey"
+            columns: ["factura_rectificada_id"]
+            isOneToOne: false
+            referencedRelation: "facturas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facturas_factura_rectificada_id_fkey"
+            columns: ["factura_rectificada_id"]
+            isOneToOne: false
+            referencedRelation: "vista_facturas_vencidas"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "facturas_plantilla_pdf_id_fkey"
+            columns: ["plantilla_pdf_id"]
+            isOneToOne: false
+            referencedRelation: "plantillas_pdf"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "facturas_serie_id_fkey"
             columns: ["serie_id"]
@@ -1401,148 +1794,28 @@ export type Database = {
             referencedRelation: "series_facturacion"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["cliente_id"]
-          },
-          {
-            foreignKeyName: "fk_facturas_empresa"
-            columns: ["empresa_id"]
-            isOneToOne: false
-            referencedRelation: "empresas"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      vista_pagos_dashboard: {
-        Row: {
-          anulado: boolean | null
-          cliente_id: string | null
-          cliente_nombre: string | null
-          comprobante_url: string | null
-          conciliado: boolean | null
-          creado_por: string | null
-          created_at: string | null
-          cuenta_bancaria: string | null
-          empresa_id: string | null
-          factura_estado: string | null
-          factura_id: string | null
-          factura_total: number | null
-          fecha_anulacion: string | null
-          fecha_conciliacion: string | null
-          fecha_emision: string | null
-          fecha_pago: string | null
-          fecha_vencimiento: string | null
-          id: string | null
-          importe: number | null
-          metodo_pago: string | null
-          motivo_anulacion: string | null
-          notas: string | null
-          numero: string | null
-          pendiente: number | null
-          referencia: string | null
-          serie: string | null
-          updated_at: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "clientes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "fk_facturas_cliente"
-            columns: ["cliente_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["cliente_id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "facturas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_rectificativas"
-            referencedColumns: ["original_id"]
-          },
-          {
-            foreignKeyName: "pagos_factura_id_fkey"
-            columns: ["factura_id"]
-            isOneToOne: false
-            referencedRelation: "vista_facturas_vencidas"
-            referencedColumns: ["id"]
-          },
         ]
       }
     }
     Functions: {
-      crear_factura_rectificativa: {
-        Args: {
-          p_factura_original_id: string
-          p_generar_abono?: boolean
-          p_lineas_a_rectificar?: string[]
-          p_motivo: string
-          p_tipo_rectificativa: string
-        }
-        Returns: string
+      actualizar_total_pagado: {
+        Args: { p_factura_id: string }
+        Returns: undefined
       }
-      crear_notificacion: {
-        Args: {
-          p_categoria: string
-          p_empresa_id: string
-          p_enlace?: string
-          p_mensaje: string
-          p_metadata?: Json
-          p_tipo: string
-          p_titulo: string
-          p_user_id: string
-        }
-        Returns: string
-      }
-      generar_codigo_concepto: {
-        Args: { p_categoria: string; p_empresa_id: string }
-        Returns: string
-      }
+      check_email_exists: { Args: { p_email: string }; Returns: boolean }
       get_desglose_iva: {
         Args: {
+          p_cliente_id?: string
           p_empresa_id: string
           p_fecha_desde?: string
           p_fecha_hasta?: string
         }
         Returns: Json
       }
-      get_estadisticas_vencidas: {
-        Args: { p_empresa_id: string }
-        Returns: Json
-      }
       get_estado_facturas: {
         Args: {
-          p_empresa_id: string
+          p_cliente_id?: string
+          p_empresa_id?: string
           p_fecha_desde?: string
           p_fecha_hasta?: string
         }
@@ -1550,14 +1823,7 @@ export type Database = {
       }
       get_evolucion_facturacion: {
         Args: {
-          p_empresa_id: string
-          p_fecha_desde?: string
-          p_fecha_hasta?: string
-        }
-        Returns: Json
-      }
-      get_facturacion_por_categoria: {
-        Args: {
+          p_cliente_id?: string
           p_empresa_id: string
           p_fecha_desde?: string
           p_fecha_hasta?: string
@@ -1566,36 +1832,22 @@ export type Database = {
       }
       get_kpis_ventas: {
         Args: {
+          p_cliente_id?: string
           p_empresa_id: string
           p_fecha_desde?: string
           p_fecha_hasta?: string
         }
         Returns: Json
       }
-      get_ranking_conceptos: {
-        Args: {
-          p_empresa_id: string
-          p_fecha_desde?: string
-          p_fecha_hasta?: string
-          p_limite?: number
-        }
-        Returns: Json
+      liberar_numero_serie: { Args: { p_serie_id: string }; Returns: undefined }
+      obtener_proximo_numero_preview: {
+        Args: { p_serie_id: string }
+        Returns: string
       }
-      get_top_clientes: {
-        Args: {
-          p_empresa_id: string
-          p_fecha_desde?: string
-          p_fecha_hasta?: string
-          p_limite?: number
-        }
-        Returns: Json
-      }
-      limpiar_notificaciones_antiguas: { Args: never; Returns: undefined }
       obtener_siguiente_numero_serie: {
         Args: { p_serie_id: string }
         Returns: string
       }
-      resetear_series_anuales: { Args: never; Returns: undefined }
       validar_cif_espanol: { Args: { p_cif: string }; Returns: boolean }
       validar_iban: { Args: { p_iban: string }; Returns: boolean }
     }

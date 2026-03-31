@@ -5,13 +5,17 @@ Esta skill garantiza que todo cambio en la rama de desarrollo (ej. `desarrollov1
 ## Flux de Trabajo-Deploy
 En CADA mención de "desplegar", "subir a producción" o "pasar a master", el asistente DEBE:
 
-1.  **Ejecutar Build**: Ejecutar `npm run build` para asegurar que no hay errores de SSR o estáticos.
-2.  **Commit y Push Desarrollo**: Guardar todos los cambios locales en la rama actual y subirlos a `origin`.
-3.  **Merge a Master**:
+1.  **Validación de Calidad**:
+    *   Ejecutar `npx eslint src --ext .ts,.tsx` para asegurar que no hay errores de código.
+    *   Ejecutar `npx tsc --noEmit` para validar tipos de TypeScript.
+    *   *Si falla alguno, corregir antes de seguir.*
+2.  **Ejecutar Build**: Ejecutar `npm run build` para asegurar que la compilación de Next.js es correcta.
+3.  **Commit y Push Desarrollo**: Guardar todos los cambios locales en la rama actual y subirlos a `origin`.
+4.  **Merge a Master**:
     *   Moverse a la rama `master`.
     *   Fusionar (`merge`) la rama de desarrollo.
     *   Subir (`push`) `master` a remoto para que Hostinger detecte el cambio.
-4.  **Limpieza**: Volver a la rama de desarrollo original.
+5.  **Limpieza**: Volver a la rama de desarrollo original.
 
 ## Comandos Recomendados
 Utiliza el workflow `/deploy` para ejecutar estos pasos de forma automática.

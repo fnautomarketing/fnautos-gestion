@@ -40,7 +40,7 @@ import {
 } from 'lucide-react'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
 import type { Contrato } from '@/types/contratos'
-import { anularContratoAction, enviarContratoAction } from '@/app/actions/contratos'
+import { anularContratoAction, enviarContratoAction, reenviarContratoFirmadoAction } from '@/app/actions/contratos'
 import { toast } from 'sonner'
 import { ConfirmDialog } from '@/components/ui/confirm-dialog'
 import Link from 'next/link'
@@ -110,6 +110,22 @@ export function ContratosTable({
         } finally {
             setIsSending(null)
             router.refresh()
+        }
+    }
+
+    const handleReenviarFirmado = async (id: string) => {
+        setIsSending(id)
+        try {
+            const result = await reenviarContratoFirmadoAction(id)
+            if (result.success) {
+                toast.success('Copia del contrato enviada por email')
+            } else {
+                toast.error(result.error || 'Error al reenviar email')
+            }
+        } catch (error) {
+            toast.error('Error de red al reenviar el email')
+        } finally {
+            setIsSending(null)
         }
     }
 
@@ -364,6 +380,13 @@ export function ContratosTable({
                                                                         <FileText className="mr-3 h-5 w-5 text-slate-600" /> Previsualizar PDF
                                                                     </Link>
                                                                 </DropdownMenuItem>
+                                                                
+                                                                {contrato.estado === 'firmado' && (
+                                                                    <DropdownMenuItem onClick={() => handleReenviarFirmado(contrato.id)} disabled={isSending === contrato.id} className="flex items-center cursor-pointer rounded-lg px-3 py-2.5">
+                                                                        <Mail className="mr-3 h-5 w-5 text-emerald-600" /> 
+                                                                        {isSending === contrato.id ? 'Enviando...' : 'Reenviar copia firmada'}
+                                                                    </DropdownMenuItem>
+                                                                )}
 
                                                                 {contrato.estado === 'borrador' && (
                                                                     <DropdownMenuItem asChild>
@@ -463,6 +486,12 @@ export function ContratosTable({
                                                                 <FileText className="mr-3 h-5 w-5 text-slate-600" /> PDF
                                                             </Link>
                                                         </DropdownMenuItem>
+                                                        {contrato.estado === 'firmado' && (
+                                                            <DropdownMenuItem onClick={() => handleReenviarFirmado(contrato.id)} disabled={isSending === contrato.id} className="flex items-center cursor-pointer rounded-lg px-3 py-3 text-base">
+                                                                <Mail className="mr-3 h-5 w-5 text-emerald-600" /> 
+                                                                {isSending === contrato.id ? '... ' : ''}Reenviar copia
+                                                            </DropdownMenuItem>
+                                                        )}
                                                         {contrato.estado === 'pendiente_firma' && (
                                                             <>
                                                                 <DropdownMenuItem onClick={() => handleEnviarEmail(contrato.id)} className="flex items-center cursor-pointer rounded-lg px-3 py-3 text-base">

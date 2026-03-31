@@ -43,6 +43,9 @@ export interface Empresa {
     logo_url?: string
     logo_filename?: string
 
+    // Firma digital de empresa
+    firma_url?: string
+
     // Datos bancarios
     iban?: string
     swift?: string

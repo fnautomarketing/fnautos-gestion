@@ -92,6 +92,7 @@ export async function GET(request: Request) {
 
         const empresaNombre = empresaData.razon_social || empresaData.nombre_comercial || 'Empresa'
         const logoUrl = resolveLogoUrl()
+        const firmaEmpresaUrl = empresaData.firma_url || undefined
 
         // Generar PDF
         const stream = await renderToStream(
@@ -107,7 +108,8 @@ export async function GET(request: Request) {
                     email: empresaData.email || '',
                 },
                 logoUrl,
-            }) as React.ReactElement<any>
+                firmaEmpresaUrl,
+            })
         )
         const pdfBuffer = await streamToBuffer(stream as unknown as NodeJS.ReadableStream)
 

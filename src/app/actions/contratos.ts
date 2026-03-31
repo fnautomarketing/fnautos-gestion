@@ -475,6 +475,81 @@ export async function enviarContratoConEmailAction(id: string, email: string) {
     }
 }
 
+// ── REENVIAR CONTRATO FIRMADO ───────────────────────────
+
+export async function reenviarContratoFirmadoAction(id: string) {
+    try {
+        const { empresa_id } = await getAuthContext()
+        const admin = createAdminClient()
+
+        // 1. Obtener contrato
+        const { data: contrato, error: fetchError } = await admin
+            .from('contratos')
+            .select('*')
+            .eq('id', id)
+            .eq('empresa_id', empresa_id)
+            .single()
+
+        if (fetchError || !contrato) throw new Error('Contrato no encontrado')
+
+        const c = contrato as unknown as Contrato
+        if (c.estado !== 'firmado') {
+            throw new Error('Solo se pueden reenviar contratos ya firmados')
+        }
+
+        // 2. Determinar email del destinatario
+        const emailDestinatario = c.tipo_operacion === 'venta'
+            ? c.comprador_email
+            : c.vendedor_email
+
+        if (!emailDestinatario) {
+            throw new Error('El contrato no tiene un email de destinatario configurado')
+        }
+
+        // 3. Obtener baseUrl
+        const headersList = await headers()
+        const host = headersList.get('x-forwarded-host') || headersList.get('host') || 'localhost:3000'
+        const proto = headersList.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https')
+        const requestBaseUrl = `${proto}://${host}`
+
+        // 4. Obtener pdf de borrador/firmado e invocar enviarEmailCopiaFirmada
+        const { enviarEmailCopiaFirmada } = await import('@/app/actions/contratos-email')
+        
+        const urlDescarga = c.pdf_firmado_url || c.pdf_borrador_url
+        if (!urlDescarga) {
+            throw new Error('No se encontró el PDF firmado para este contrato')
+        }
+        
+        // Obtener el PDF real de storage
+        const { data: pdfData, error: downloadError } = await admin
+            .storage
+            .from('contratos')
+            .download(urlDescarga)
+
+        if (downloadError || !pdfData) {
+            console.error('Error descargando PDF:', downloadError)
+            throw new Error('Error al acceder al documento PDF firmado')
+        }
+
+        const pdfBuffer = await pdfData.arrayBuffer()
+        const base64Pdf = Buffer.from(pdfBuffer).toString('base64')
+
+        await enviarEmailCopiaFirmada({
+            contrato: c,
+            emailDestinatario,
+            empresaId: empresa_id,
+            pdfBuffer: Buffer.from(base64Pdf, 'base64'),
+            baseUrl: requestBaseUrl,
+        })
+
+        return { success: true }
+    } catch (error: unknown) {
+        console.error('Error en reenviarContratoFirmadoAction:', error)
+        const message = error instanceof Error ? error.message : 'Error desconocido'
+        return { success: false, error: message }
+    }
+}
+
 // ── ANULAR CONTRATO ─────────────────────────────────────
 
 export async function anularContratoAction(id: string) {

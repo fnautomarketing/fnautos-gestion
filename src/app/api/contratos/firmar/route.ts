@@ -101,6 +101,10 @@ export async function POST(request: Request) {
             || 'unknown'
         const firmaUserAgent = request.headers.get('user-agent') || 'unknown'
         const firmadoEn = new Date().toISOString()
+        
+        const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || 'localhost:3000'
+        const proto = request.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https')
+        const requestBaseUrl = `${proto}://${host}`
 
         // Determinar campo de firma según tipo de operación
         const firmaField = contrato.tipo_operacion === 'venta'
@@ -130,12 +134,13 @@ export async function POST(request: Request) {
         // Obtener datos de la empresa para el PDF
         const { data: empresaData } = await admin
             .from('empresas')
-            .select('razon_social, nombre_comercial, direccion, ciudad, codigo_postal, cif, email, telefono')
+            .select('razon_social, nombre_comercial, direccion, ciudad, codigo_postal, cif, email, telefono, firma_url')
             .eq('id', contrato.empresa_id)
             .single()
 
         const empresaNombre = empresaData?.razon_social || empresaData?.nombre_comercial || 'Empresa'
         const logoUrl = getLogoUrl()
+        const firmaEmpresaUrl = empresaData?.firma_url || undefined
 
         // Generar PDF firmado
         const contratoFirmado: Contrato = {
@@ -161,6 +166,7 @@ export async function POST(request: Request) {
                         email: empresaData?.email || '',
                     },
                     logoUrl,
+                    firmaEmpresaUrl,
                 }) as React.ReactElement<any>
             )
             pdfBuffer = await streamToBuffer(stream as unknown as NodeJS.ReadableStream)
@@ -185,6 +191,7 @@ export async function POST(request: Request) {
                     emailDestinatario: emailCliente,
                     pdfBuffer,
                     empresaId: contrato.empresa_id,
+                    baseUrl: requestBaseUrl,
                 }).catch(err => console.error('Error email copia firmada:', err))
             )
         }

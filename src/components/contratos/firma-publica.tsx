@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import {
     FileText, ShieldCheck, PenTool, Eraser, Check, Eye,
     AlertCircle, Info, ArrowRight, Download, Lock, Scale,
-    X, Loader2, ChevronDown
+    X, Loader2
 } from 'lucide-react'
 import type { Contrato } from '@/types/contratos'
 import { cn, formatCurrency, formatDate } from '@/lib/utils'
@@ -202,34 +202,34 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
     const currentStep = !hasReadPdf ? 1 : isCanvasEmpty ? 2 : !allLegalChecked ? 3 : 4
 
     return (
-        <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 md:py-12 animate-in fade-in duration-700">
+        <div className="w-full max-w-5xl mx-auto py-4 sm:py-8 px-4 sm:px-6 md:py-12 animate-in fade-in duration-700">
 
             {/* ═══ STEPPER PREMIUM ═══ */}
-            <div className="mb-10">
+            <div className="mb-4 sm:mb-10">
                 <div className="flex items-center justify-between max-w-xl mx-auto relative px-2 sm:px-0">
                     {/* Línea de progreso */}
-                    <div className="absolute top-5 sm:top-6 left-[12%] right-[12%] h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
+                    <div className="absolute top-4 sm:top-6 left-[12%] right-[12%] h-0.5 bg-slate-200 dark:bg-slate-800 z-0" />
                     <div
-                        className="absolute top-5 sm:top-6 left-[12%] h-0.5 bg-emerald-500 z-0 transition-all duration-700"
+                        className="absolute top-4 sm:top-6 left-[12%] h-0.5 bg-emerald-500 z-0 transition-all duration-700"
                         style={{ width: `${Math.max(0, (currentStep - 1) / 3) * 76}%` }}
                     />
                     {steps.map((step, idx) => {
                         const Icon = step.icon
                         const isActive = idx === currentStep
                         return (
-                            <div key={idx} className="relative z-10 flex flex-col items-center gap-1.5">
+                            <div key={idx} className="relative z-10 flex flex-col items-center gap-1">
                                 <div className={cn(
-                                    "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-500 border-2",
+                                    "w-8 h-8 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-500 border-2",
                                     step.completed
                                         ? "bg-emerald-600 border-emerald-600 text-white shadow-lg shadow-emerald-500/25"
                                         : isActive
                                             ? "bg-white dark:bg-slate-900 border-primary text-primary shadow-md animate-pulse"
                                             : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-300 dark:text-slate-600"
                                 )}>
-                                    {step.completed ? <Check className="w-5 h-5" /> : <Icon className="w-4 h-4 sm:w-5 sm:h-5" />}
+                                    {step.completed ? <Check className="w-4 h-4 sm:w-5 sm:h-5" /> : <Icon className="w-3.5 h-3.5 sm:w-5 sm:h-5" />}
                                 </div>
                                 <span className={cn(
-                                    "text-[9px] sm:text-[10px] font-bold uppercase tracking-wider",
+                                    "text-[8px] sm:text-[10px] font-bold uppercase tracking-wider hidden sm:block",
                                     step.completed ? "text-emerald-600" : isActive ? "text-primary" : "text-slate-400"
                                 )}>
                                     {step.name}
@@ -241,18 +241,56 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
             </div>
 
             {/* ═══ HEADER ═══ */}
-            <div className="text-center mb-10 space-y-3">
-                <Badge variant="outline" className="px-4 py-1 text-primary border-primary/20 bg-primary/5 rounded-full font-bold tracking-widest uppercase text-[9px]">
+            <div className="text-center mb-4 sm:mb-10 space-y-2 sm:space-y-3">
+                <Badge variant="outline" className="px-3 sm:px-4 py-1 text-primary border-primary/20 bg-primary/5 rounded-full font-bold tracking-widest uppercase text-[8px] sm:text-[9px]">
                     <Lock className="w-3 h-3 mr-1.5" /> Firma Electrónica Segura
                 </Badge>
-                <h1 className="text-3xl sm:text-4xl font-serif font-black text-slate-900 dark:text-white tracking-tight">
+                <h1 className="text-2xl sm:text-4xl font-serif font-black text-slate-900 dark:text-white tracking-tight">
                     Contrato de Compraventa
                 </h1>
-                <p className="text-sm text-slate-500 max-w-lg mx-auto">
+                <p className="text-xs sm:text-sm text-slate-500 max-w-lg mx-auto hidden sm:block">
                     Documento enviado por <strong>FN Autos</strong> para su revisión y firma electrónica vinculante
                     conforme al Reglamento (UE) nº 910/2014 (eIDAS).
                 </p>
             </div>
+
+            {/* ═══ MENSAJE DE LECTURA OBLIGATORIA (HERO) ═══ */}
+            {!hasReadPdf && (
+                <div className="mb-6 sm:mb-12 py-8 sm:py-12 px-4 sm:px-6 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl border border-primary/20 flex flex-col items-center justify-center text-center space-y-4 sm:space-y-6 animate-in zoom-in-95 duration-700 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-primary/10 rounded-full flex flex-col items-center justify-center text-primary relative z-10 shadow-inner">
+                        <FileText className="w-8 h-8 sm:w-10 sm:h-10 animate-pulse" />
+                    </div>
+                    <div className="space-y-1.5 sm:space-y-2 relative z-10">
+                        <h3 className="text-xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+                            Lectura obligatoria del contrato
+                        </h3>
+                        <p className="text-sm sm:text-base text-slate-500 max-w-md mx-auto leading-relaxed">
+                            La legislación española y europea (eIDAS) requiere que revise íntegramente este documento 
+                            antes de poder estampar su firma vinculante.
+                        </p>
+                    </div>
+                    <Button
+                        size="lg"
+                        className="mt-2 sm:mt-4 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl h-12 sm:h-14 px-8 sm:px-10 shadow-2xl shadow-primary/30 hover:scale-105 active:scale-95 transition-all w-full sm:w-auto relative z-10 text-base sm:text-lg"
+                        onClick={openPdfViewer}
+                        disabled={pdfLoading}
+                    >
+                        {pdfLoading ? (
+                            <span className="flex items-center gap-2">
+                                <Loader2 className="w-5 h-5 animate-spin" /> Preparando documento seguro...
+                            </span>
+                        ) : (
+                            <span className="flex items-center gap-2">
+                                <Eye className="w-5 h-5" /> REVISAR CONTRATO AHORA
+                            </span>
+                        )}
+                    </Button>
+                    <div className="flex items-center gap-2 text-[10px] sm:text-[11px] uppercase font-bold text-primary/60 mt-2 sm:mt-4 relative z-10 tracking-widest">
+                        <Lock className="w-3.5 h-3.5 flex-shrink-0" /> El área de firma se habilitará tras la lectura
+                    </div>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
@@ -578,39 +616,6 @@ export function FirmaPublica({ contrato, token }: FirmaPublicaProps) {
                                 </div>
                             </div>
 
-                            {/* ── Mensaje de bloqueo si no ha leído ── */}
-                            {!hasReadPdf && (
-                                <div className="py-16 flex flex-col items-center justify-center text-center space-y-4 animate-in fade-in zoom-in-95 duration-700">
-                                    <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary">
-                                        <FileText className="w-8 h-8" />
-                                    </div>
-                                    <h3 className="text-xl font-black text-slate-900 dark:text-white">
-                                        Lectura obligatoria del contrato
-                                    </h3>
-                                    <p className="text-sm text-slate-500 max-w-sm">
-                                        La legislación española requiere que el firmante lea íntegramente el documento
-                                        antes de estampar su firma. Pulse el botón para abrir el contrato.
-                                    </p>
-                                    <Button
-                                        className="mt-2 bg-primary hover:bg-primary/90 text-white font-bold rounded-xl h-12 px-8 shadow-lg"
-                                        onClick={openPdfViewer}
-                                        disabled={pdfLoading}
-                                    >
-                                        {pdfLoading ? (
-                                            <span className="flex items-center gap-2">
-                                                <Loader2 className="w-4 h-4 animate-spin" /> Cargando...
-                                            </span>
-                                        ) : (
-                                            <span className="flex items-center gap-2">
-                                                <Eye className="w-4 h-4" /> Abrir contrato PDF
-                                            </span>
-                                        )}
-                                    </Button>
-                                    <div className="flex items-center gap-1.5 text-[9px] text-slate-400 mt-1">
-                                        <Lock className="w-3 h-3" /> El área de firma se desbloqueará tras la lectura
-                                    </div>
-                                </div>
-                            )}
                         </CardContent>
                     </Card>
                 </div>

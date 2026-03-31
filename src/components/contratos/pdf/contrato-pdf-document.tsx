@@ -32,6 +32,7 @@ export interface ContratoPdfDocumentProps {
     contrato: Contrato
     empresa: ContratoEmpresaPdf
     logoUrl?: string
+    firmaEmpresaUrl?: string
 }
 
 // ── Paleta de colores (coherente con branding) ───────────
@@ -467,9 +468,19 @@ function generarClausulas(contrato: Contrato, empresa: ContratoEmpresaPdf): Arra
 // ║  COMPONENTE PDF PRINCIPAL                               ║
 // ╚══════════════════════════════════════════════════════════╝
 
-export function ContratoPdfDocument({ contrato, empresa, logoUrl }: ContratoPdfDocumentProps) {
+export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUrl }: ContratoPdfDocumentProps) {
     const clausulas = generarClausulas(contrato, empresa)
     const esVenta = contrato.tipo_operacion === 'venta'
+
+    // Determinar qué firma corresponde a la empresa según tipo de operación
+    // Venta: empresa = vendedor → firmaEmpresaUrl va en firma_vendedor
+    // Compra: empresa = comprador → firmaEmpresaUrl va en firma_comprador
+    const firmaVendedor = esVenta
+        ? (contrato.firma_vendedor_data || firmaEmpresaUrl)
+        : contrato.firma_vendedor_data
+    const firmaComprador = esVenta
+        ? contrato.firma_comprador_data
+        : (contrato.firma_comprador_data || firmaEmpresaUrl)
     const tipoTexto = esVenta
         ? 'CONTRATO DE COMPRAVENTA DE VEHÍCULO'
         : 'CONTRATO DE COMPRA DE VEHÍCULO'
@@ -685,8 +696,8 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl }: ContratoPdfD
                 <View style={s.firmasRow}>
                     <View style={s.firmaBox}>
                         <Text style={s.firmaLabel}>LA PARTE VENDEDORA</Text>
-                        {contrato.firma_vendedor_data ? (
-                            <Image src={contrato.firma_vendedor_data} style={s.firmaImagen} />
+                        {firmaVendedor ? (
+                            <Image src={firmaVendedor} style={s.firmaImagen} />
                         ) : (
                             <View style={{ width: 150, height: 65 }} />
                         )}
@@ -696,8 +707,8 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl }: ContratoPdfD
                     </View>
                     <View style={s.firmaBox}>
                         <Text style={s.firmaLabel}>LA PARTE COMPRADORA</Text>
-                        {contrato.firma_comprador_data ? (
-                            <Image src={contrato.firma_comprador_data} style={s.firmaImagen} />
+                        {firmaComprador ? (
+                            <Image src={firmaComprador} style={s.firmaImagen} />
                         ) : (
                             <View style={{ width: 150, height: 65 }} />
                         )}

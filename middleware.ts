@@ -5,7 +5,13 @@ export async function middleware(request: NextRequest) {
     const response = await updateSession(request)
 
     // Security Headers (Security Fortress)
-    response.headers.set('X-Frame-Options', 'DENY')
+    // Las rutas públicas de contratos NO deben tener X-Frame-Options: DENY
+    // porque el visor de PDF usa iframe con blob: URLs en la página de firma
+    const isPublicContractRoute = request.nextUrl.pathname.startsWith('/api/contratos/public/')
+        || request.nextUrl.pathname.startsWith('/contratos/firmar/')
+    if (!isPublicContractRoute) {
+        response.headers.set('X-Frame-Options', 'DENY')
+    }
     response.headers.set('X-Content-Type-Options', 'nosniff')
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
     response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')

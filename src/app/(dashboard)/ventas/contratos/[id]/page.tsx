@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { ChevronLeft, Download, Mail, PenTool, Edit, Trash, FileText, CheckCircle2, Clock, XCircle, Send, AlertCircle } from 'lucide-react'
 import { formatCurrency, formatDate } from '@/lib/utils'
 import { BotonEnviarContrato } from '@/components/contratos/boton-enviar-contrato'
+import { BotonReenviarFirmado } from '@/components/contratos/boton-reenviar-firmado'
 
 export const metadata: Metadata = {
     title: 'Detalle de Contrato | FN Autos',
@@ -115,6 +116,10 @@ export default async function DetalleContratoPage({
                                 label="Reenviar Email"
                             />
                         </>
+                    )}
+
+                    {contrato.estado === 'firmado' && (
+                        <BotonReenviarFirmado contratoId={contrato.id} />
                     )}
                 </div>
             </div>

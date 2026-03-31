@@ -91,6 +91,7 @@ export async function GET(
 
         const empresaNombre = empresaData.razon_social || empresaData.nombre_comercial || 'Empresa'
         const logoUrl = resolveLogoUrl()
+        const firmaEmpresaUrl = empresaData.firma_url || undefined
 
         const stream = await renderToStream(
             React.createElement(ContratoPdfDocument, {
@@ -105,6 +106,7 @@ export async function GET(
                     email: empresaData.email || '',
                 },
                 logoUrl,
+                firmaEmpresaUrl,
             }) as React.ReactElement<any>
         )
         const pdfBuffer = await streamToBuffer(stream as unknown as NodeJS.ReadableStream)
