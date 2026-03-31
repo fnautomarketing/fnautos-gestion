@@ -7,7 +7,7 @@ export const size = { width: 180, height: 180 }
 export const contentType = 'image/png'
 
 export default async function AppleIcon() {
-  const logoPath = join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+  const logoPath = join(process.cwd(), 'public', (clientConfig.logoPngPath || clientConfig.logoPath).replace(/^\//, ''))
   let logoSrc: string
   try {
     const buf = await readFile(logoPath)
@@ -33,7 +33,7 @@ export default async function AppleIcon() {
           <img
             src={logoSrc}
             alt=""
-            style={{ objectFit: 'contain', width: '150%', height: '150%' }}
+            style={{ objectFit: 'contain', width: '80%', height: '80%' }}
           />
         ) : (
           <span style={{ fontSize: 56, fontWeight: 800, color: clientConfig.colors.brandGold }}>{clientConfig.nombreCorto}</span>

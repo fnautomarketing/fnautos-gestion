@@ -8,7 +8,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function OpenGraphImage() {
-  const logoPath = join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+  const logoPath = join(process.cwd(), 'public', (clientConfig.logoPngPath || clientConfig.logoPath).replace(/^\//, ''))
   let logoSrc: string
   try {
     const buf = await readFile(logoPath)
@@ -27,7 +27,7 @@ export default async function OpenGraphImage() {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%)',
+          background: `linear-gradient(135deg, ${clientConfig.colors.brandDark} 0%, #1e293b 50%, ${clientConfig.colors.brandDark} 100%)`,
           fontFamily: 'system-ui, sans-serif',
         }}
       >

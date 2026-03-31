@@ -17,9 +17,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { CarFront, FileText, UserSquare, Users, CreditCard, ChevronRight, ChevronLeft, Save, Info, Check, AlertCircle } from 'lucide-react'
+import { CarFront, FileText, UserSquare, Users, CreditCard, ChevronRight, ChevronLeft, Save, Info, Check, AlertCircle, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useEffect } from 'react'
+
+import { SimpleCombobox } from '@/components/ui/simple-combobox'
+import { CrearClienteRapidoModal } from '@/components/ventas/crear-cliente-rapido-modal'
 
 interface ContratoFormProps {
     clientes: Array<{
@@ -44,12 +47,21 @@ interface ContratoFormProps {
         telefono?: string | null
         email?: string | null
     }
+    empresasIds?: string[]
 }
 
-export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
+export function ContratoForm({ clientes: clientesIniciales, empresa, empresasIds = [] }: ContratoFormProps) {
     const router = useRouter()
     const [isPending, startTransition] = useTransition()
     const [activeTab, setActiveTab] = useState('operacion')
+    
+    // Estado para clientes locales recién creados
+    const [clientesNuevosLocales, setClientesNuevosLocales] = useState<Array<{ id: string; nombre_fiscal: string; cif?: string; activo?: boolean }>>([])
+    const clientes = [...clientesIniciales, ...clientesNuevosLocales]
+
+    // Estado del modal rápido
+    const [showCrearClienteModal, setShowCrearClienteModal] = useState(false)
+    const [clienteRoleToCreate, setClienteRoleToCreate] = useState<'comprador' | 'vendedor'>('comprador')
 
     const steps = [
         { id: 'operacion', label: 'Operación', icon: FileText },
@@ -63,7 +75,7 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
     type FormValues = z.infer<typeof crearContratoSchema>
 
     const form = useForm<FormValues>({
-        resolver: zodResolver(crearContratoSchema) as any,
+        resolver: zodResolver(crearContratoSchema),
         defaultValues: {
             tipo_operacion: 'venta',
             comprador_nombre: '',
@@ -118,7 +130,7 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
         if (hasError) return 'error'
 
         const isFilled = fields.every(field => {
-            const val = form.watch(field)
+            const val = form.getValues(field)
             return val !== undefined && val !== null && val !== '' && val !== 0
         })
 
@@ -140,13 +152,13 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                 } else {
                     toast.error('Error al crear el contrato', { description: result.error })
                 }
-            } catch (err) {
+            } catch {
                 toast.error('Ocurrió un error inesperado al guardar el contrato')
             }
         })
     }
 
-    const onError = (errors: any) => {
+    const onError = (errors: Record<string, unknown>) => {
         console.log('Form errors:', errors)
         toast.error('Corrige los errores antes de continuar', {
             description: 'Revisa los campos obligatorios en cada sección.'
@@ -232,13 +244,14 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
     }
 
     return (
+        <>
         <form onSubmit={form.handleSubmit(onSubmit, onError)} className="space-y-8">
             <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                 {/* Visual Stepper */}
                 <div className="relative mb-12 px-4 md:px-0">
                     <div className="absolute top-5 left-0 w-full h-0.5 bg-slate-100 dark:bg-slate-800 -z-10" />
                     <TabsList className="flex justify-between items-start bg-transparent h-auto p-0 border-none shadow-none w-full">
-                        {steps.map((step, index) => {
+                        {steps.map((step) => {
                             const Icon = step.icon
                             const isActive = activeTab === step.id
                             const status = getStepStatus(step.id)
@@ -333,17 +346,33 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                             {tipoOperacion === 'compra' && (
                                 <div className="mb-6 p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/50 rounded-xl max-w-md">
                                     <Label className="uppercase text-[10px] font-bold tracking-widest text-blue-600 dark:text-blue-400 mb-2 block">Seleccionar Cliente Existente</Label>
-                                    <Select onValueChange={(val) => selectCliente(val, 'vendedor')}>
-                                        <SelectTrigger className="rounded-xl bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800">
-                                            <SelectValue placeholder="Búscar cliente..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">--- Datos manuales ---</SelectItem>
-                                            {clientes.map(c => (
-                                                <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="flex gap-2 isolate">
+                                        <div className="flex-1">
+                                            <SimpleCombobox
+                                                items={clientes.map(c => ({
+                                                    value: c.id,
+                                                    label: `${c.nombre_fiscal || c.nombre_comercial} (${c.cif || c.nif})`
+                                                }))}
+                                                value={form.getValues('vendedor_nombre') ? clientes.find(c => (c.nombre_fiscal || c.nombre_comercial) === form.getValues('vendedor_nombre'))?.id || '' : ''}
+                                                onChange={(val) => selectCliente(val || 'none', 'vendedor')}
+                                                placeholder="Buscar cliente..."
+                                                emptyText="No se encontraron clientes"
+                                            />
+                                        </div>
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            size="icon"
+                                            className="shrink-0 rounded-xl bg-white dark:bg-slate-900 shadow-sm border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/50 hover:text-blue-600"
+                                            title="Crear nuevo cliente"
+                                            onClick={() => {
+                                                setClienteRoleToCreate('vendedor')
+                                                setShowCrearClienteModal(true)
+                                            }}
+                                        >
+                                            <Plus className="h-5 w-5" />
+                                        </Button>
+                                    </div>
                                     <p className="text-[10px] text-blue-500 mt-2 flex items-center gap-1">
                                         <Info className="w-3 h-3" /> Esto rellenará los campos automáticamente con los datos de facturación.
                                     </p>
@@ -409,17 +438,33 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                             {tipoOperacion === 'venta' && (
                                 <div className="mb-6 p-4 bg-blue-50/50 dark:bg-blue-900/10 border border-blue-100 dark:border-blue-900/50 rounded-xl max-w-md">
                                     <Label className="uppercase text-[10px] font-bold tracking-widest text-blue-600 dark:text-blue-400 mb-2 block">Seleccionar Cliente Existente</Label>
-                                    <Select onValueChange={(val) => selectCliente(val, 'comprador')}>
-                                        <SelectTrigger className="rounded-xl bg-white dark:bg-slate-900 border-blue-200 dark:border-blue-800">
-                                            <SelectValue placeholder="Búscar cliente..." />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="none">--- Datos manuales ---</SelectItem>
-                                            {clientes.map(c => (
-                                                <SelectItem key={c.id} value={c.id}>{c.nombre_fiscal || c.nombre_comercial} ({c.cif || c.nif})</SelectItem>
-                                            ))}
-                                        </SelectContent>
-                                    </Select>
+                                    <div className="flex gap-2 isolate">
+                                        <div className="flex-1">
+                                            <SimpleCombobox
+                                                items={clientes.map(c => ({
+                                                    value: c.id,
+                                                    label: `${c.nombre_fiscal || c.nombre_comercial} (${c.cif || c.nif})`
+                                                }))}
+                                                value={form.getValues('comprador_nombre') ? clientes.find(c => (c.nombre_fiscal || c.nombre_comercial) === form.getValues('comprador_nombre'))?.id || '' : ''}
+                                                onChange={(val) => selectCliente(val || 'none', 'comprador')}
+                                                placeholder="Buscar cliente..."
+                                                emptyText="No se encontraron clientes"
+                                            />
+                                        </div>
+                                        <Button 
+                                            type="button" 
+                                            variant="outline" 
+                                            size="icon"
+                                            className="shrink-0 rounded-xl bg-white dark:bg-slate-900 shadow-sm border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-900/50 hover:text-blue-600"
+                                            title="Crear nuevo cliente"
+                                            onClick={() => {
+                                                setClienteRoleToCreate('comprador')
+                                                setShowCrearClienteModal(true)
+                                            }}
+                                        >
+                                            <Plus className="h-5 w-5" />
+                                        </Button>
+                                    </div>
                                     <p className="text-[10px] text-blue-500 mt-2 flex items-center gap-1">
                                         <Info className="w-3 h-3" /> Esto rellenará los campos automáticamente con los datos de facturación.
                                     </p>
@@ -637,5 +682,22 @@ export function ContratoForm({ clientes, empresa }: ContratoFormProps) {
                 </TabsContent>
             </Tabs>
         </form>
+
+        <CrearClienteRapidoModal
+            open={showCrearClienteModal}
+            onOpenChange={setShowCrearClienteModal}
+            empresasIds={empresasIds}
+            onClienteCreado={(id, nombre_fiscal, cif) => {
+                const nuevoCliente = { id, nombre_fiscal, cif, activo: true }
+                setClientesNuevosLocales(prev => [...prev, nuevoCliente])
+                
+                // Forzar sincronización inmediata de la selección 
+                // Usamos un pequeño macro-task si se requiere delay, pero selectCliente resolverá con el valor local
+                setTimeout(() => {
+                    selectCliente(id, clienteRoleToCreate)
+                }, 100)
+            }}
+        />
+        </>
     )
 }

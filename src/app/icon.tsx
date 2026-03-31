@@ -8,7 +8,7 @@ export const size = { width: 48, height: 48 }
 export const contentType = 'image/png'
 
 export default async function Icon() {
-  const logoPath = join(process.cwd(), 'public', clientConfig.logoPath.replace(/^\//, ''))
+  const logoPath = join(process.cwd(), 'public', (clientConfig.logoPngPath || clientConfig.logoPath).replace(/^\//, ''))
   let logoSrc: string
   try {
     const buf = await readFile(logoPath)
@@ -34,7 +34,7 @@ export default async function Icon() {
           <img
             src={logoSrc}
             alt=""
-            style={{ objectFit: 'contain', width: '160%', height: '160%' }}
+            style={{ objectFit: 'contain', width: '90%', height: '90%' }}
           />
         ) : (
           <span style={{ fontSize: 20, fontWeight: 800, color: clientConfig.colors.brandGold }}>{clientConfig.nombreCorto.slice(0, 3).toUpperCase()}</span>
