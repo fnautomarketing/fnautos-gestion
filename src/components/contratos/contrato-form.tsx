@@ -349,9 +349,10 @@ export function ContratoForm({ clientes: clientesIniciales, empresa, empresasIds
                                     <div className="flex gap-2 isolate">
                                         <div className="flex-1">
                                             <SimpleCombobox
-                                                items={clientes.map(c => ({
+                                                options={clientes.map(c => ({
                                                     value: c.id,
-                                                    label: `${c.nombre_fiscal || c.nombre_comercial} (${c.cif || c.nif})`
+                                                    label: c.nombre_fiscal || c.nombre_comercial || '',
+                                                    subLabel: c.cif || c.nif || ''
                                                 }))}
                                                 value={form.getValues('vendedor_nombre') ? clientes.find(c => (c.nombre_fiscal || c.nombre_comercial) === form.getValues('vendedor_nombre'))?.id || '' : ''}
                                                 onChange={(val) => selectCliente(val || 'none', 'vendedor')}
@@ -441,9 +442,10 @@ export function ContratoForm({ clientes: clientesIniciales, empresa, empresasIds
                                     <div className="flex gap-2 isolate">
                                         <div className="flex-1">
                                             <SimpleCombobox
-                                                items={clientes.map(c => ({
+                                                options={clientes.map(c => ({
                                                     value: c.id,
-                                                    label: `${c.nombre_fiscal || c.nombre_comercial} (${c.cif || c.nif})`
+                                                    label: c.nombre_fiscal || c.nombre_comercial || '',
+                                                    subLabel: c.cif || c.nif || ''
                                                 }))}
                                                 value={form.getValues('comprador_nombre') ? clientes.find(c => (c.nombre_fiscal || c.nombre_comercial) === form.getValues('comprador_nombre'))?.id || '' : ''}
                                                 onChange={(val) => selectCliente(val || 'none', 'comprador')}
