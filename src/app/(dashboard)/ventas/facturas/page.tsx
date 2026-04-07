@@ -48,7 +48,7 @@ export default async function FacturasPage({
     const { data: series } = await seriesQuery
 
     // Resolver ordenación
-    type OrderField = 'fecha_emision' | 'fecha_vencimiento' | 'total' | 'estado' | 'numero_orden'
+    type OrderField = 'fecha_emision' | 'total' | 'estado' | 'numero_orden'
     let orderField: OrderField = 'fecha_emision'
     let orderAsc = false
     let orderByCliente = false
@@ -59,10 +59,6 @@ export default async function FacturasPage({
             orderField = 'fecha_emision'; orderAsc = true; break
         case 'fecha_desc':
             orderField = 'fecha_emision'; orderAsc = false; break
-        case 'fecha_vencimiento_asc':
-            orderField = 'fecha_vencimiento'; orderAsc = true; break
-        case 'fecha_vencimiento_desc':
-            orderField = 'fecha_vencimiento'; orderAsc = false; break
         case 'cliente_asc':
             orderByCliente = true; orderAsc = true; break
         case 'cliente_desc':

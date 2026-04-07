@@ -122,8 +122,7 @@ export default async function PreviewPlantillaPage({ params }: PreviewPlantillaP
                                 </p>
                                 <p className="text-slate-700 text-lg">Nº FAC-2024-001</p>
                                 <p className="text-slate-500 mt-2">
-                                    Fecha emisión: 07/02/2024<br />
-                                    Fecha vencimiento: 09/03/2024
+                                    Fecha emisión: 07/02/2024
                                 </p>
                             </div>
                         </div>

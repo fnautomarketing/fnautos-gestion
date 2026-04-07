@@ -103,6 +103,7 @@ export function RegistrarPagoForm({ facturaId, empresaId, pendienteActual, onImp
         if (result.success) {
             toast.success('Pago registrado correctamente')
             router.push(`/ventas/facturas/${facturaId}`)
+            router.refresh()
         } else {
             toast.error(result.error)
             setSending(false)

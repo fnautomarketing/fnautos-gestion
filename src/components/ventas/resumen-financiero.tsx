@@ -63,10 +63,19 @@ export function ResumenFinanciero({ factura, totalPagado, pendiente, totalEfecti
                     <span className="font-semibold text-slate-900">{formatCurrency(factura.base_imponible)}</span>
                 </div>
 
-                <div className="flex justify-between text-sm">
-                    <span className="text-slate-600 dark:text-slate-400">IVA (21%)</span>
-                    <span className="font-medium text-slate-900">{formatCurrency(factura.iva)}</span>
-                </div>
+                {factura.iva > 0 ? (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-slate-600 dark:text-slate-400">
+                            IVA ({factura.base_imponible > 0 ? Math.round((factura.iva / factura.base_imponible) * 100) : 21}%)
+                        </span>
+                        <span className="font-medium text-slate-900">{formatCurrency(factura.iva)}</span>
+                    </div>
+                ) : (
+                    <div className="flex justify-between text-sm">
+                        <span className="text-amber-600 dark:text-amber-400 font-medium">Exento de IVA</span>
+                        <span className="font-medium text-slate-400">—</span>
+                    </div>
+                )}
 
                 {factura.recargo_equivalencia && (factura.importe_recargo || 0) > 0 && (
                     <div className="flex justify-between text-sm">

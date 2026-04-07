@@ -27,7 +27,6 @@ interface FacturaReciente {
     total: number
     estado: string
     fecha_emision: string
-    fecha_vencimiento?: string
     divisa: string | null
     cliente: { nombre_fiscal: string | null, nombre_comercial: string | null } | null
     empresa: { nombre_comercial: string | null, razon_social: string | null } | null
@@ -114,20 +113,7 @@ export default async function DashboardPage({
         estadosCount[f.estado] = (estadosCount[f.estado] || 0) + 1
     }
 
-    // ── Alertas: vencimientos próximos (7 días) ────────────────────────────────
-    const nowLocal = new Date()
-    const hoy = nowLocal.toISOString().slice(0, 10)
-    const en7dias = new Date(nowLocal.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
-    let vencimientosQuery = adminClient
-        .from('facturas')
-        .select('id, numero, serie, total, fecha_vencimiento, cliente:clientes(nombre_fiscal, nombre_comercial)')
-        .gte('fecha_vencimiento', hoy)
-        .lte('fecha_vencimiento', en7dias)
-        .not('estado', 'in', '("pagada","anulada")')
-        .order('fecha_vencimiento', { ascending: true })
-        .limit(5)
-    if (empresaId) vencimientosQuery = vencimientosQuery.eq('empresa_id', empresaId)
-    const { data: vencimientosProximos } = await vencimientosQuery
+    // (Se eliminó el bloque de vencimientos)
 
     // ── Desglose por empresa (solo visión global) ──────────────────────────────
     let desgloseEmpresas: Array<{ nombre: string; facturacion: number; num_facturas: number; ticket_medio: number; id: string }> = []
@@ -260,42 +246,7 @@ export default async function DashboardPage({
                     </CardContent>
                 </Card>
 
-                {/* Alertas: vencimientos próximos */}
-                <Card className="lg:col-span-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900/95 shadow-md" data-testid="dashboard-card-vencimientos">
-                    <CardHeader className="pb-3">
-                        <CardTitle className="text-sm font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wider flex items-center gap-2">
-                            <AlertTriangle className="h-4 w-4 text-amber-500" /> Vencimientos próximos (7 días)
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        {!vencimientosProximos || vencimientosProximos.length === 0 ? (
-                            <div className="flex flex-col sm:flex-row items-center sm:items-start gap-3 py-6 px-4 text-emerald-600 dark:text-emerald-400" data-testid="dashboard-empty-vencimientos">
-                                <CheckCircle2 className="h-10 w-10 sm:h-6 sm:w-6 shrink-0" aria-hidden />
-                                <span className="text-sm font-medium text-center sm:text-left">Sin vencimientos pendientes en los próximos 7 días</span>
-                            </div>
-                        ) : (
-                            <div className="space-y-2">
-                                {vencimientosProximos.map((f) => (
-                                    <Link key={f.id} href={`/ventas/facturas/${f.id}`} className="flex flex-wrap items-center justify-between gap-2 p-2 sm:p-3 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors duration-150 group min-h-[44px] sm:min-h-0">
-                                        <div className="flex items-center gap-2 min-w-0 flex-1">
-                                            <div className="text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 px-2 py-0.5 rounded font-mono font-semibold shrink-0">
-                                                {f.serie ? `${f.serie}-${f.numero}` : f.numero}
-                                            </div>
-                                            <span className="text-sm text-slate-700 dark:text-slate-300 truncate min-w-0">
-                                                {f.cliente?.nombre_comercial || f.cliente?.nombre_fiscal || '—'}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                                            <span className="text-xs text-slate-500" suppressHydrationWarning>{new Date(`${f.fecha_vencimiento}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })}</span>
-                                            <span className="text-sm font-bold text-slate-900 dark:text-white">{formatCurrency(f.total)}</span>
-                                            <ExternalLink className="h-3 w-3 text-slate-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all duration-150" aria-hidden />
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        )}
-                    </CardContent>
-                </Card>
+                {/* (Se eliminó la tarjeta de vencimientos) */}
             </div>
 
             {/* ── Desglose por empresa (solo visión global) ── */}

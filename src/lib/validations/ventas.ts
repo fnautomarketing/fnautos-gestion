@@ -15,7 +15,6 @@ export const GuardarBorradorSchema = z.object({
     serie: z.string().optional().nullable(),
     plantilla_pdf_id: z.string().uuid().optional().nullable(),
     fecha_emision: z.string().min(1, 'La fecha de emisión es obligatoria'),
-    fecha_vencimiento: z.string().optional().nullable(),
     forma_pago: z.string().optional().nullable(),
     notas: z.string().optional().nullable(),
     descuento_tipo: z.enum(['porcentaje', 'fijo']).default('porcentaje'),

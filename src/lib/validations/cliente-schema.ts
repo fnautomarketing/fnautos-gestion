@@ -21,8 +21,7 @@ export const clienteSchema = z.object({
     provincia: z.string().optional(),
     pais: z.string().default('España'),
 
-    forma_pago_predeterminada: z.string().default('transferencia_30'),
-    dias_vencimiento: z.number().int().min(0).max(365).default(30),
+    forma_pago_predeterminada: z.string().default('transferencia'),
     descuento_comercial: z.number().min(0).max(100).default(0),
     iva_aplicable: z.number().min(0).max(100).default(21),
     tarifa_precios: z.string().default('general'),

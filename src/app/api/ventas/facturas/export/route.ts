@@ -188,7 +188,6 @@ export async function GET(request: NextRequest) {
                 cliente: nombreCliente,
                 cif,
                 fechaEmision: formatFechaES(f.fecha_emision as string),
-                fechaVencimiento: formatFechaES(f.fecha_vencimiento as string),
                 baseImponible: formatNumeroES(base),
                 iva: formatNumeroES(iva),
                 descuento: formatNumeroES(descuento),
@@ -200,7 +199,7 @@ export async function GET(request: NextRequest) {
             }
         })
 
-        const headers = ['Número', 'Serie', 'Cliente', 'CIF', 'Fecha Emisión', 'Fecha Vencimiento', 'Base Imponible', 'IVA', 'Descuento', 'Retención', 'Total', 'Estado', 'Externa', 'Empresa']
+        const headers = ['Número', 'Serie', 'Cliente', 'CIF', 'Fecha Emisión', 'Base Imponible', 'IVA', 'Descuento', 'Retención', 'Total', 'Estado', 'Externa', 'Empresa']
 
         if (formatType === 'csv') {
             const csvRows = [headers.join(';'), ...rows.map((r) => Object.values(r).map((v) => `"${String(v).replace(/"/g, '""')}"`).join(';'))]
@@ -223,7 +222,6 @@ export async function GET(request: NextRequest) {
             { header: 'Cliente', key: 'cliente', width: 35 },
             { header: 'CIF', key: 'cif', width: 14 },
             { header: 'Fecha Emisión', key: 'fechaEmision', width: 14 },
-            { header: 'Fecha Vencimiento', key: 'fechaVencimiento', width: 16 },
             { header: 'Base Imponible', key: 'baseImponible', width: 16 },
             { header: 'IVA', key: 'iva', width: 14 },
             { header: 'Descuento', key: 'descuento', width: 12 },

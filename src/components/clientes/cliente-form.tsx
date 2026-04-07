@@ -272,8 +272,7 @@ export function ClienteForm({ clienteId, defaultValues, empresas, empresasClient
                                     <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="transferencia_30">Transferencia (30 días)</SelectItem>
-                                    <SelectItem value="transferencia_60">Transferencia (60 días)</SelectItem>
+                                    <SelectItem value="transferencia">Transferencia</SelectItem>
                                     <SelectItem value="domiciliación">Domiciliación</SelectItem>
                                     <SelectItem value="efectivo">Efectivo</SelectItem>
                                     <SelectItem value="tarjeta">Tarjeta</SelectItem>
@@ -281,11 +280,8 @@ export function ClienteForm({ clienteId, defaultValues, empresas, empresasClient
                             </Select>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <Label htmlFor="dias_vencimiento">Días Vencimiento</Label>
-                                <Input type="number" id="dias_vencimiento" name="dias_vencimiento" defaultValue={defaultValues?.dias_vencimiento || 30} />
-                            </div>
+                        <div className="grid grid-cols-1 gap-4">
+                            {/* (Se eliminó el campo de días de vencimiento) */}
 
                             <div>
                                 <Label htmlFor="descuento_comercial">Descuento %</Label>

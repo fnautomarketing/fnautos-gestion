@@ -25,15 +25,13 @@ export default async function PagosPage({
     const tab = resolvedSearchParams.tab || 'todos'
     const search = resolvedSearchParams.search || ''
     const metodo = resolvedSearchParams.metodo || 'todos'
-    const today = new Date().toISOString().split('T')[0]
 
     interface PagoRow {
         id: string
         factura_id: string
         serie: string
-        numero: number | string
+        numero: number
         cliente_nombre: string
-        fecha_vencimiento: string
         factura_total: number
         pendiente: number
         metodo_pago: string | null
@@ -48,7 +46,7 @@ export default async function PagosPage({
     // IMPORTANTE: Las pestañas "Pendientes" y "Vencidos" deben mostrar FACTURAS pendientes de cobro,
     // no solo registros de pago. vista_pagos_dashboard solo tiene filas por cada PAGO registrado,
     // así que una factura emitida SIN ningún pago nunca aparecería. Los KPIs sí consultan facturas.
-    if (tab === 'pendientes' || tab === 'vencidos') {
+    if (tab === 'pendientes') {
         let facturasQuery = supabase
             .from('facturas')
             .select(`
@@ -58,15 +56,12 @@ export default async function PagosPage({
                 total,
                 pagado,
                 estado,
-                fecha_vencimiento,
                 empresa_id,
                 cliente:clientes(nombre_fiscal)
             `)
             .in('estado', ['emitida', 'parcial'])
 
-        if (tab === 'vencidos') {
-            facturasQuery = facturasQuery.lt('fecha_vencimiento', today)
-        }
+        // (Se eliminó el filtro de vencidos)
 
         if (!isGlobalAdmin && empresaId) {
             facturasQuery = facturasQuery.eq('empresa_id', empresaId)
@@ -86,7 +81,7 @@ export default async function PagosPage({
             facturasQuery = facturasQuery.or(orParts.join(','))
         }
 
-        facturasQuery = facturasQuery.order('fecha_vencimiento', { ascending: true })
+        facturasQuery = facturasQuery.order('numero', { ascending: false })
 
         const { data: facturas } = await facturasQuery
 
@@ -99,9 +94,9 @@ export default async function PagosPage({
                 id: `factura-${f.id}`,
                 factura_id: f.id,
                 serie: f.serie || '',
-                numero: f.numero,
+                numero: Number(f.numero),
                 cliente_nombre: clienteNombre,
-                fecha_vencimiento: f.fecha_vencimiento,
+                fecha_vencimiento: '',
                 factura_total: Number(f.total),
                 pendiente,
                 metodo_pago: null,
@@ -130,7 +125,6 @@ export default async function PagosPage({
                 total,
                 pagado,
                 estado,
-                fecha_vencimiento,
                 cliente:clientes (nombre_fiscal, nombre_comercial)
             )
         `)
@@ -167,9 +161,9 @@ export default async function PagosPage({
                     id: p.id,
                     factura_id: p.factura_id || '',
                     serie: f.serie || '',
-                    numero: f.numero || '',
+                    numero: Number(f.numero || 0),
                     cliente_nombre: clienteNombre,
-                    fecha_vencimiento: f.fecha_vencimiento || p.fecha_pago,
+                    fecha_vencimiento: p.fecha_pago,
                     factura_total: Number(f.total) || 0,
                     pendiente: Math.max(0, Number(f.total) - Number(f.pagado)),
                     metodo_pago: p.metodo_pago,
@@ -203,11 +197,18 @@ export default async function PagosPage({
     // Import the action
     const { getEstadisticasPagosAction } = await import('@/app/actions/pagos')
     const statsResult = await getEstadisticasPagosAction()
-    const stats = statsResult.success ? statsResult.data : ({
-        total_recuperado: 0,
-        total_pendiente: 0,
-        facturas_vencidas: 0,
-        tasa_recuperacion: 0
+    const stats = statsResult.success && statsResult.data ? {
+        totalCobradoMes: statsResult.data.totalCobradoMes,
+        pendienteCobro: statsResult.data.pendienteCobro,
+        numFacturasPendientes: statsResult.data.numFacturasPendientes,
+        totalPagos: statsResult.data.totalPagos,
+        pagosConciliados: statsResult.data.pagosConciliados,
+    } : ({
+        totalCobradoMes: 0,
+        pendienteCobro: 0,
+        numFacturasPendientes: 0,
+        totalPagos: 0,
+        pagosConciliados: 0
     })
 
     return (

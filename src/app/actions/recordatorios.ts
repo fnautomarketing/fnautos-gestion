@@ -66,7 +66,7 @@ export async function enviarRecordatorioAction(formData: FormData) {
                 .replace(/{cliente_nombre}/g, factura.clientes.nombre_fiscal)
                 .replace(/{factura_numero}/g, `${factura.serie}-${factura.numero}`)
                 .replace(/{importe}/g, `${factura.total.toFixed(2)}€`)
-                .replace(/{dias_vencido}/g, String(Math.floor((new Date().getTime() - new Date(factura.fecha_vencimiento).getTime()) / (1000 * 60 * 60 * 24))))
+                // (Se eliminó el reemplazo de dias_vencido)
 
             const recordatorio = {
                 ...validated,
@@ -94,7 +94,7 @@ export async function enviarRecordatorioAction(formData: FormData) {
         // TODO: Integrar con servicio de email real (Resend, SendGrid, etc)
         // Aquí se enviaría el email real
 
-        revalidatePath('/ventas/facturas-vencidas')
+        revalidatePath('/ventas/facturas')
 
         return { success: true, data, count: recordatorios.length }
     } catch (error: unknown) {
@@ -137,7 +137,7 @@ export async function registrarLlamadaAction(formData: FormData) {
 
         if (error) throw error
 
-        revalidatePath('/ventas/facturas-vencidas')
+        revalidatePath('/ventas/facturas')
 
         return { success: true, data }
     } catch (error: unknown) {
@@ -191,21 +191,4 @@ export async function marcarEmailAbierto(recordatorioId: string) {
     }
 }
 
-export async function getEstadisticasVencidasAction() {
-    try {
-        const { supabase, empresaId } = await getEmpresaId()
-
-        // Llamada a la función RPC
-        const { data, error } = await (supabase as unknown as import("@supabase/supabase-js").SupabaseClient).rpc('get_estadisticas_vencidas', {
-            p_empresa_id: empresaId
-        })
-
-        if (error) throw error
-
-        return { success: true, data }
-    } catch (error: unknown) {
-        console.error('[getEstadisticasVencidasAction]', error)
-        const message = error instanceof Error ? error.message : 'Error desconocido'
-        return { success: false, error: message }
-    }
-}
+// (Se eliminó getEstadisticasVencidasAction)

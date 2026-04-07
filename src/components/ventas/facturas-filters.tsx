@@ -197,8 +197,6 @@ const ORDEN_OPTIONS = [
     { value: 'numero_desc', label: 'Número 9999→0001' },
     { value: 'cliente_asc', label: 'Cliente A→Z' },
     { value: 'cliente_desc', label: 'Cliente Z→A' },
-    { value: 'fecha_vencimiento_asc', label: 'Vencimiento más próximo' },
-    { value: 'fecha_vencimiento_desc', label: 'Vencimiento más lejano' },
     { value: 'total_desc', label: 'Mayor importe' },
     { value: 'total_asc', label: 'Menor importe' },
     { value: 'estado_asc', label: 'Estado A→Z' },

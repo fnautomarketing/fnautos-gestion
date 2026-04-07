@@ -84,7 +84,6 @@ export async function guardarBorradorAction(formData: FormData) {
             serie: formData.get('serie'),
             cliente_id: formData.get('cliente_id'),
             fecha_emision: formData.get('fecha_emision'),
-            fecha_vencimiento: formData.get('fecha_vencimiento'),
             plantilla_pdf_id: formData.get('plantilla_pdf_id') || undefined,
             forma_pago: formData.get('forma_pago'),
             descuento_tipo: formData.get('descuento_tipo') || 'porcentaje',
@@ -133,7 +132,6 @@ export async function guardarBorradorAction(formData: FormData) {
                 serie_id: (validatedData.serie || null) as any,
                 cliente_id: validatedData.cliente_id,
                 fecha_emision: validatedData.fecha_emision,
-                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
                 subtotal: validatedData.subtotal,
                 plantilla_pdf_id: (validatedData.plantilla_pdf_id || null) as any,
                 descuento_tipo: validatedData.descuento_tipo as any,
@@ -215,7 +213,6 @@ export async function crearFacturaAction(formData: FormData) {
             serie: formData.get('serie'),
             cliente_id: formData.get('cliente_id'),
             fecha_emision: formData.get('fecha_emision'),
-            fecha_vencimiento: formData.get('fecha_vencimiento'),
             plantilla_pdf_id: formData.get('plantilla_pdf_id') || undefined,
             forma_pago: formData.get('forma_pago'),
             descuento_tipo: formData.get('descuento_tipo') || 'porcentaje',
@@ -271,7 +268,6 @@ export async function crearFacturaAction(formData: FormData) {
                 serie_id: (validatedData.serie || null) as any,
                 cliente_id: validatedData.cliente_id,
                 fecha_emision: validatedData.fecha_emision,
-                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
                 subtotal: validatedData.subtotal,
                 // Nuevos campos
                 plantilla_pdf_id: (validatedData.plantilla_pdf_id || null) as any,
@@ -395,7 +391,7 @@ export async function editarFacturaAction(formData: FormData) {
         // Verificar que la factura pertenece a la empresa
         const { data, error } = await supabase
             .from('facturas')
-            .select('id, empresa_id, estado, fecha_emision, fecha_vencimiento, notas, serie_id, cliente_id, descuento_tipo, descuento_valor, recargo_equivalencia, recargo_porcentaje, retencion_porcentaje, plantilla_pdf_id, divisa, tipo_cambio, archivo_url, es_externa')
+            .select('id, empresa_id, estado, fecha_emision, notas, serie_id, cliente_id, descuento_tipo, descuento_valor, recargo_equivalencia, recargo_porcentaje, retencion_porcentaje, plantilla_pdf_id, divisa, tipo_cambio, archivo_url, es_externa')
             .eq('id', factura_id)
             .eq('empresa_id', empresa_id)
             .single()
@@ -826,7 +822,6 @@ export async function duplicarFacturaAction(formData: FormData) {
             numero: string
             cliente_id: string | null
             fecha_emision: string
-            fecha_vencimiento: string | null
             subtotal: number
             // Nuevos campos
             descuento_tipo: string
@@ -848,7 +843,6 @@ export async function duplicarFacturaAction(formData: FormData) {
             numero: numero,
             cliente_id: mantenerCliente ? facturaOriginal.cliente_id : null,
             fecha_emision: fechaEmision,
-            fecha_vencimiento: null,
             subtotal: copiarLineas ? facturaOriginal.subtotal : 0,
 
             descuento_tipo: facturaOriginal.descuento_tipo || 'porcentaje',

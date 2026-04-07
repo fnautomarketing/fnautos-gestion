@@ -92,7 +92,6 @@ export function PlantillaEditor({ plantillaId, defaultValues }: PlantillaEditorP
         formData.set('idiomas', JSON.stringify(idiomas))
         formData.set('mostrar_numero_factura', 'true')
         formData.set('mostrar_fecha_emision', 'true')
-        formData.set('mostrar_fecha_vencimiento', 'true')
         formData.set('mostrar_datos_bancarios', String(mostrarDatosBancarios))
         formData.set('mostrar_notas', String(mostrarNotas))
         formData.set('mostrar_qr_pago', String(mostrarQrPago))

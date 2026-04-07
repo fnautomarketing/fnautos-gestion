@@ -17,7 +17,6 @@ interface Pago {
     serie: string
     numero: number
     cliente_nombre: string
-    fecha_vencimiento: string
     factura_total: number
     pendiente: number
     metodo_pago: string | null
@@ -48,16 +47,8 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
         }
     }
 
-    const getEstadoBadge = (estado: string, fechaVencimiento: string) => {
-        const vencida = isVencida(fechaVencimiento) && estado !== 'pagada' && estado !== 'anulada'
-
-        if (vencida) {
-            return (
-                <Badge variant="destructive" className="bg-rose-500/10 text-rose-600 border-rose-200 dark:bg-rose-500/20 dark:text-rose-400 dark:border-rose-900/50 font-medium px-2.5 py-0.5 rounded-full animate-pulse-slow">
-                    Vencida
-                </Badge>
-            )
-        }
+    const getEstadoBadge = (estado: string) => {
+        // (Se eliminó la lógica de vencida)
 
         switch (estado) {
             case 'pagada':
@@ -130,7 +121,6 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
                     <TabsTrigger value="todos">Todos los Pagos</TabsTrigger>
                     <TabsTrigger value="pendientes">Pendientes</TabsTrigger>
                     <TabsTrigger value="cobrados">Cobrados</TabsTrigger>
-                    <TabsTrigger value="vencidos">Vencidos</TabsTrigger>
                     <TabsTrigger value="parciales">Parciales</TabsTrigger>
                 </TabsList>
             </Tabs>
@@ -165,7 +155,6 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
                         <tr>
                             <th className="p-4 text-left text-xs font-semibold uppercase">Factura</th>
                             <th className="p-4 text-left text-xs font-semibold uppercase">Cliente</th>
-                            <th className="p-4 text-left text-xs font-semibold uppercase">Vencimiento</th>
                             <th className="p-4 text-right text-xs font-semibold uppercase">Total</th>
                             <th className="p-4 text-right text-xs font-semibold uppercase">Pagado</th>
                             <th className="p-4 text-right text-xs font-semibold uppercase">Pendiente</th>
@@ -183,12 +172,11 @@ export function PagosTabla({ pagos, tab, search = '', metodo = 'todos' }: PagosT
                                     </Link>
                                 </td>
                                 <td className="p-4">{pago.cliente_nombre}</td>
-                                <td className="p-4 text-sm">{new Date(pago.fecha_vencimiento).toLocaleDateString('es-ES')}</td>
                                 <td className="p-4 text-right font-bold">{pago.factura_total.toFixed(2)}€</td>
                                 <td className="p-4 text-right text-green-600 font-semibold">{(pago.factura_total - pago.pendiente).toFixed(2)}€</td>
                                 <td className="p-4 text-right text-red-600 font-semibold">{pago.pendiente.toFixed(2)}€</td>
                                 <td className="p-4 text-center text-sm">{pago.metodo_pago || '-'}</td>
-                                <td className="p-4 text-center">{getEstadoBadge(pago.factura_estado, pago.fecha_vencimiento)}</td>
+                                <td className="p-4 text-center">{getEstadoBadge(pago.factura_estado)}</td>
                                 <td className="p-4 text-center">
                                     {pago.esFacturaRow ? (
                                         <span className="text-slate-400 text-sm">—</span>

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { Plus, Trash2, Loader2, Percent, Building2, FileText, Upload } from 'lucide-react'
+import { Plus, Trash2, Loader2, Percent, Building2, FileText, Upload, ShieldCheck, ShieldOff } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
 import { guardarBorradorAction, crearFacturaAction, obtenerProximoNumeroPreviewAction } from '@/app/actions/ventas'
@@ -49,6 +49,7 @@ const EMPRESA_EDISON_ID = 'af15f25a-7ade-4de8-9241-a42e1b8407da'
 export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, empresaId, empresaConfig, empresasConfigs = {}, defaultEmpresaId, empresas = [] }: NuevaFacturaFormProps) {
     const router = useRouter()
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const [aplicarIva, setAplicarIva] = useState(true)
     const [lineas, setLineas] = useState<LineaForm[]>([
         { concepto: '', cantidad: 1, precio_unitario: 0, iva_porcentaje: 21, descuento_porcentaje: 0, subtotal: 0 }
     ])
@@ -153,7 +154,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         }
 
         const base_imponible = subtotal - importe_descuento
-        const iva = lineas.reduce((acc, l) => acc + (Number(l.cantidad) * Number(l.precio_unitario) * (Number(l.iva_porcentaje) || 21) / 100), 0)
+        const iva = lineas.reduce((acc, l) => acc + (Number(l.cantidad) * Number(l.precio_unitario) * (Number(l.iva_porcentaje) === 0 ? 0 : Number(l.iva_porcentaje || 21)) / 100), 0)
         // efectoRetencion: negativo cuando el porcentaje es negativo (resta), positivo cuando suma
         const efectoRetencion = base_imponible * (retencionPorcentaje / 100)
         const total = base_imponible + iva + efectoRetencion
@@ -167,8 +168,17 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
         })
     }, [lineas, descuentoTipo, descuentoValor, retencionPorcentaje])
 
+    // Toggle maestro de IVA: al cambiar, actualiza todas las líneas
+    const handleToggleIva = (nuevoValor: boolean) => {
+        setAplicarIva(nuevoValor)
+        setLineas(prev => prev.map(l => ({
+            ...l,
+            iva_porcentaje: nuevoValor ? 21 : 0
+        })))
+    }
+
     const addLinea = () => {
-        setLineas([...lineas, { concepto: '', cantidad: 1, precio_unitario: 0, iva_porcentaje: 21, descuento_porcentaje: 0, subtotal: 0 }])
+        setLineas([...lineas, { concepto: '', cantidad: 1, precio_unitario: 0, iva_porcentaje: aplicarIva ? 21 : 0, descuento_porcentaje: 0, subtotal: 0 }])
     }
 
     const removeLinea = (index: number) => {
@@ -195,7 +205,7 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
             cantidad: Number(l.cantidad) || 0,
             precio_unitario: Number(l.precio_unitario) || 0,
             descuento_porcentaje: Number(l.descuento_porcentaje) || 0,
-            iva_porcentaje: Number(l.iva_porcentaje) || 21,
+            iva_porcentaje: Number(l.iva_porcentaje) === 0 ? 0 : Number(l.iva_porcentaje || 21),
         }))
         const fd = new FormData()
         fd.set('empresa_id', selectedEmpresaId)
@@ -404,7 +414,43 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
 
 
 
-                        <div className="flex items-center space-x-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="flex flex-col sm:flex-row gap-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                            {/* Toggle IVA */}
+                            <div className="flex items-center space-x-3">
+                                <div className="flex items-center space-x-2">
+                                    {aplicarIva ? (
+                                        <ShieldCheck className="h-4 w-4 text-emerald-600" />
+                                    ) : (
+                                        <ShieldOff className="h-4 w-4 text-amber-500" />
+                                    )}
+                                    <Label htmlFor="iva-switch" className="font-semibold cursor-pointer select-none">Aplicar IVA</Label>
+                                </div>
+                                <span
+                                    data-testid="factura-iva-switch"
+                                    role="switch"
+                                    aria-checked={aplicarIva}
+                                    tabIndex={0}
+                                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 ${
+                                        aplicarIva ? 'bg-emerald-500' : 'bg-slate-300'
+                                    }`}
+                                    onClick={() => handleToggleIva(!aplicarIva)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleToggleIva(!aplicarIva) } }}
+                                >
+                                    <span
+                                        className={`${aplicarIva ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm`}
+                                    />
+                                </span>
+                                {!aplicarIva && (
+                                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200 animate-in fade-in duration-300">
+                                        Exento de IVA
+                                    </span>
+                                )}
+                            </div>
+
+                            {/* Separador visual */}
+                            <div className="hidden sm:block w-px bg-slate-200" />
+
+                            {/* Toggle Externa */}
                             <div className="flex items-center space-x-2">
                                 <Label htmlFor="externa-switch" className="font-semibold cursor-pointer">Factura Externa</Label>
                                 <span
@@ -416,8 +462,8 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                                         className={`${esExterna ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                                     />
                                 </span>
+                                {esExterna && <span className="text-xs text-slate-500 ml-1">Número automático. Puedes subir PDF ahora o más tarde.</span>}
                             </div>
-                            {esExterna && <span className="text-xs text-slate-500 ml-2">Se asignará número de serie automáticamente. Puedes subir el PDF ahora o más tarde.</span>}
                         </div>
 
                         <Separator className="bg-slate-100" />
@@ -701,16 +747,26 @@ export function NuevaFacturaForm({ clientes, clientesByEmpresa = {}, series, emp
                             <span>{totales.base_imponible.toFixed(2)}{getSimboloDivisa(divisa)}</span>
                         </div>
 
-                        <div className="flex justify-between text-sm">
-                            <span className="text-slate-500">
-                                IVA (
-                                {lineas.length > 0
-                                    ? [...new Set(lineas.map((l) => Number(l.iva_porcentaje) || 21))].sort((a, b) => a - b).join('%, ') + '%'
-                                    : '21%'}
-                                )
-                            </span>
-                            <span>{totales.iva.toFixed(2)}{getSimboloDivisa(divisa)}</span>
-                        </div>
+                        {aplicarIva ? (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-slate-500">
+                                    IVA (
+                                    {lineas.length > 0
+                                        ? [...new Set(lineas.map((l) => (Number(l.iva_porcentaje) === 0 ? 0 : Number(l.iva_porcentaje || 21))))].sort((a, b) => Number(a) - Number(b)).join('%, ') + '%'
+                                        : '0%'}
+                                    )
+                                </span>
+                                <span>{totales.iva.toFixed(2)}{getSimboloDivisa(divisa)}</span>
+                            </div>
+                        ) : (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-amber-600 font-medium flex items-center gap-1.5">
+                                    <ShieldOff className="h-3.5 w-3.5" />
+                                    Exento de IVA
+                                </span>
+                                <span className="text-slate-400">0,00{getSimboloDivisa(divisa)}</span>
+                            </div>
+                        )}
 
                         {(retencionPorcentaje > 0 || retencionPorcentaje < 0) && (
                             <div className="flex justify-between text-sm text-amber-700 dark:text-amber-400">

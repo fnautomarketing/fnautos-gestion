@@ -59,38 +59,38 @@ const i18n = {
     es: {
         factura: 'FACTURA', facturaRect: 'FACTURA RECTIFICATIVA',
         emisor: 'EMISOR', cliente: 'DATOS DEL CLIENTE', detalles: 'DETALLES',
-        fechaEmision: 'Fecha Emisión', fechaVto: 'Fecha Vencimiento',
+        fechaEmision: 'Fecha Emisión',
         numFactura: 'Nº Factura',
         concepto: 'CONCEPTO', cant: 'CANT.', precio: 'P. UNIT.',
         pctIva: 'IVA %', impIva: 'IVA', total: 'TOTAL',
         subtotal: 'Subtotal', descuento: 'Descuento', base: 'Base Imponible',
         cuotaIva: 'Cuota IVA', retencion: 'Retención IRPF',
         totalFact: 'TOTAL FACTURA', bancarios: 'DATOS BANCARIOS',
-        notas: 'NOTAS', nif: 'NIF/CIF',
+        notas: 'NOTAS', nif: 'NIF/CIF', exentoIva: 'Exento de IVA',
     },
     en: {
         factura: 'INVOICE', facturaRect: 'CREDIT NOTE',
         emisor: 'ISSUER', cliente: 'BILL TO', detalles: 'DETAILS',
-        fechaEmision: 'Issue Date', fechaVto: 'Due Date',
+        fechaEmision: 'Issue Date',
         numFactura: 'Invoice No.',
         concepto: 'DESCRIPTION', cant: 'QTY', precio: 'UNIT PRICE',
         pctIva: 'VAT %', impIva: 'VAT', total: 'TOTAL',
         subtotal: 'Subtotal', descuento: 'Discount', base: 'Tax Base',
         cuotaIva: 'VAT Amount', retencion: 'Withholding',
         totalFact: 'TOTAL INVOICE', bancarios: 'BANK DETAILS',
-        notas: 'NOTES', nif: 'Tax ID',
+        notas: 'NOTES', nif: 'Tax ID', exentoIva: 'VAT Exempt',
     },
     fr: {
         factura: 'FACTURE', facturaRect: 'AVOIR',
         emisor: 'ÉMETTEUR', cliente: 'DESTINATAIRE', detalles: 'DÉTAILS',
-        fechaEmision: "Date d'émission", fechaVto: "Date d'échéance",
+        fechaEmision: "Date d'émission",
         numFactura: 'N° Facture',
         concepto: 'DESCRIPTION', cant: 'QTÉ', precio: 'PRIX UNIT.',
         pctIva: 'TVA %', impIva: 'TVA', total: 'TOTAL',
         subtotal: 'Sous-total', descuento: 'Remise', base: 'Base Imposable',
         cuotaIva: 'Montant TVA', retencion: 'Retenue',
         totalFact: 'TOTAL FACTURE', bancarios: 'COORDONNÉES BANCAIRES',
-        notas: 'NOTES', nif: 'N° TVA',
+        notas: 'NOTES', nif: 'N° TVA', exentoIva: 'Exonéré de TVA',
     },
 }
 
@@ -110,6 +110,8 @@ const C = {
 
 // ─── Widths de columnas (deben sumar exactamente 100%) ───────────────────────
 const W = { concepto: '35%', cant: '7%', precio: '14%', pctIva: '9%', impIva: '16%', total: '19%' }
+// Anchos de columna sin IVA (redistribuidos)
+const W_SIN_IVA = { concepto: '45%', cant: '10%', precio: '20%', total: '25%' }
 
 // ─── Estilo compartido para paneles de info (cliente y detalles) ─────────────
 const panelStyle = {
@@ -132,6 +134,11 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
     const t   = i18n[options.idioma || 'es']
     const div = factura.divisa || 'EUR'
     const cli = factura.cliente
+
+    // Detectar si la factura es sin IVA (todas las líneas con iva_porcentaje=0 o importe IVA total=0)
+    const sinIva = (factura.iva === 0 || factura.iva == null) &&
+        (factura.lineas || []).every(l => (l.iva_porcentaje ?? 21) === 0)
+    const colW = sinIva ? W_SIN_IVA : W
 
     // Cálculos fiscales
     const sub          = factura.subtotal || 0
@@ -242,16 +249,6 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
 
                         <Text style={labelStyle}>{t.fechaEmision}</Text>
                         <Text style={valueStyle}>{fmtDate(factura.fecha_emision, options.idioma)}</Text>
-
-                        {/* Fecha vencimiento: solo si existe */}
-                        {factura.fecha_vencimiento ? (
-                            <>
-                                <Text style={labelStyle}>{t.fechaVto}</Text>
-                                <Text style={{ ...valueStyle, color: C.red, marginBottom: 0 }}>
-                                    {fmtDate(factura.fecha_vencimiento, options.idioma)}
-                                </Text>
-                            </>
-                        ) : null}
                     </View>
                 </View>
 
@@ -272,19 +269,19 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                         borderBottomColor: C.red,
                         marginBottom: 0,
                     }}>
-                        <Text style={{ width: W.concepto, fontSize: 8, fontWeight: 'bold', color: C.dark }}>{t.concepto}</Text>
-                        <Text style={{ width: W.cant,    fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'center' }}>{t.cant}</Text>
-                        <Text style={{ width: W.precio,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.precio}</Text>
-                        <Text style={{ width: W.pctIva,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'center' }}>{t.pctIva}</Text>
-                        <Text style={{ width: W.impIva,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.impIva}</Text>
-                        <Text style={{ width: W.total,   fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.total}</Text>
+                        <Text style={{ width: colW.concepto, fontSize: 8, fontWeight: 'bold', color: C.dark }}>{t.concepto}</Text>
+                        <Text style={{ width: colW.cant,    fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'center' }}>{t.cant}</Text>
+                        <Text style={{ width: colW.precio,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.precio}</Text>
+                        {!sinIva && <Text style={{ width: W.pctIva,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'center' }}>{t.pctIva}</Text>}
+                        {!sinIva && <Text style={{ width: W.impIva,  fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.impIva}</Text>}
+                        <Text style={{ width: colW.total,   fontSize: 8, fontWeight: 'bold', color: C.dark, textAlign: 'right'  }}>{t.total}</Text>
                     </View>
 
                     {/* Filas de líneas */}
                     {(factura.lineas || []).map((linea, i) => {
                         const esUltima  = i === (factura.lineas?.length || 1) - 1
                         const baseLin   = linea.subtotal ?? (linea.cantidad * linea.precio_unitario * (1 - (linea.descuento_porcentaje || 0) / 100))
-                        const ivaLin    = baseLin * ((linea.iva_porcentaje || 21) / 100)
+                        const ivaLin    = sinIva ? 0 : baseLin * ((linea.iva_porcentaje || 21) / 100)
                         const totalLin  = baseLin + ivaLin
                         return (
                             <View
@@ -299,17 +296,17 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                                     alignItems: 'flex-start',
                                 }}
                             >
-                                <View style={{ width: W.concepto }}>
+                                <View style={{ width: colW.concepto }}>
                                     <Text style={{ fontSize: 9, fontWeight: 'bold', color: C.dark }}>{linea.concepto}</Text>
                                     {linea.descripcion
                                         ? <Text style={{ fontSize: 8, color: C.light, marginTop: 2 }}>{linea.descripcion}</Text>
                                         : null}
                                 </View>
-                                <Text style={{ width: W.cant,   fontSize: 9, color: C.slate, textAlign: 'center' }}>{linea.cantidad}</Text>
-                                <Text style={{ width: W.precio, fontSize: 9, color: C.slate, textAlign: 'right'  }}>{fmt(linea.precio_unitario, div)}</Text>
-                                <Text style={{ width: W.pctIva, fontSize: 9, color: C.slate, textAlign: 'center' }}>{linea.iva_porcentaje}%</Text>
-                                <Text style={{ width: W.impIva, fontSize: 9, color: C.slate, textAlign: 'right'  }}>{fmt(ivaLin, div)}</Text>
-                                <Text style={{ width: W.total,  fontSize: 9, color: C.dark,  textAlign: 'right', fontWeight: 'bold' }}>{fmt(totalLin, div)}</Text>
+                                <Text style={{ width: colW.cant,   fontSize: 9, color: C.slate, textAlign: 'center' }}>{linea.cantidad}</Text>
+                                <Text style={{ width: colW.precio, fontSize: 9, color: C.slate, textAlign: 'right'  }}>{fmt(linea.precio_unitario, div)}</Text>
+                                {!sinIva && <Text style={{ width: W.pctIva, fontSize: 9, color: C.slate, textAlign: 'center' }}>{linea.iva_porcentaje}%</Text>}
+                                {!sinIva && <Text style={{ width: W.impIva, fontSize: 9, color: C.slate, textAlign: 'right'  }}>{fmt(ivaLin, div)}</Text>}
+                                <Text style={{ width: colW.total,  fontSize: 9, color: C.dark,  textAlign: 'right', fontWeight: 'bold' }}>{fmt(totalLin, div)}</Text>
                             </View>
                         )
                     })}
@@ -354,13 +351,22 @@ export function FacturaPdfDocument({ factura, empresa, options, logoUrl }: Factu
                             <Text style={{ fontSize: 9, color: C.dark, fontWeight: 'bold' }}>{fmt(base, div)}</Text>
                         </View>
 
-                        {/* Cuota IVA — texto oscuro uniforme */}
-                        <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 7, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: C.border }}>
-                            <Text style={{ fontSize: 9, color: C.light }}>
-                                {t.cuotaIva}{ivaPct > 0 ? ` (${ivaPct}%)` : ''}
-                            </Text>
-                            <Text style={{ fontSize: 9, color: C.dark, fontWeight: 'bold' }}>{fmt(ivaTot, div)}</Text>
-                        </View>
+                        {/* Cuota IVA o Exento de IVA */}
+                        {sinIva ? (
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 7, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: C.border }}>
+                                <Text style={{ fontSize: 9, color: '#d97706', fontWeight: 'bold' }}>
+                                    {t.exentoIva}
+                                </Text>
+                                <Text style={{ fontSize: 9, color: '#d97706' }}>—</Text>
+                            </View>
+                        ) : (
+                            <View style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 7, paddingHorizontal: 14, borderBottomWidth: 1, borderBottomColor: C.border }}>
+                                <Text style={{ fontSize: 9, color: C.light }}>
+                                    {t.cuotaIva}{ivaPct > 0 ? ` (${ivaPct}%)` : ''}
+                                </Text>
+                                <Text style={{ fontSize: 9, color: C.dark, fontWeight: 'bold' }}>{fmt(ivaTot, div)}</Text>
+                            </View>
+                        )}
 
                         {/* Retención — solo si aplica */}
                         {retImporte > 0 && (

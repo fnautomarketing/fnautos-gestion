@@ -101,7 +101,6 @@ export function FacturasTable({
                 { header: 'Número', key: 'numero', width: 20 },
                 { header: 'Cliente', key: 'cliente', width: 35 },
                 { header: 'Emisión', key: 'fecha_emision', width: 15 },
-                { header: 'Vencimiento', key: 'fecha_vencimiento', width: 15 },
                 { header: 'Estado', key: 'estado', width: 15 },
                 { header: 'Total', key: 'total', width: 15 },
             ]
@@ -111,7 +110,6 @@ export function FacturasTable({
                     numero: formatFacturaDisplayNumero(f.serie, f.numero),
                     cliente: f.cliente?.nombre_fiscal || f.cliente?.nombre_comercial || '-',
                     fecha_emision: formatDate(f.fecha_emision),
-                    fecha_vencimiento: formatDate(f.fecha_vencimiento),
                     estado: f.estado,
                     total: f.total
                 })
@@ -245,7 +243,6 @@ export function FacturasTable({
                                 <TableHead className="w-[140px] font-serif font-bold text-slate-900 dark:text-slate-100 py-5 pl-6">Número</TableHead>
                                 <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5">Cliente</TableHead>
                                 <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center hidden md:table-cell">Emisión</TableHead>
-                                <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center hidden lg:table-cell">Vencimiento</TableHead>
                                 <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-center">Estado</TableHead>
                                 <TableHead className="font-serif font-bold text-slate-900 dark:text-slate-100 py-5 text-right">Total</TableHead>
                                 <TableHead className="w-[80px] py-5 pr-6"></TableHead>
@@ -275,12 +272,12 @@ export function FacturasTable({
                                     >
                                         <TableCell className="py-4 pl-6">
                                             <div className="flex flex-col">
-                                                <span className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors">
+                                                <Link href={`/ventas/facturas/${factura.id}`} className="font-bold text-slate-900 dark:text-slate-100 group-hover:text-primary transition-colors hover:underline underline-offset-4 decoration-primary/50 cursor-pointer">
                                                     <HighlightText 
                                                         text={formatFacturaDisplayNumero(factura.serie, factura.numero)}
                                                         query={searchQuery}
                                                     />
-                                                </span>
+                                                </Link>
                                                 {factura.es_externa && (
                                                     <span className="text-[10px] font-bold text-purple-600 uppercase tracking-widest mt-0.5">EXTERNA</span>
                                                 )}
@@ -303,11 +300,6 @@ export function FacturasTable({
                                             <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
                                                 {formatDate(factura.fecha_emision)}
                                             </span>
-                                        </TableCell>
-                                        <TableCell className={cn('text-center py-4 hidden lg:table-cell', isVencida(factura.fecha_vencimiento) && factura.estado !== 'pagada' && factura.estado !== 'anulada' && 'text-red-500 font-bold')}>
-                                            <div className="flex items-center justify-center gap-1.5">
-                                                {formatDate(factura.fecha_vencimiento)}
-                                            </div>
                                         </TableCell>
                                         <TableCell className="text-center py-4">
                                             <div className="flex flex-col items-center gap-1">

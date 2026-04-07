@@ -10,7 +10,6 @@ interface InformacionFacturaProps {
         serie?: string | null
         numero: string
         fecha_emision: string
-        fecha_vencimiento: string
         estado: string
         forma_pago?: string | null
         cliente?: { forma_pago_predeterminada?: string | null }
@@ -47,10 +46,6 @@ export function InformacionFactura({ factura }: InformacionFacturaProps) {
                 label: 'Emitida',
                 className: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-300',
             },
-            vencida: {
-                label: 'Vencida',
-                className: 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-300',
-            },
             borrador: {
                 label: 'Borrador',
                 className: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300',
@@ -68,9 +63,7 @@ export function InformacionFactura({ factura }: InformacionFacturaProps) {
     const formaPago = rawFormaPagoStr
         .replace(/_/g, ' ')
         .replace(/\b\w/g, (c) => c.toUpperCase())
-    const formaPagoDisplay = rawFormaPagoStr.includes('_')
-        ? formaPago.replace(/(\d+)/, '($1 días)')
-        : formaPago
+    const formaPagoDisplay = formaPago
 
     return (
         <Card className="shadow-sm border-slate-200 dark:border-slate-700">
@@ -86,7 +79,6 @@ export function InformacionFactura({ factura }: InformacionFacturaProps) {
                         <span className="font-mono font-semibold">{formatFacturaDisplayNumero(factura.serie, factura.numero)}</span>
                     </InfoRow>
                     <InfoRow label="Emisión">{formatDate(factura.fecha_emision)}</InfoRow>
-                    <InfoRow label="Vencimiento">{formatDate(factura.fecha_vencimiento)}</InfoRow>
                     <InfoRow label="Forma de pago">{formaPagoDisplay}</InfoRow>
                     <InfoRow label="Estado">{getEstadoBadge(factura.estado)}</InfoRow>
                 </dl>

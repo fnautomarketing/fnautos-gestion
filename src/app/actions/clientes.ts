@@ -27,7 +27,6 @@ export async function crearClienteAction(formData: FormData) {
 
         const dataToValidate = {
             ...rawData,
-            dias_vencimiento: Number(rawData.dias_vencimiento) || 30,
             descuento_comercial: Number(rawData.descuento_comercial) || 0,
             iva_aplicable: Number(rawData.iva_aplicable) || 21,
             activo: rawData.activo === 'on',
@@ -124,7 +123,6 @@ export async function actualizarClienteAction(clienteId: string, formData: FormD
         const rawData = Object.fromEntries(formData.entries())
         const dataToValidate = {
             ...rawData,
-            dias_vencimiento: Number(rawData.dias_vencimiento) || 30,
             descuento_comercial: Number(rawData.descuento_comercial) || 0,
             iva_aplicable: Number(rawData.iva_aplicable) || 21,
             activo: rawData.activo === 'on',

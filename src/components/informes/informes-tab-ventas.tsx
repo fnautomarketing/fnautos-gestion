@@ -105,7 +105,7 @@ export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId
 
     const emptyEvolucion = !evolucion?.length
     const emptyEstados = !estados?.length
-    const estadoLabels: Record<string, string> = { pagada: 'Pagadas', emitida: 'Emitidas', borrador: 'Borradores', vencida: 'Vencidas' }
+    const estadoLabels: Record<string, string> = { pagada: 'Pagadas', emitida: 'Emitidas', borrador: 'Borradores', parcial: 'Parciales' }
 
     return (
         <div className="grid gap-4 grid-cols-1 lg:grid-cols-3 min-w-0">
@@ -148,7 +148,7 @@ export function InformesTabVentas({ fechaDesde, fechaHasta, empresaId, clienteId
                         Estado de facturas
                         <SectionInfoButton
                             title="Estado de facturas"
-                            description="Distribución del número de facturas según su estado: pagada, pendiente de cobro, vencida, etc. Las facturas anuladas no se incluyen. Útil para ver cuánto está por cobrar."
+                            description="Distribución del número de facturas según su estado: pagada, emitida, parcial, etc. Las facturas anuladas no se incluyen. Útil para ver cuánto está por cobrar."
                         />
                     </CardTitle>
                     <CardDescription>Distribución por estado</CardDescription>

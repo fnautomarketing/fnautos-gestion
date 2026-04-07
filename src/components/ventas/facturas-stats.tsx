@@ -10,7 +10,6 @@ interface FacturasStatsProps {
     stats: {
         totalFacturado: number
         pendienteCobro: number
-        vencidas: number
         esteMes: number
     }
 }
@@ -83,17 +82,7 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
             glow: 'from-amber-500/20 to-transparent',
             delay: '100ms'
         },
-        {
-            id: 'vencido',
-            label: 'Vencidas',
-            description: "Importe total de facturas cuya fecha de vencimiento ya ha pasado.",
-            value: stats.vencidas,
-            icon: AlertTriangle,
-            color: 'text-rose-500',
-            bg: 'bg-rose-500/10',
-            glow: 'from-rose-500/20 to-transparent',
-            delay: '200ms'
-        },
+        // (Se eliminó el item de vencidas)
         {
             id: 'mes',
             label: 'Este Mes',
@@ -108,7 +97,7 @@ export function FacturasStats({ stats }: FacturasStatsProps) {
     ]
 
     return (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {items.map((item) => (
                 <Card 
                     key={item.id}

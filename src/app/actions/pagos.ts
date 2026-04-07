@@ -102,14 +102,21 @@ export async function registrarPagoAction(formData: FormData) {
             actualizacion.estado = 'parcial'
         }
 
-        const { error: errorUpdate } = await supabase
+        const { error: errorUpdate, count: affectedRows } = await supabase
             .from('facturas')
             .update(actualizacion)
             .eq('id', validated.factura_id)
             .eq('empresa_id', empresaId)
+            .select('*', { count: 'exact', head: true })
 
         if (errorUpdate) {
             console.error('[registrarPagoAction] Error updating factura:', errorUpdate)
+            throw new Error(`Error al actualizar el estado de la factura: ${errorUpdate.message}`)
+        }
+
+        if (affectedRows === 0) {
+            console.error('[registrarPagoAction] No row updated for factura:', validated.factura_id)
+            throw new Error('No se pudo actualizar la factura. Verifica tus permisos o que la factura pertenezca a la empresa actual.')
         }
 
         // Crear notificación (empresaId ya es el de la factura en Vision Global)
@@ -320,26 +327,7 @@ export async function getEstadisticasPagosAction() {
 
         const numFacturasPendientes = facturasPendientes?.length || 0
 
-        const hoy = new Date()
-        const finSemana = new Date(hoy)
-        finSemana.setDate(hoy.getDate() + 7)
-
-        // Facturas que vencen esta semana
-        let facturasVencenSemanaQuery = supabase
-            .from('facturas')
-            .select('total, pagado')
-            .in('estado', ['emitida', 'parcial'])
-            .gte('fecha_vencimiento', hoy.toISOString().split('T')[0])
-            .lte('fecha_vencimiento', finSemana.toISOString().split('T')[0])
-        if (filtroEmpresa) {
-            facturasVencenSemanaQuery = facturasVencenSemanaQuery.eq('empresa_id', filtroEmpresa)
-        }
-        const { data: facturasVencenSemana } = await facturasVencenSemanaQuery
-        const venceSemana = (facturasVencenSemana as Array<{ total: number, pagado: number }> | null)?.reduce((sum: number, f) =>
-            sum + (f.total - (f.pagado || 0)), 0
-        ) || 0
-
-        const numVencenSemana = facturasVencenSemana?.length || 0
+        // (Se eliminó el bloque de vencimientos de la semana)
 
         // Conteo de pagos totales
         let totalPagosQuery = (supabase as unknown as import('@supabase/supabase-js').SupabaseClient)
@@ -368,8 +356,6 @@ export async function getEstadisticasPagosAction() {
                 totalCobradoMes,
                 pendienteCobro,
                 numFacturasPendientes,
-                venceSemana,
-                numVencenSemana,
                 totalPagos: totalPagos || 0,
                 pagosConciliados: pagosConciliados || 0,
             }
