@@ -33,6 +33,7 @@ export const GuardarBorradorSchema = z.object({
     total: z.number(),
     divisa: z.string().default('EUR'),
     tipo_cambio: z.number().min(0).default(1.0),
+    fecha_vencimiento: z.string().optional().nullable(),
     lineas: z.array(LineaFacturaSchema).min(1, 'Debe haber al menos una línea'),
 })
 
@@ -55,6 +56,7 @@ export const EditarFacturaSchema = z.object({
     recargo_porcentaje: z.number().min(0).optional().nullable(),
     retencion_porcentaje: z.number().min(0).max(100).optional().nullable(),
     archivo_url: z.string().optional().nullable(),
+    fecha_vencimiento: z.string().optional().nullable(),
     es_externa: z.boolean().optional(),
 })
 

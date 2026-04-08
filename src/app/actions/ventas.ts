@@ -103,7 +103,8 @@ export async function guardarBorradorAction(formData: FormData) {
             tipo_cambio: parseFloat(formData.get('tipo_cambio') as string) || 1.0,
             es_externa: formData.get('es_externa') === 'true',
             numero_manual: formData.get('numero_manual') as string || undefined,
-            archivo_url: formData.get('archivo_url') as string || undefined
+            archivo_url: formData.get('archivo_url') as string || undefined,
+            fecha_vencimiento: formData.get('fecha_vencimiento') as string || undefined
         }
 
         const validatedData = GuardarBorradorSchema.parse(rawData)
@@ -151,6 +152,7 @@ export async function guardarBorradorAction(formData: FormData) {
                 tipo_cambio: validatedData.tipo_cambio,
                 estado: 'borrador' as any,
                 notas: validatedData.notas as any,
+                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
             } as any)
             .select()
             .single()
@@ -232,7 +234,8 @@ export async function crearFacturaAction(formData: FormData) {
             tipo_cambio: parseFloat(formData.get('tipo_cambio') as string) || 1.0,
             es_externa: formData.get('es_externa') === 'true',
             numero_manual: formData.get('numero_manual') as string || undefined,
-            archivo_url: formData.get('archivo_url') as string || undefined
+            archivo_url: formData.get('archivo_url') as string || undefined,
+            fecha_vencimiento: formData.get('fecha_vencimiento') as string || undefined
         }
 
         const validatedData = CrearFacturaSchema.parse(rawData)
@@ -289,6 +292,7 @@ export async function crearFacturaAction(formData: FormData) {
                 tipo_cambio: validatedData.tipo_cambio,
                 estado: 'emitida' as any,
                 notas: validatedData.notas as any,
+                fecha_vencimiento: validatedData.fecha_vencimiento || validatedData.fecha_emision,
             } as any)
             .select()
             .single()
