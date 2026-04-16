@@ -3,6 +3,8 @@ import Image from 'next/image'
 import { clientConfig } from '@/config/clients'
 import * as LucideIcons from 'lucide-react'
 
+export const dynamic = 'force-dynamic'
+
 export default function LoginPage() {
     return (
         <main className="flex min-h-screen">
