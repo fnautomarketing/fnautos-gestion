@@ -25,6 +25,11 @@ export async function middleware(request: NextRequest) {
         'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
     )
 
+    // AÑADIR HEADERS ANTI-CACHE CDN
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('CDN-Cache-Control', 'no-store')
+    response.headers.set('Surrogate-Control', 'no-store')
+
     return response
 }
 
