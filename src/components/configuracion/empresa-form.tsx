@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition, useEffect } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch'
 import { toast } from 'sonner'
 import { clientConfig } from '@/config/clients'
+import { validarCIF } from '@/lib/utils/cif-validator'
 import {
     Building2, MapPin, Phone, CreditCard, FileText, Upload, X, CheckCircle2, AlertCircle, Euro
 } from 'lucide-react'
@@ -57,26 +58,22 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
     const [isPending, startTransition] = useTransition()
     const [empresa, setEmpresa] = useState(empresaInicial)
     // Inicializar con NONE_VALUE para evitar hydration mismatch (server/client pueden tener datos distintos)
-    const [seriePredeterminadaId, setSeriePredeterminadaId] = useState(NONE_VALUE)
-    const [plantillaPredeterminadaId, setPlantillaPredeterminadaId] = useState(NONE_VALUE)
-    const [cifValido, setCifValido] = useState<boolean | null>(null)
+    const [seriePredeterminadaId, setSeriePredeterminadaId] = useState(empresaInicial.serie_predeterminada_id || NONE_VALUE)
+    const [plantillaPredeterminadaId, setPlantillaPredeterminadaId] = useState(empresaInicial.plantilla_pdf_predeterminada_id || NONE_VALUE)
+    const [cifValido, setCifValido] = useState<boolean | null>(empresaInicial.cif ? validarCIF(empresaInicial.cif) : null)
 
-    const [ibanValido, setIbanValido] = useState<boolean | null>(null)
+    const [ibanValido, setIbanValido] = useState<boolean | null>(() => {
+        if (!empresaInicial.iban) return null
+        const normalized = empresaInicial.iban.replace(/[^A-Z0-9]/gi, '').toUpperCase()
+        const regexES = /^ES[0-9]{22}$/
+        const regexGral = /^[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}$/
+        return regexES.test(normalized) || regexGral.test(normalized)
+    })
     const [subiendoLogo, setSubiendoLogo] = useState(false)
 
-    useEffect(() => {
-        setSeriePredeterminadaId(empresaInicial.serie_predeterminada_id || NONE_VALUE)
-        setPlantillaPredeterminadaId(empresaInicial.plantilla_pdf_predeterminada_id || NONE_VALUE)
-        
-        // Validar datos iniciales
-        if (empresaInicial.cif) validarCIF(empresaInicial.cif)
-        if (empresaInicial.iban) validarIBAN(empresaInicial.iban)
-    }, [empresaInicial])
-
-    // Validar CIF en tiempo real
-    function validarCIF(cif: string) {
-        const regex = /^[A-Z][0-9]{7}[A-Z0-9]$/
-        setCifValido(regex.test(cif))
+    // Validar CIF/NIF/NIE en tiempo real
+    function validarDocumentoFiscal(cif: string) {
+        setCifValido(validarCIF(cif))
     }
 
     // Validar IBAN en tiempo real (formato básico)
@@ -275,7 +272,7 @@ export function ConfiguracionEmpresaForm({ empresa: empresaInicial, series, plan
                                         placeholder="B12345678"
                                         onChange={(e) => {
                                             const val = e.target.value.toUpperCase();
-                                            validarCIF(val);
+                                            validarDocumentoFiscal(val);
                                             setEmpresa({ ...empresa, cif: val });
                                         }}
                                         className={
