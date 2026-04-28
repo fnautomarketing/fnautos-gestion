@@ -108,13 +108,18 @@ export async function actualizarEmpresaAction(formData: FormData) {
         if (!datosEmpresa.cif) {
             return { success: false, error: 'El CIF es obligatorio' }
         }
-        // Formato: CIF empresa (A-Z + 7 dígitos + control) o NIF persona (8 dígitos + letra)
-        const formatoCif = /^[A-Z][0-9]{7}[A-Z0-9]$/.test(datosEmpresa.cif)
+        // Formatos soportados:
+        // - CIF empresa: letra válida + 7 dígitos + control
+        // - NIF persona: 8 dígitos + letra
+        // - NIE: X/Y/Z + 7 dígitos + letra
+        const formatoCif = /^[ABCDEFGHJNPQRSUVW][0-9]{7}[A-Z0-9]$/.test(datosEmpresa.cif)
         const formatoNif = /^[0-9]{8}[A-Z]$/.test(datosEmpresa.cif)
-        if (!formatoCif && !formatoNif) {
-            return { success: false, error: 'El CIF/NIF no tiene un formato válido (ej: B12345678 o 12345678Z)' }
+        const formatoNie = /^[XYZ][0-9]{7}[A-Z]$/.test(datosEmpresa.cif)
+        if (!formatoCif && !formatoNif && !formatoNie) {
+            return { success: false, error: 'El CIF/NIF/NIE no tiene un formato válido (ej: B12345678, 12345678Z o Z1234567L)' }
         }
-        // Solo validar dígito de control vía RPC para formato CIF; NIF se acepta por formato
+        // Solo validar dígito de control vía RPC para formato CIF de empresa.
+        // NIF/NIE se aceptan por formato para evitar falsos negativos con identificadores no contemplados por la RPC.
         if (formatoCif) {
             const { data: empresaActual } = await supabase
                 .from('empresas')
