@@ -449,7 +449,7 @@ function generarClausulas(contrato: Contrato, empresa: ContratoEmpresaPdf): Arra
     if (esVenta) {
         clausulas.push({
             titulo: 'DECIMOSEXTA — Política de devoluciones y reemplazo',
-            texto: `Las partes acuerdan expresamente que no se realizarán devoluciones de dinero bajo ninguna circunstancia (incluyendo, a título enunciativo, el hallazgo de daños menores como el fallo de un neumático). En caso de existir un reclamo válido y amparado por la garantía, la única solución ofrecida a la parte compradora será el cambio del vehículo por otro. El vehículo de reemplazo podrá ser por un monto de hasta el mismo valor del vehículo original adquirido. En el supuesto de que la parte compradora elija un vehículo de mayor precio para el reemplazo, esta deberá abonar la diferencia económica correspondiente a la parte vendedora.`,
+            texto: `Las partes acuerdan expresamente que no se realizarán devoluciones de dinero bajo ninguna circunstancia (incluyendo, a título enunciativo, el hallazgo de daños menores, elementos de desgaste natural o componentes sujetos a mantenimiento ordinario). En caso de existir un reclamo válido y amparado por la garantía, la única solución ofrecida a la parte compradora será el cambio del vehículo por otro. El vehículo de reemplazo podrá ser por un monto de hasta el mismo valor del vehículo original adquirido. En el supuesto de que la parte compradora elija un vehículo de mayor precio para el reemplazo, esta deberá abonar la diferencia económica correspondiente a la parte vendedora.`,
             ref: 'Política de devoluciones — Pacto expreso',
         })
     }
