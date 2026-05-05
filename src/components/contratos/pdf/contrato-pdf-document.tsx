@@ -693,7 +693,7 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
                 ))}
 
                 {/* ═══ ZONA DE FIRMAS ═══ */}
-                <View style={s.firmasRow}>
+                <View style={s.firmasRow} wrap={false}>
                     <View style={s.firmaBox}>
                         <Text style={s.firmaLabel}>LA PARTE VENDEDORA</Text>
                         {firmaVendedor ? (
