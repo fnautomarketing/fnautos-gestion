@@ -407,7 +407,7 @@ function generarClausulas(contrato: Contrato, empresa: ContratoEmpresaPdf): Arra
         {
             titulo: 'NOVENA — Vicios ocultos y garantía legal',
             texto: esVenta
-                ? `De conformidad con los artículos 1484 a 1490 del Código Civil, la parte vendedora responderá de los vicios o defectos ocultos que tuviera el vehículo si los conociera y no los hubiese manifestado al comprador. Al actuar la empresa vendedora como profesional del sector, será de aplicación la garantía legal de conformidad prevista en el Real Decreto Legislativo 1/2007, por el que se aprueba el Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios (TRLGDCU). Para vehículos de segunda mano vendidos por un profesional, el plazo de garantía legal es de un (1) año desde la entrega, conforme al artículo 120 TRLGDCU, pudiendo las partes pactar por escrito su reducción a un año. Durante dicho plazo, si el vehículo presenta falta de conformidad, el comprador podrá exigir la reparación, sustitución, reducción del precio o resolución del contrato.`
+                ? `De conformidad con los artículos 1484 a 1490 del Código Civil, la parte vendedora responderá de los vicios o defectos ocultos que tuviera el vehículo si los conociera y no los hubiese manifestado al comprador. Al actuar la empresa vendedora como profesional del sector, será de aplicación la garantía legal de conformidad prevista en el Real Decreto Legislativo 1/2007, por el que se aprueba el Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios (TRLGDCU). Para vehículos de segunda mano vendidos por un profesional, el plazo de garantía legal es de un (1) año desde la entrega, conforme al artículo 120 TRLGDCU, pudiendo las partes pactar por escrito su reducción a un año. Durante dicho plazo, si el vehículo presenta falta de conformidad o reclamo válido, la solución ofrecida se regirá exclusivamente por lo estipulado en la cláusula de Política de devoluciones y reemplazo de este contrato, excluyendo expresamente la resolución con devolución monetaria.`
                 : `De conformidad con los artículos 1484 a 1490 del Código Civil, la parte vendedora responderá de los vicios o defectos ocultos que tuviera el vehículo si los conociera y no los hubiese manifestado al comprador. Al tratarse de una compraventa entre particulares, el plazo para ejercitar la acción de saneamiento por vicios ocultos es de seis (6) meses desde la entrega del vehículo, conforme al artículo 1490 del Código Civil.`,
             ref: esVenta
                 ? 'Arts. 1484-1490 C.C.; Arts. 114-127 TRLGDCU (RDL 1/2007) — Garantía legal'
@@ -444,6 +444,15 @@ function generarClausulas(contrato: Contrato, empresa: ContratoEmpresaPdf): Arra
             ref: 'Arts. 1445-1537 C.C.; RD 2822/1998; RDL 6/2015 — Ley sobre Tráfico',
         },
     ]
+
+    // Cláusula de política de devoluciones y reemplazo para contratos de venta
+    if (esVenta) {
+        clausulas.push({
+            titulo: 'DECIMOSEXTA — Política de devoluciones y reemplazo',
+            texto: `Las partes acuerdan expresamente que no se realizarán devoluciones de dinero bajo ninguna circunstancia (incluyendo, a título enunciativo, el hallazgo de daños menores, elementos de desgaste natural o componentes sujetos a mantenimiento ordinario). En caso de existir un reclamo válido y amparado por la garantía, la única solución ofrecida a la parte compradora será el cambio del vehículo por otro. El vehículo de reemplazo podrá ser por un monto de hasta el mismo valor del vehículo original adquirido. En el supuesto de que la parte compradora elija un vehículo de mayor precio para el reemplazo, esta deberá abonar la diferencia económica correspondiente a la parte vendedora.`,
+            ref: 'Política de devoluciones — Pacto expreso',
+        })
+    }
 
     // Cláusula adicional personalizada si existe
     if (contrato.clausulas_adicionales) {
@@ -693,7 +702,7 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
                 ))}
 
                 {/* ═══ ZONA DE FIRMAS ═══ */}
-                <View style={s.firmasRow}>
+                <View style={s.firmasRow} wrap={false}>
                     <View style={s.firmaBox}>
                         <Text style={s.firmaLabel}>LA PARTE VENDEDORA</Text>
                         {firmaVendedor ? (
