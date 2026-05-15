@@ -349,125 +349,85 @@ const s = StyleSheet.create({
 })
 
 // ╔══════════════════════════════════════════════════════════╗
-// ║  CLÁUSULAS LEGALES COMPLETAS                            ║
-// ║  Adaptadas a legislación española vigente               ║
+// ║  CLÁUSULAS — Contrato compraventa y garantía V.O.       ║
+// ║  Basado en plantilla operativa FN Autos                 ║
 // ╚══════════════════════════════════════════════════════════╝
 
 function generarClausulas(contrato: Contrato, empresa: ContratoEmpresaPdf): Array<{ titulo: string; texto: string; ref?: string }> {
-    const esVenta = contrato.tipo_operacion === 'venta'
     const ivaPorcentaje = contrato.iva_porcentaje || 0
     const totalFinal = contrato.total_con_iva || contrato.precio_venta
     const formaPagoLabel = FORMA_PAGO_LABELS[contrato.forma_pago || 'transferencia'] || 'transferencia bancaria'
+    const kmTexto = contrato.vehiculo_kilometraje
+        ? `${contrato.vehiculo_kilometraje.toLocaleString('es-ES')} km`
+        : 'el kilometraje indicado'
+    const estadoVehiculo = contrato.vehiculo_estado_declarado
+        ? ` Estado declarado: "${contrato.vehiculo_estado_declarado}".`
+        : ''
+    const itvEntregada = contrato.documentacion_entregada?.some((d) =>
+        d.toLowerCase().includes('itv')
+    )
 
     const clausulas: Array<{ titulo: string; texto: string; ref?: string }> = [
         {
-            titulo: 'PRIMERA — Objeto del contrato',
-            texto: `Por medio del presente contrato, la parte vendedora transmite a la parte compradora la plena propiedad y posesión del vehículo descrito en el apartado "Datos del Vehículo" de este documento, con todos los derechos y obligaciones inherentes al mismo, libre de cargas y gravámenes${contrato.vehiculo_libre_cargas ? '' : ', salvo las expresamente declaradas'}, obligándose la parte compradora a su aceptación conforme a las condiciones aquí pactadas.`,
-            ref: 'Art. 1445 Código Civil — Concepto de compraventa',
+            titulo: 'PRIMERA — Objeto de la compraventa',
+            texto: `La parte vendedora VENDE a la parte compradora, que COMPRA, el vehículo de ocasión identificado en el apartado "Datos del Vehículo" de este documento, en el estado técnico y de conservación propio de su antigüedad y de ${kmTexto}, reconociendo el comprador que se trata de un vehículo usado con el desgaste natural correspondiente a su uso.${estadoVehiculo} El comprador declara haber tenido oportunidad de examinar el vehículo y aceptarlo en las condiciones descritas.`,
         },
         {
             titulo: 'SEGUNDA — Precio y forma de pago',
-            texto: `El precio total de la compraventa asciende a la cantidad de ${fmt(totalFinal)}${contrato.precio_letras ? ` (${contrato.precio_letras})` : ''}.${ivaPorcentaje > 0 ? ` Dicha cantidad incluye un IVA del ${ivaPorcentaje}% que asciende a ${fmt(contrato.iva_importe)}, siendo la base imponible de ${fmt(contrato.precio_venta)}.` : ' Esta operación no está sujeta a IVA al tratarse de una transmisión entre particulares, quedando sujeta al Impuesto de Transmisiones Patrimoniales (ITP).'} El pago se realizará mediante ${formaPagoLabel}.${contrato.forma_pago === 'efectivo' ? ' En cumplimiento de la Ley 7/2012, de 29 de octubre, los pagos en efectivo no podrán superar los 1.000€ cuando alguna de las partes actúe como empresario o profesional.' : ''}`,
-            ref: 'Arts. 1445, 1500 C.C. — Precio cierto; Ley 7/2012 (limitación pagos efectivo)',
+            texto: `El precio de la compraventa se pacta de común acuerdo en ${fmt(totalFinal)}${contrato.precio_letras ? ` (${contrato.precio_letras})` : ''}, importe en el que queda incluido el precio del vehículo en el estado descrito.${ivaPorcentaje > 0 ? ` Incluye IVA al ${ivaPorcentaje}% (${fmt(contrato.iva_importe)}), sobre base imponible de ${fmt(contrato.precio_venta)}.` : ''} El pago se efectuará mediante ${formaPagoLabel}, en el establecimiento o lugar acordado por las partes.${contrato.forma_pago === 'efectivo' ? ' En operaciones con intervención de empresario o profesional, el pago en efectivo quedará sujeto a los límites legales vigentes (Ley 7/2012).' : ''}`,
         },
         {
-            titulo: 'TERCERA — Entrega del vehículo y transmisión de riesgos',
-            texto: `La entrega material del vehículo se efectuará en el momento de la firma del presente contrato, o en la fecha que las partes acuerden expresamente. Desde el momento de la entrega, la posesión, los riesgos y la responsabilidad civil derivada de la circulación del vehículo se transmiten íntegramente a la parte compradora. La parte vendedora queda exonerada de toda responsabilidad por infracciones de tráfico, accidentes o cualquier reclamación derivada del uso del vehículo posteriores a la fecha de entrega.`,
-            ref: 'Arts. 1462-1466 C.C. — Entrega de la cosa vendida; Art. 1452 C.C. — Riesgo de la cosa',
+            titulo: 'TERCERA — Entrega del vehículo y asunción de riesgos',
+            texto: `En este acto, o en la fecha que las partes acuerden por escrito, el vendedor hace entrega del vehículo al comprador, quien desde dicha fecha asume la posesión, el uso, las responsabilidades de circulación y cuantas obligaciones o sanciones se deriven del mismo. El vendedor responderá de las cuestiones derivadas del uso o posesión del vehículo hasta la fecha de entrega.`,
         },
         {
-            titulo: 'CUARTA — Estado del vehículo y conformidad',
-            texto: `La parte compradora declara haber examinado previamente el vehículo objeto de esta compraventa y lo acepta en su estado actual de conservación y funcionamiento.${contrato.vehiculo_estado_declarado ? ` Estado declarado por el vendedor: "${contrato.vehiculo_estado_declarado}".` : ' El vendedor declara que el vehículo se encuentra en correcto estado de funcionamiento a la fecha de la firma.'} La parte compradora reconoce que el vehículo es de segunda mano y que, como tal, puede presentar el desgaste propio de su antigüedad y kilometraje${contrato.vehiculo_kilometraje ? ` (${contrato.vehiculo_kilometraje.toLocaleString('es-ES')} km)` : ''}.`,
-            ref: 'Arts. 1484-1490 C.C. — Saneamiento por vicios ocultos',
+            titulo: 'CUARTA — Garantía legal y garantía comercial',
+            texto: `El plazo de garantía legal pactado es de doce (12) meses desde la entrega del vehículo. Cuando el comprador tenga la condición de consumidor y el vendedor actúe como profesional, será de aplicación la garantía legal de conformidad del Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios (RDL 1/2007). Adicionalmente, cuando proceda, el comprador podrá beneficiarse de la garantía comercial gestionada por el proveedor externo que el vendedor indique en la documentación entregada, debiendo canalizar las reclamaciones amparadas por dicha cobertura conforme a sus condiciones.`,
         },
         {
-            titulo: 'QUINTA — Cargas, gravámenes y situación administrativa',
-            texto: contrato.vehiculo_libre_cargas
-                ? `La parte vendedora declara expresamente y garantiza que el vehículo objeto de este contrato se halla libre de toda carga, gravamen, embargo, anotación en el Registro de Bienes Muebles, multas pendientes de pago, reserva de dominio, financiación vigente o cualquier otra limitación de dominio. Igualmente declara estar al corriente en el pago del Impuesto sobre Vehículos de Tracción Mecánica (IVTM) y que el vehículo no ha sido declarado siniestro total por ninguna compañía aseguradora.`
-                : `La parte vendedora declara la existencia de cargas, gravámenes u otras afectaciones sobre el vehículo, cuyo detalle se refleja en las cláusulas adicionales de este contrato. La parte compradora acepta expresamente la adquisición del vehículo en dichas condiciones.`,
-            ref: 'Art. 1474 C.C. — Saneamiento por evicción; RD 1828/1999 — Registro de Bienes Muebles',
+            titulo: 'QUINTA — Falta de conformidad',
+            texto: `El vendedor responderá ante el comprador de las faltas de conformidad existentes en el momento de la entrega del vehículo, en los términos de la normativa de consumidores y usuarios y del Código Civil. No habrá lugar a responsabilidad por faltas de conformidad que el comprador conociera o no hubiera podido ignorar de manera fundada en el momento de celebrar el contrato.`,
         },
         {
-            titulo: 'SEXTA — Documentación entregada',
-            texto: `La parte vendedora entrega a la parte compradora toda la documentación necesaria para realizar la transferencia de titularidad del vehículo ante la Jefatura Provincial de Tráfico (DGT), conforme al artículo 32 del Real Decreto 2822/1998, del Reglamento General de Vehículos.${contrato.documentacion_entregada?.length ? ` Documentación entregada: ${contrato.documentacion_entregada.join(', ')}.` : ''} La parte vendedora se compromete a firmar cuantos documentos sean necesarios para perfeccionar la transmisión ante la DGT.`,
-            ref: 'Art. 32 RD 2822/1998 — Cambio de titularidad; Art. 1258 C.C.',
+            titulo: 'SEXTA — Derecho a la reparación',
+            texto: `En caso de falta de conformidad del vehículo, el titular de la garantía tendrá derecho a exigir su reparación en los términos legalmente previstos, sin perjuicio de lo establecido en la cláusula de política de sustitución y reembolso de este contrato.`,
         },
         {
-            titulo: 'SÉPTIMA — Obligaciones fiscales',
-            texto: ivaPorcentaje > 0
-                ? `Al ser una de las partes empresario o profesional, la operación está sujeta al Impuesto sobre el Valor Añadido (IVA) al tipo del ${ivaPorcentaje}%, cuyo importe de ${fmt(contrato.iva_importe)} queda incluido en el precio total. La parte vendedora emitirá la correspondiente factura y procederá a la liquidación del IVA repercutido en su declaración periódica.`
-                : `Al tratarse de una transmisión entre particulares, esta operación no está sujeta a IVA sino al Impuesto de Transmisiones Patrimoniales (ITP), cuyo pago corresponde a la parte compradora. Dicho impuesto deberá liquidarse ante la Agencia Tributaria de la Comunidad Autónoma correspondiente al domicilio fiscal del adquirente, en el plazo de 30 días hábiles desde la firma del presente contrato, conforme al artículo 102 del Real Decreto Legislativo 1/1993.`,
-            ref: 'RDL 1/1993 — ITP; Ley 37/1992 — IVA; Art. 102 RDL 1/1993',
+            titulo: 'SÉPTIMA — Comunicación de incidencias',
+            texto: `Para hacer valer sus derechos, el comprador deberá comunicar al vendedor la falta de conformidad apreciada a la mayor brevedad desde que tenga conocimiento de la misma. El retraso injustificado en la comunicación podrá generar responsabilidad por los daños agravados en el vehículo. El vendedor no responderá respecto de piezas o elementos manipulados por el comprador sin autorización previa.`,
         },
         {
-            titulo: 'OCTAVA — Transferencia ante la DGT',
-            texto: `La parte compradora se obliga a realizar el cambio de titularidad del vehículo ante la Dirección General de Tráfico (DGT) en el plazo máximo de 30 días desde la fecha de firma del presente contrato, conforme establece el Real Decreto 2822/1998. Los gastos derivados de la transferencia (tasas de tráfico, gestoría, en su caso) serán por cuenta de la parte compradora, salvo pacto expreso en contrario. La parte vendedora realizará la notificación de venta a la DGT para quedar exenta de responsabilidad por infracciones posteriores a la transmisión.`,
-            ref: 'Arts. 32-34 RD 2822/1998 — Reglamento General de Vehículos',
+            titulo: 'OCTAVA — Reparación y piezas de recambio',
+            texto: `Una vez comprobada la falta de conformidad, el vendedor determinará el modo de reparación y el taller en que deba ser examinado el vehículo. Cuando sea necesario incorporar piezas de recambio, podrán utilizarse piezas reacondicionadas, reconstruidas o usadas, siempre que sea técnicamente posible, tengan estado conforme al contrato y no se trate de elementos activos ni conjuntos de los sistemas de frenado, suspensión o dirección. El comprador podrá solicitar piezas nuevas, asumiendo el sobreprecio correspondiente.`,
         },
         {
-            titulo: 'NOVENA — Vicios ocultos y garantía legal',
-            texto: esVenta
-                ? `De conformidad con los artículos 1484 a 1490 del Código Civil, la parte vendedora responderá de los vicios o defectos ocultos que tuviera el vehículo si los conociera y no los hubiese manifestado al comprador. Al actuar la empresa vendedora como profesional del sector, será de aplicación la garantía legal de conformidad prevista en el Real Decreto Legislativo 1/2007, por el que se aprueba el Texto Refundido de la Ley General para la Defensa de los Consumidores y Usuarios (TRLGDCU). Para vehículos de segunda mano vendidos por un profesional, el plazo de garantía legal es de un (1) año desde la entrega, conforme al artículo 120 TRLGDCU, pudiendo las partes pactar por escrito su reducción a un año. Durante dicho plazo, si el vehículo presenta falta de conformidad o reclamo válido, la solución ofrecida se regirá exclusivamente por lo estipulado en la cláusula de Política de devoluciones y reemplazo de este contrato, excluyendo expresamente la resolución con devolución monetaria.`
-                : `De conformidad con los artículos 1484 a 1490 del Código Civil, la parte vendedora responderá de los vicios o defectos ocultos que tuviera el vehículo si los conociera y no los hubiese manifestado al comprador. Al tratarse de una compraventa entre particulares, el plazo para ejercitar la acción de saneamiento por vicios ocultos es de seis (6) meses desde la entrega del vehículo, conforme al artículo 1490 del Código Civil.`,
-            ref: esVenta
-                ? 'Arts. 1484-1490 C.C.; Arts. 114-127 TRLGDCU (RDL 1/2007) — Garantía legal'
-                : 'Arts. 1484-1490 C.C. — Saneamiento por vicios ocultos',
+            titulo: 'NOVENA — Exclusiones de garantía',
+            texto: `No se considerarán faltas de conformidad: (a) el desgaste normal de piezas, materiales o componentes; (b) averías motivadas por uso inadecuado o falta de las operaciones de mantenimiento recomendadas por el fabricante; (c) daños consecuencia de robo, accidente o factores externos; (d) piezas de mantenimiento y desgaste (correas, filtros, frenos, neumáticos, embrague, etc.).`,
         },
         {
-            titulo: 'DÉCIMA — Seguro obligatorio',
-            texto: `La parte compradora se obliga a suscribir un seguro obligatorio de responsabilidad civil de automóviles antes de la puesta en circulación del vehículo, conforme a lo dispuesto en el Real Decreto Legislativo 8/2004, de 29 de octubre, por el que se aprueba el Texto Refundido de la Ley sobre Responsabilidad Civil y Seguro en la Circulación de Vehículos a Motor. La parte vendedora mantendrá vigente su póliza de seguro hasta la efectiva transferencia de titularidad ante la DGT.`,
-            ref: 'RDL 8/2004 — Responsabilidad Civil y Seguro de Vehículos a Motor',
+            titulo: 'DÉCIMA — Aceptaciones del comprador y procedimiento de verificación',
+            texto: `El comprador reconoce y acepta que: (i) la garantía no cubre desgaste mecánico ordinario ni averías por falta de mantenimiento; (ii) ha sido informado de la conveniencia de cumplir los mantenimientos del fabricante; (iii) verifica y acepta el estado actual del vehículo. Si detecta una posible falta de conformidad, deberá comunicarlo fehacientemente al vendedor antes de intervenir el vehículo en otro taller. El vendedor podrá organizar el traslado cautelar del vehículo para verificación. Si se confirma la garantía, el vendedor asumirá los gastos de transporte y reparación conforme a ley. Si el diagnóstico descarta la garantía, el comprador abonará transporte, mano de obra de diagnosis y demás costes generados.${itvEntregada ? ' El vehículo dispone de ITV conforme a la documentación entregada.' : ''}`,
         },
         {
-            titulo: 'UNDÉCIMA — Inspección Técnica de Vehículos (ITV)',
-            texto: `La parte vendedora declara que el vehículo${contrato.documentacion_entregada?.includes('Informe ITV vigente') ? ' dispone de la Inspección Técnica de Vehículos (ITV) vigente a la fecha de la firma' : ' cuyo estado de la ITV consta según la documentación facilitada'}. En cualquier caso, la parte compradora será responsable de las futuras inspecciones técnicas del vehículo conforme a lo establecido en el Real Decreto 920/2017, de 23 de octubre, por el que se regula la inspección técnica de vehículos.`,
-            ref: 'RD 920/2017 — Inspección Técnica de Vehículos',
+            titulo: 'UNDÉCIMA — Política de sustitución, devolución y reembolso',
+            texto: `Ante un reclamo fundado y amparado por la garantía legal o por este contrato, las partes pactan expresamente lo siguiente: (1) La solución preferente será la reparación conforme a las cláusulas anteriores. (2) Cuando proceda sustitución, esta se efectuará exclusivamente mediante la entrega de otro vehículo de valor equivalente al precio total abonado por el comprador en virtud del presente contrato. (3) Si el comprador optase por un vehículo de mayor precio, abonará previamente la diferencia al vendedor. (4) Solo en el supuesto de que no resulte viable la reparación ni la sustitución por causas no imputables al comprador, el vendedor procederá al reembolso del importe efectivamente abonado en un plazo máximo de treinta (30) días naturales desde la comunicación fehaciente de imposibilidad o desde la resolución conforme a derecho. Quedan excluidas las solicitudes derivadas de desgaste normal, mal uso, falta de mantenimiento o causas de exclusión previstas en este contrato.`,
         },
         {
-            titulo: 'DUODÉCIMA — Protección de datos personales',
-            texto: `De conformidad con el Reglamento (UE) 2016/679 del Parlamento Europeo y del Consejo (Reglamento General de Protección de Datos, RGPD) y la Ley Orgánica 3/2018, de Protección de Datos Personales y garantía de los derechos digitales (LOPDGDD), las partes quedan informadas y consienten expresamente que los datos personales recogidos en este contrato (nombre, NIF/CIF, domicilio, teléfono, correo electrónico, dirección IP, firma electrónica) serán tratados con la única finalidad de gestionar la relación contractual derivada de la compraventa del vehículo y el cumplimiento de obligaciones legales y fiscales. Los datos se conservarán durante el plazo legalmente exigible. Ambas partes podrán ejercitar sus derechos de acceso, rectificación, supresión, limitación del tratamiento, portabilidad y oposición (derechos ARCO-POL) dirigiéndose por escrito a ${empresa.nombre}, ${empresa.direccion}, ${empresa.codigo_postal} ${empresa.ciudad}${empresa.email ? `, o por correo electrónico a ${empresa.email}` : ''}.`,
-            ref: 'RGPD (UE) 2016/679; LO 3/2018 (LOPDGDD)',
-        },
-        {
-            titulo: 'DECIMOTERCERA — Firma electrónica',
-            texto: `Las partes reconocen y aceptan que la firma electrónica realizada a través de la plataforma digital de ${empresa.nombre} tiene plena validez jurídica y eficacia probatoria, de conformidad con lo dispuesto en el Reglamento (UE) nº 910/2014 del Parlamento Europeo y del Consejo (Reglamento eIDAS), especialmente su artículo 25.1, que establece que no se denegarán efectos jurídicos ni admisibilidad como prueba en procedimientos judiciales a una firma electrónica por el mero hecho de ser una firma electrónica simple. Se registran como evidencia electrónica la dirección IP del firmante, la fecha y hora exacta de la firma, el agente de usuario (navegador) y la imagen de la firma manuscrita digitalizada.`,
-            ref: 'Reglamento eIDAS (UE) 910/2014, Art. 25; Ley 6/2020 de servicios electrónicos de confianza',
-        },
-        {
-            titulo: 'DECIMOCUARTA — Resolución de controversias',
-            texto: `Para la resolución de cualesquiera controversias que pudieran derivarse de la interpretación, cumplimiento o ejecución del presente contrato, las partes se someten expresamente a los Juzgados y Tribunales de ${empresa.ciudad || 'la localidad del vendedor'}, con renuncia a cualquier otro fuero que pudiera corresponderles. No obstante, si la parte compradora tiene la condición de consumidor conforme al TRLGDCU, serán competentes los Juzgados de su domicilio. Previamente, las partes podrán acudir al Sistema Arbitral de Consumo si ambas lo aceptan voluntariamente.`,
-            ref: 'Art. 1809 C.C.; Art. 90 TRLGDCU (RDL 1/2007); Ley 60/2003 de Arbitraje',
-        },
-        {
-            titulo: 'DECIMOQUINTA — Legislación aplicable',
-            texto: `El presente contrato se rige por la legislación española, en particular por los artículos 1445 a 1537 del Código Civil relativos al contrato de compraventa, así como por el Real Decreto 2822/1998 (Reglamento General de Vehículos), el Real Decreto Legislativo 6/2015 (Ley sobre Tráfico), y cualesquiera otras disposiciones que resulten de aplicación. En lo no previsto expresamente en este contrato, serán de aplicación las normas generales del Código Civil y las normas de protección del consumidor si alguna de las partes tiene esa condición.`,
-            ref: 'Arts. 1445-1537 C.C.; RD 2822/1998; RDL 6/2015 — Ley sobre Tráfico',
+            titulo: 'DUODÉCIMA — Observaciones sobre sistemas de motorización',
+            texto: `El comprador declara haber sido informado, cuando el vehículo lo requiera, de la naturaleza del filtro de partículas (FAP/DPF) como elemento de mantenimiento, de la necesidad de regeneraciones periódicas mediante conducción adecuada, y de las recomendaciones de uso del sistema AdBlue. No se considerará avería garantizada la cristalización de AdBlue por uso indebido o depósito mantenido de forma incorrecta. El comprador manifiesta comprender que el vendedor no asumirá piezas de desgaste ni mantenimientos preventivos no cubiertos por la garantía.`,
         },
     ]
 
-    // Cláusula de política de devoluciones y reemplazo para contratos de venta
-    if (esVenta) {
-        clausulas.push({
-            titulo: 'DECIMOSEXTA — Política de devoluciones y reemplazo',
-            texto: `Las partes acuerdan expresamente que no se realizarán devoluciones de dinero bajo ninguna circunstancia (incluyendo, a título enunciativo, el hallazgo de daños menores, elementos de desgaste natural o componentes sujetos a mantenimiento ordinario). En caso de existir un reclamo válido y amparado por la garantía, la única solución ofrecida a la parte compradora será el cambio del vehículo por otro. El vehículo de reemplazo podrá ser por un monto de hasta el mismo valor del vehículo original adquirido. En el supuesto de que la parte compradora elija un vehículo de mayor precio para el reemplazo, esta deberá abonar la diferencia económica correspondiente a la parte vendedora.`,
-            ref: 'Política de devoluciones — Pacto expreso',
-        })
-    }
-
-    // Cláusula adicional personalizada si existe
     if (contrato.clausulas_adicionales) {
         clausulas.push({
             titulo: 'CLÁUSULA ADICIONAL — Pactos particulares',
             texto: contrato.clausulas_adicionales,
-            ref: 'Art. 1255 C.C. — Autonomía de la voluntad de las partes',
         })
     }
 
-    // Cláusula final de cierre
     clausulas.push({
-        titulo: 'CLÁUSULA FINAL — Unidad del contrato e integración',
-        texto: `El presente contrato constituye la totalidad del acuerdo entre las partes en relación con su objeto, dejando sin efecto cualquier acuerdo, pacto o negociación previa, verbal o escrita, que hubiera existido entre las partes con anterioridad. Cualquier modificación del presente contrato deberá realizarse por escrito y ser firmada por ambas partes. Y en prueba de conformidad con lo expuesto, las partes firman el presente contrato, que se extiende por duplicado y a un solo efecto, en la fecha y lugar arriba indicados.`,
-        ref: 'Arts. 1254, 1258 C.C. — Perfección y cumplimiento de contratos',
+        titulo: 'CLÁUSULA FINAL — Integración y firma',
+        texto: `El presente contrato, junto con su documentación anexa, constituye el acuerdo íntegro entre las partes. Cualquier modificación requerirá acuerdo escrito. En prueba de conformidad, las partes firman el presente documento por duplicado y a un solo efecto, en ${empresa.ciudad || 'el lugar indicado en el encabezamiento'}, en la fecha del encabezamiento.`,
     })
 
     return clausulas
@@ -491,8 +451,8 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
         ? contrato.firma_comprador_data
         : (contrato.firma_comprador_data || firmaEmpresaUrl)
     const tipoTexto = esVenta
-        ? 'CONTRATO DE COMPRAVENTA DE VEHÍCULO'
-        : 'CONTRATO DE COMPRA DE VEHÍCULO'
+        ? 'CONTRATO DE COMPRAVENTA Y GARANTÍA DE VEHÍCULO DE OCASIÓN (V.O.)'
+        : 'CONTRATO DE COMPRAVENTA Y GARANTÍA DE VEHÍCULO DE OCASIÓN (V.O.)'
     const fechaContrato = fmtDateLong(contrato.created_at || new Date().toISOString())
 
     const vehiculoItems = [
@@ -507,7 +467,7 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
         { label: 'Combustible', value: contrato.vehiculo_combustible ? COMBUSTIBLE_LABELS[contrato.vehiculo_combustible] : null },
     ].filter(item => item.value)
 
-    // Calcular número total de páginas (1 datos + N cláusulas)
+    const indiceCorteClausulas = Math.ceil(clausulas.length / 2)
     const totalPages = 3
 
     return (
@@ -670,8 +630,8 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
                 </Text>
                 <View style={s.brandLine} />
 
-                {clausulas.slice(0, 9).map((cl, i) => (
-                    <View key={i} wrap={false}>
+                {clausulas.slice(0, indiceCorteClausulas).map((cl, i) => (
+                    <View key={i}>
                         <Text style={s.clausulaTitle}>{cl.titulo}</Text>
                         <Text style={s.clausulaText}>{cl.texto}</Text>
                         {cl.ref && <Text style={s.clausulaRef}>Ref. legal: {cl.ref}</Text>}
@@ -693,8 +653,8 @@ export function ContratoPdfDocument({ contrato, empresa, logoUrl, firmaEmpresaUr
                 </Text>
                 <View style={s.brandLine} />
 
-                {clausulas.slice(9).map((cl, i) => (
-                    <View key={i} wrap={false}>
+                {clausulas.slice(indiceCorteClausulas).map((cl, i) => (
+                    <View key={i}>
                         <Text style={s.clausulaTitle}>{cl.titulo}</Text>
                         <Text style={s.clausulaText}>{cl.texto}</Text>
                         {cl.ref && <Text style={s.clausulaRef}>Ref. legal: {cl.ref}</Text>}
